@@ -20,7 +20,9 @@ export class Revert extends BackendJS.Module.Command<Context, Args, Options> {
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const version = await this.context.myRepository.revert({ minVersion: args.version });
+        await this.context.customerRepository.revert({ minVersion: args.version });
+        await this.context.orderRepository.revert({ minVersion: args.version });
+        const version = await this.context.productRepository.revert({ minVersion: args.version });
 
         return new CoreJS.TextResponse('reverted to version ' + version);
     }

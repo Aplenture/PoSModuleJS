@@ -7,10 +7,10 @@
 
 import * as BackendJS from "backendjs";
 
-export class MyUpdate extends BackendJS.Database.Update<string> {
-    public readonly name = "MyUpdate";
+export class CreateProductTable extends BackendJS.Database.Update<string> {
+    public readonly name = "CreateProductTable";
     public readonly version = 1;
-    public readonly timestamp = '2023-08-26';
+    public readonly timestamp = '2023-09-11';
 
     public readonly update: string;
     public readonly reset: string;
@@ -24,7 +24,9 @@ export class MyUpdate extends BackendJS.Database.Update<string> {
         this.update = `CREATE TABLE IF NOT EXISTS ${table} (
             \`id\` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            \`name\` TEXT NULL
+            \`name\` TEXT NULL,
+            \`price\` INT NOT NULL,
+            \`discount\` INT NOT NULL
         ) DEFAULT CHARSET=utf8`;
     }
 }

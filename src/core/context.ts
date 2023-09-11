@@ -6,8 +6,10 @@
  */
 
 import * as BackendJS from "backendjs";
-import { MyRepository } from "../repositories";
+import { CustomerRepository, OrderRepository, ProductRepository } from "../repositories";
 
 export interface Context extends BackendJS.Module.Context {
-    readonly myRepository: MyRepository;
+    readonly customerRepository: CustomerRepository;
+    readonly orderRepository: OrderRepository;
+    readonly productRepository: ProductRepository;
 }

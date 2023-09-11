@@ -7,5 +7,5 @@
 
 import * as BackendJS from "backendjs";
 
-export class MyRepository extends BackendJS.Database.Repository<string> {
+export class CustomerRepository extends BackendJS.Database.Repository<string> {
 }

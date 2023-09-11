@@ -5,6 +5,7 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
-export * from "./CustomerRepository";
-export * from "./OrderRepository";
-export * from "./ProductRepository";
+import * as BackendJS from "backendjs";
+
+export class ProductRepository extends BackendJS.Database.Repository<string> {
+}

@@ -20,7 +20,9 @@ export class Update extends BackendJS.Module.Command<Context, Args, Options> {
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const version = await this.context.myRepository.update({ maxVersion: args.version });
+        await this.context.customerRepository.update({ maxVersion: args.version });
+        await this.context.orderRepository.update({ maxVersion: args.version });
+        const version = await this.context.productRepository.update({ maxVersion: args.version });
 
         return new CoreJS.TextResponse('updated to version ' + version);
     }

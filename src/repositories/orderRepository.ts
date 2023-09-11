@@ -8,9 +8,5 @@
 import * as BackendJS from "backendjs";
 import { OrderTables } from "../models/orderTables";
 
-export interface Options extends BackendJS.Module.Options {
-    readonly databaseConfig: BackendJS.Database.Config;
-    readonly customerTable?: string;
-    readonly orderTables?: OrderTables;
-    readonly productTable?: string;
+export class OrderRepository extends BackendJS.Database.Repository<OrderTables> {
 }
