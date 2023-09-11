@@ -1,8 +1,8 @@
 /**
- * Aplenture/<my_module_name>
- * https://github.com/Aplenture/<my_module_name>
+ * Aplenture/PoSModuleJS
+ * https://github.com/Aplenture/PoSModuleJS
  * Copyright (c) 2023 Aplenture
- * MIT License https://github.com/Aplenture/<my_module_name>/blob/main/LICENSE
+ * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
 export * from "./reset";

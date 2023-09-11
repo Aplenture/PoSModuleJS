@@ -1,5 +1,5 @@
 {
-    "name": "<my_module_name>",
+    "name": "posmodulejs",
     "version": "0.1.0",
     "description": "",
     "main": "dist/index.js",
@@ -14,14 +14,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Aplenture/<my_module_name>.git"
+        "url": "git+https://github.com/Aplenture/PoSModuleJS.git"
     },
     "author": "Aplenture",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/Aplenture/<my_module_name>/issues"
+        "url": "https://github.com/Aplenture/PoSModuleJS/issues"
     },
-    "homepage": "https://github.com/Aplenture/<my_module_name>#readme",
+    "homepage": "https://github.com/Aplenture/PoSModuleJS#readme",
     "devDependencies": {
         "@types/chai": "^4.3.4",
         "@types/chai-as-promised": "^7.1.5",

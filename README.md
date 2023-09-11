@@ -1,1 +1,1 @@
-# <my_module_name>
+# PoSModuleJS
