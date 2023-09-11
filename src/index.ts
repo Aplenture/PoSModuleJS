@@ -25,7 +25,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.database = new BackendJS.Database.Database(this.options.databaseConfig, args.debug);
         this.database.onMessage.on(message => this.onMessage.emit(this, `database '${this.options.databaseConfig.database}' ${message}`));
 
-        this.myRepository = new MyRepository(options.databaseTable, this.database);
+        this.myRepository = new MyRepository(options.databaseTable, this.database, __dirname + '/updates/MyRepository');
 
         this.addCommands(Object.values(require('./commands')).map((constructor: any) => new constructor(this)));
     }
