@@ -5,10 +5,6 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
-export interface Customer {
-    readonly id: number;
-    readonly created: number;
-    readonly firstname: string;
-    readonly lastname: string;
-    readonly nickname: string;
-}
+export * from "./reset";
+export * from "./revert";
+export * from "./update";

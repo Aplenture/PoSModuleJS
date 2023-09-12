@@ -10,6 +10,7 @@ import { OrderTables } from "../models/orderTables";
 
 export interface Options extends BackendJS.Module.Options {
     readonly databaseConfig: BackendJS.Database.Config;
+    readonly balanceTables?: BackendJS.Balance.Tables;
     readonly customerTable?: string;
     readonly orderTables?: OrderTables;
     readonly productTable?: string;

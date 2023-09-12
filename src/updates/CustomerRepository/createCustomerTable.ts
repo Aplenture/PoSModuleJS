@@ -24,8 +24,10 @@ export class CreateCustomerTable extends BackendJS.Database.Update<string> {
         this.update = `CREATE TABLE IF NOT EXISTS ${table} (
             \`id\` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            \`firstname\` TEXT NULL,
-            \`lastname\` TEXT NULL
+            \`firstname\` CHAR(24) NOT NULL,
+            \`lastname\` CHAR(24) NOT NULL,
+            \`nickname\` CHAR(24) DEFAULT '',
+            UNIQUE (\`firstname\`,\`lastname\`,\`nickname\`)
         ) DEFAULT CHARSET=utf8`;
     }
 }
