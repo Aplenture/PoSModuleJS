@@ -21,8 +21,8 @@ export class EditCustomer extends BackendJS.Module.Command<Context, Args, Option
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('id', 'id of customer'),
         new CoreJS.StringParameter('firstname', 'firstname of customer', null),
-        new CoreJS.StringParameter('lastname', 'firstname of customer', null),
-        new CoreJS.StringParameter('nickname', 'firstname of customer', null)
+        new CoreJS.StringParameter('lastname', 'lastname of customer', null),
+        new CoreJS.StringParameter('nickname', 'nickname of customer', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {

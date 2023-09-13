@@ -43,9 +43,9 @@ describe("Module", () => {
 
                 expect(result).is.not.undefined;
 
-                const customer = JSON.parse(result.data);
+                const data = JSON.parse(result.data);
 
-                expect(customer).contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
+                expect(data).contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
             });
 
             it("with nickname", async () => {
@@ -53,9 +53,9 @@ describe("Module", () => {
 
                 expect(result).is.not.undefined;
 
-                const customer = JSON.parse(result.data);
+                const data = JSON.parse(result.data);
 
-                expect(customer).contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
+                expect(data).contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
             });
 
             it("catches missing firstname", () => m.execute("createCustomer", { lastname: 'world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'firstname', type: 'string' } })));
@@ -69,11 +69,11 @@ describe("Module", () => {
 
                 expect(result).is.not.undefined;
 
-                const customers = JSON.parse(result.data);
+                const data = JSON.parse(result.data);
 
-                expect(customers).has.length(2);
-                expect(customers[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
-                expect(customers[1], 'customer at 1').contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
+                expect(data).has.length(2);
+                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
+                expect(data[1], 'customer at 1').contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
             });
 
             it("limit 1", async () => {
@@ -81,10 +81,10 @@ describe("Module", () => {
 
                 expect(result).is.not.undefined;
 
-                const customers = JSON.parse(result.data);
+                const data = JSON.parse(result.data);
 
-                expect(customers).has.length(1);
-                expect(customers[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
+                expect(data).has.length(1);
+                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
             });
 
             it("first id 2", async () => {
@@ -92,10 +92,10 @@ describe("Module", () => {
 
                 expect(result).is.not.undefined;
 
-                const customers = JSON.parse(result.data);
+                const data = JSON.parse(result.data);
 
-                expect(customers).has.length(1);
-                expect(customers[0], 'customer at 0').contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
+                expect(data).has.length(1);
+                expect(data[0], 'customer at 0').contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
             });
 
             it("last id 1", async () => {
@@ -103,38 +103,41 @@ describe("Module", () => {
 
                 expect(result).is.not.undefined;
 
-                const customers = JSON.parse(result.data);
+                const data = JSON.parse(result.data);
 
-                expect(customers).has.length(1);
-                expect(customers[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
+                expect(data).has.length(1);
+                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
             });
         });
 
         describe("Edit", () => {
             it("changes firstname", () => m.execute("editCustomer", { id: 1, firstname: 'test1' })
                 .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data} WHERE id=1`))
+                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data}`))
                 .then(result => {
-                    expect(result).has.length(1);
-                    expect(result[0]).deep.contains({ firstname: 'test1', lastname: 'world', nickname: '' });
+                    expect(result).has.length(2);
+                    expect(result[0]).deep.contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: '' });
+                    expect(result[1]).deep.contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
                 })
             );
 
             it("changes lastname", () => m.execute("editCustomer", { id: 2, lastname: 'test2' })
                 .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data} WHERE id=2`))
+                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data}`))
                 .then(result => {
-                    expect(result).has.length(1);
-                    expect(result[0]).deep.contains({ firstname: 'hello', lastname: 'test2', nickname: '2' });
+                    expect(result).has.length(2);
+                    expect(result[0]).deep.contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: '' });
+                    expect(result[1]).deep.contains({ id: 2, firstname: 'hello', lastname: 'test2', nickname: '2' });
                 })
             );
 
             it("changes nickname", () => m.execute("editCustomer", { id: 1, nickname: 'test3' })
                 .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data} WHERE id=1`))
+                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data}`))
                 .then(result => {
-                    expect(result).has.length(1);
-                    expect(result[0]).deep.contains({ firstname: 'test1', lastname: 'world', nickname: 'test3' });
+                    expect(result).has.length(2);
+                    expect(result[0]).deep.contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: 'test3' });
+                    expect(result[1]).deep.contains({ id: 2, firstname: 'hello', lastname: 'test2', nickname: '2' });
                 })
             );
         });

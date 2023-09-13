@@ -19,8 +19,8 @@ export class GetCustomers extends BackendJS.Module.Command<Context, Args, Option
     public readonly description = 'returns all customers';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('limit', 'max number of returning customers', 1000),
-        new CoreJS.NumberParameter('firstID', 'customer id of first returning customer', null),
-        new CoreJS.NumberParameter('lastID', 'customer id of last returned customer', null)
+        new CoreJS.NumberParameter('firstID', 'id of first returning customer', null),
+        new CoreJS.NumberParameter('lastID', 'id of last returned customer', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {

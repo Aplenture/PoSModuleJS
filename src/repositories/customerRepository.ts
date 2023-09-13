@@ -44,6 +44,7 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             nickname
         };
     }
+
     public async edit(id: number, options: EditOptions = {}): Promise<boolean> {
         const keys = [];
         const values = [];

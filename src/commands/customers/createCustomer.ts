@@ -19,8 +19,8 @@ export class CreateCustomer extends BackendJS.Module.Command<Context, Args, Opti
     public readonly description = 'creats a customer';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.StringParameter('firstname', 'firstname of customer'),
-        new CoreJS.StringParameter('lastname', 'firstname of customer'),
-        new CoreJS.StringParameter('nickname', 'firstname of customer', '')
+        new CoreJS.StringParameter('lastname', 'lastname of customer'),
+        new CoreJS.StringParameter('nickname', 'nickname of customer', '')
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
