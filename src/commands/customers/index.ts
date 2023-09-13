@@ -6,4 +6,5 @@
  */
 
 export * from "./createCustomer";
+export * from "./editCustomer";
 export * from "./getCustomers";

@@ -10,6 +10,12 @@ import { Customer } from "../models";
 
 const MAX_LIMIT = 1000;
 
+interface EditOptions {
+    readonly firstname?: string;
+    readonly lastname?: string;
+    readonly nickname?: string;
+}
+
 interface GetAllOptions {
     readonly limit?: number;
     readonly firstID?: number;
@@ -37,6 +43,34 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             lastname,
             nickname
         };
+    }
+    public async edit(id: number, options: EditOptions = {}): Promise<boolean> {
+        const keys = [];
+        const values = [];
+
+        if (options.firstname) {
+            keys.push('`firstname`=?');
+            values.push(options.firstname);
+        }
+
+        if (options.lastname) {
+            keys.push('`lastname`=?');
+            values.push(options.lastname);
+        }
+
+        if (options.nickname) {
+            keys.push('`nickname`=?');
+            values.push(options.nickname);
+        }
+
+        if (0 == keys.length)
+            return false;
+
+        values.push(id);
+
+        const result = await this.database.query(`UPDATE ${this.data} SET ${keys.join(',')} WHERE \`id\`=?`, values);
+
+        return 1 == result.affectedRows;
     }
 
     public async getAll(options: GetAllOptions = {}): Promise<Customer[]> {
