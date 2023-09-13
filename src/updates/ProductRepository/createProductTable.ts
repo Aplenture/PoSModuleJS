@@ -24,7 +24,7 @@ export class CreateProductTable extends BackendJS.Database.Update<string> {
         this.update = `CREATE TABLE IF NOT EXISTS ${table} (
             \`id\` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            \`name\` TEXT NULL,
+            \`name\` CHAR(24) UNIQUE NOT NULL,
             \`price\` INT NOT NULL,
             \`discount\` INT NOT NULL
         ) DEFAULT CHARSET=utf8`;
