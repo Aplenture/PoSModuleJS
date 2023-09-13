@@ -6,6 +6,7 @@
  */
 
 export enum PaymentMethod {
+    None = 0,
     Cash,
     Balance
 }

@@ -5,4 +5,5 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
+export * from "./orderState";
 export * from "./paymentMethod";

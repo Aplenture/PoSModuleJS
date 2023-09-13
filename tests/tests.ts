@@ -9,6 +9,7 @@ import * as BackendJS from 'backendjs';
 import * as CoreJS from 'corejs';
 import { expect } from "chai";
 import { Module } from "../src";
+import { OrderState, PaymentMethod } from '../src/enums';
 
 const args = {
     debug: true
@@ -247,6 +248,33 @@ describe("Module", () => {
                     expect(result[1]).deep.contains({ name: 'product 2', price: 200, discount: 10 });
                 })
             );
+        });
+    });
+
+    describe("Orders", () => {
+        describe("Create Order", () => {
+            it("creates for customer 1", async () => {
+                const result = await m.execute("createOrder", { customer: 1 }) as CoreJS.Response;
+
+                expect(result).is.not.undefined;
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ id: 1, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
+            });
+
+            it("creates for customer 2", async () => {
+                const result = await m.execute("createOrder", { customer: 2 }) as CoreJS.Response;
+
+                expect(result).is.not.undefined;
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ id: 2, state: OrderState.Open, customer: 2, paymentMethod: PaymentMethod.None, tip: 0 });
+            });
+
+            it("catches missing customer", () => m.execute("createOrder").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
+            it("catches currently open order", () => m.execute("createOrder", { customer: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_open_already" })));
         });
     });
 

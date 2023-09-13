@@ -5,11 +5,12 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
-import { PaymentMethod } from "../enums";
+import { OrderState, PaymentMethod } from "../enums";
 
 export interface Order {
     readonly id: number;
     readonly created: number;
+    readonly state: OrderState;
     readonly customer: number;
     readonly paymentMethod: PaymentMethod;
     readonly tip: number;

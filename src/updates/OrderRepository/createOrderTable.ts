@@ -25,9 +25,10 @@ export class CreateOrderTable extends BackendJS.Database.Update<OrderTables> {
         this.update = `CREATE TABLE IF NOT EXISTS ${tables.orders} (
             \`id\` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            \`state\` INT DEFAULT 0,
             \`customer\` BIGINT NOT NULL,
-            \`paymentMethod\` INT NOT NULL,
-            \`tip\` INT NOT NULL
+            \`paymentMethod\` INT DEFAULT 0,
+            \`tip\` INT DEFAULT 0
         ) DEFAULT CHARSET=utf8`;
     }
 }
