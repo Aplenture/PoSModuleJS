@@ -16,7 +16,7 @@ interface Args extends GlobalArgs {
 }
 
 export class CreateProduct extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'creats a product';
+    public readonly description = 'creates a product';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.StringParameter('name', 'name of product'),
         new CoreJS.NumberParameter('price', 'price of product'),
