@@ -13,7 +13,7 @@ interface Args extends GlobalArgs {
     readonly order: number;
     readonly product: number;
     readonly amount: number;
-    readonly discount: boolean;
+    readonly discount: number;
 }
 
 export class Order extends BackendJS.Module.Command<Context, Args, Options> {
@@ -22,7 +22,7 @@ export class Order extends BackendJS.Module.Command<Context, Args, Options> {
         new CoreJS.NumberParameter('order', 'id of order'),
         new CoreJS.NumberParameter('product', 'id of product'),
         new CoreJS.NumberParameter('amount', 'amount of product', 1),
-        new CoreJS.BoolParameter('discount', 'should the product discount be considered', true)
+        new CoreJS.NumberParameter('discount', 'should the product discount be considered', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
@@ -34,9 +34,9 @@ export class Order extends BackendJS.Module.Command<Context, Args, Options> {
         if (!product)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid_product');
 
-        const price = args.discount
+        const price = undefined == args.discount
             ? CoreJS.Currency.percentage(product.price, 100 - product.discount)
-            : product.price;
+            : CoreJS.Currency.percentage(product.price, 100 - args.discount);
 
         const result = await this.context.orderRepository.orderProduct(args.order, args.product, price, args.amount);
 
