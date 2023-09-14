@@ -20,7 +20,10 @@ export class CreateOrder extends BackendJS.Module.Command<Context, Args, Options
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.orderRepository.create(args.customer);
+        if (!await this.context.customerRepository.has(args.customer))
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid_customer');
+
+        const result = await this.context.orderRepository.createOrder(args.customer);
 
         if (!result)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_open_already');

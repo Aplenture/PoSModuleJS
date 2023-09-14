@@ -82,6 +82,29 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         return 1 == result.affectedRows;
     }
 
+    public has(id: number): Promise<boolean> {
+        return this.get(id).then(result => !!result);
+    }
+
+    public async get(id: number): Promise<Customer | null> {
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=?`, [
+            id
+        ]);
+
+        if (!result.length)
+            return null;
+
+        const { created, firstname, lastname, nickname } = result[0];
+
+        return {
+            id,
+            created: BackendJS.Database.parseToTime(created),
+            firstname,
+            lastname,
+            nickname
+        };
+    }
+
     public async getAll(options: GetAllOptions = {}): Promise<Customer[]> {
         const limit = Math.min(MAX_LIMIT, options.limit || MAX_LIMIT);
         const values = [];

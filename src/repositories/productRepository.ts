@@ -82,6 +82,29 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
         return 1 == result.affectedRows;
     }
 
+    public has(id: number): Promise<boolean> {
+        return this.get(id).then(result => !!result);
+    }
+
+    public async get(id: number): Promise<Product | null> {
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=?`, [
+            id
+        ]);
+
+        if (!result.length)
+            return null;
+
+        const { created, name, price, discount } = result[0];
+
+        return {
+            id,
+            created: BackendJS.Database.parseToTime(created),
+            name,
+            price,
+            discount
+        };
+    }
+
     public async getAll(options: GetAllOptions = {}): Promise<Product[]> {
         const limit = Math.min(MAX_LIMIT, options.limit || MAX_LIMIT);
         const values = [];

@@ -264,25 +264,93 @@ describe("Module", () => {
             it("creates for customer 1", async () => {
                 const result = await m.execute("createOrder", { customer: 1 }) as CoreJS.Response;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
                 expect(data).deep.contains({ id: 1, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
             });
 
-            it("creates for customer 2", async () => {
-                const result = await m.execute("createOrder", { customer: 2 }) as CoreJS.Response;
+            it("creates for customer 3", async () => {
+                const result = await m.execute("createOrder", { customer: 3 }) as CoreJS.Response;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ id: 2, state: OrderState.Open, customer: 2, paymentMethod: PaymentMethod.None, tip: 0 });
+                expect(data).deep.contains({ id: 2, state: OrderState.Open, customer: 3, paymentMethod: PaymentMethod.None, tip: 0 });
+            });
+
+            it("creates for customer 4", async () => {
+                const result = await m.execute("createOrder", { customer: 4 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ id: 3, state: OrderState.Open, customer: 4, paymentMethod: PaymentMethod.None, tip: 0 });
             });
 
             it("catches missing customer", () => m.execute("createOrder").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
+            it("catches deleted customer", () => m.execute("createOrder", { customer: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_customer" })));
             it("catches currently open order", () => m.execute("createOrder", { customer: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_open_already" })));
+        });
+
+        describe("Order Product", () => {
+            it("orders product 1 for customer 1", async () => {
+                const result = await m.execute("order", { order: 1, product: 1 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ order: 1, product: 1, price: 100, amount: 1 });
+            });
+
+            it("orders product 1 for customer 1 with amount 9", async () => {
+                const result = await m.execute("order", { order: 1, product: 1, amount: 9 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ order: 1, product: 1, price: 100, amount: 10 });
+            });
+
+            it("orders product 1 for customer 3", async () => {
+                const result = await m.execute("order", { order: 2, product: 1 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ order: 2, product: 1, price: 100 });
+            });
+
+            it("orders product 3 for customer 4 with amount 10", async () => {
+                const result = await m.execute("order", { order: 3, product: 3, amount: 10 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ order: 3, product: 3, price: 180, amount: 10 });
+            });
+
+            it("orders product 4 for customer 4 with amount 10 and without discount", async () => {
+                const result = await m.execute("order", { order: 3, product: 4, amount: 10, discount: false }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ order: 3, product: 4, price: 150, amount: 10 });
+            });
+
+            it("catches missing order", () => m.execute("order", { product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
+            it("catches invalid order", () => m.execute("order", { order: 4, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
+            it("catches missing product", () => m.execute("order", { order: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "product", type: "number" } })));
+            it("catches deleted product", () => m.execute("order", { order: 1, product: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
         });
     });
 
