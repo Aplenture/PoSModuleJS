@@ -42,7 +42,7 @@ describe("Module", () => {
             it("without nickname", async () => {
                 const result = await m.execute("createCustomer", { firstname: 'hello', lastname: 'world' }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -52,7 +52,7 @@ describe("Module", () => {
             it("with nickname", async () => {
                 const result = await m.execute("createCustomer", { firstname: 'hello', lastname: 'world', nickname: '2' }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -62,7 +62,7 @@ describe("Module", () => {
             it("third", async () => {
                 const result = await m.execute("createCustomer", { firstname: 'the', lastname: 'third', nickname: 'entity' }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -72,7 +72,7 @@ describe("Module", () => {
             it("fourth", async () => {
                 const result = await m.execute("createCustomer", { firstname: 'the', lastname: 'fourth', nickname: 'entity' }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -100,7 +100,7 @@ describe("Module", () => {
             it("all", async () => {
                 const result = await m.execute("getCustomers") as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -113,7 +113,7 @@ describe("Module", () => {
             it("limit 2", async () => {
                 const result = await m.execute("getCustomers", { limit: 2 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -125,7 +125,7 @@ describe("Module", () => {
             it("first id 3", async () => {
                 const result = await m.execute("getCustomers", { firstID: 3 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -137,7 +137,7 @@ describe("Module", () => {
             it("last id 3", async () => {
                 const result = await m.execute("getCustomers", { lastID: 3 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -153,7 +153,7 @@ describe("Module", () => {
             it("without discount", async () => {
                 const result = await m.execute("createProduct", { name: 'product 1', price: 100 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -163,7 +163,7 @@ describe("Module", () => {
             it("with discount", async () => {
                 const result = await m.execute("createProduct", { name: 'product 2', price: 150, discount: 10 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -173,7 +173,7 @@ describe("Module", () => {
             it("third", async () => {
                 const result = await m.execute("createProduct", { name: 'product 3', price: 150, discount: 10 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -183,7 +183,7 @@ describe("Module", () => {
             it("fourth", async () => {
                 const result = await m.execute("createProduct", { name: 'product 4', price: 150, discount: 10 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -211,7 +211,7 @@ describe("Module", () => {
             it("all", async () => {
                 const result = await m.execute("getProducts") as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -224,7 +224,7 @@ describe("Module", () => {
             it("limit 2", async () => {
                 const result = await m.execute("getProducts", { limit: 2 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -236,7 +236,7 @@ describe("Module", () => {
             it("first id 3", async () => {
                 const result = await m.execute("getProducts", { firstID: 3 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
@@ -248,7 +248,7 @@ describe("Module", () => {
             it("last id 3", async () => {
                 const result = await m.execute("getProducts", { lastID: 3 }) as CoreJS.JSONResponse;
 
-                expect(result).is.not.undefined;
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
