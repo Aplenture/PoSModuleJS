@@ -35,7 +35,7 @@ export class Order extends BackendJS.Module.Command<Context, Args, Options> {
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid_product');
 
         const price = args.discount
-            ? (product.price * (100 - product.discount) / 100) | 0
+            ? CoreJS.Currency.percentage(product.price, 100 - product.discount)
             : product.price;
 
         const result = await this.context.orderRepository.orderProduct(args.order, args.product, price, args.amount);
