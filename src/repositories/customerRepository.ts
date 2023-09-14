@@ -10,6 +10,11 @@ import { Customer } from "../models";
 
 const MAX_LIMIT = 1000;
 
+interface CreateOptions {
+    readonly nickname?: string;
+    readonly paymentMethods?: number;
+}
+
 interface EditOptions {
     readonly firstname?: string;
     readonly lastname?: string;
@@ -23,14 +28,18 @@ interface GetAllOptions {
 }
 
 export class CustomerRepository extends BackendJS.Database.Repository<string> {
-    public async create(firstname: string, lastname: string, nickname = ''): Promise<Customer> {
+    public async create(firstname: string, lastname: string, options: CreateOptions = {}): Promise<Customer> {
+        const nickname = options.nickname || '';
+        const paymentMethods = options.paymentMethods || -1;
+
         const result = await this.database.query(`
-            INSERT INTO ${this.data} (\`firstname\`,\`lastname\`,\`nickname\`) VALUES (?,?,?);
+            INSERT INTO ${this.data} (\`firstname\`,\`lastname\`,\`nickname\`,\`paymentMethods\`) VALUES (?,?,?,?);
             SELECT * FROM ${this.data} WHERE \`id\`=LAST_INSERT_ID() LIMIT 1;
         `, [
             firstname,
             lastname,
-            nickname
+            nickname,
+            paymentMethods
         ]);
 
 
@@ -41,7 +50,8 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             created: BackendJS.Database.parseToTime(created),
             firstname,
             lastname,
-            nickname
+            nickname,
+            paymentMethods
         };
     }
 
@@ -94,14 +104,15 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         if (!result.length)
             return null;
 
-        const { created, firstname, lastname, nickname } = result[0];
+        const { created, firstname, lastname, nickname, paymentMethods } = result[0];
 
         return {
             id,
             created: BackendJS.Database.parseToTime(created),
             firstname,
             lastname,
-            nickname
+            nickname,
+            paymentMethods
         };
     }
 
@@ -131,7 +142,8 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             created: BackendJS.Database.parseToTime(data.created),
             firstname: data.firstname,
             lastname: data.lastname,
-            nickname: data.nickname
+            nickname: data.nickname,
+            paymentMethods: data.paymentMethods
         }));
     }
 }

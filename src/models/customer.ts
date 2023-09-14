@@ -11,4 +11,5 @@ export interface Customer {
     readonly firstname: string;
     readonly lastname: string;
     readonly nickname: string;
+    readonly paymentMethods: number;
 }
