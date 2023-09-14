@@ -30,7 +30,7 @@ const log = BackendJS.Log.Log.createFileLog('./test.log', true);
 
 m.onMessage.on(message => log.write(message));
 
-describe("Module", () => {
+describe("Commands", () => {
     describe("Initialization", () => {
         it("initializes", () => m.init());
         it("updates", () => m.execute('update').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
