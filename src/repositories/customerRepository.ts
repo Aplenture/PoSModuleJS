@@ -74,6 +74,14 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         return 1 == result.affectedRows;
     }
 
+    public async delete(id: number): Promise<boolean> {
+        const result = await this.database.query(`DELETE FROM ${this.data} WHERE \`id\`=?`, [
+            id
+        ]);
+
+        return 1 == result.affectedRows;
+    }
+
     public async getAll(options: GetAllOptions = {}): Promise<Customer[]> {
         const limit = Math.min(MAX_LIMIT, options.limit || MAX_LIMIT);
         const values = [];

@@ -6,5 +6,6 @@
  */
 
 export * from "./createCustomer";
+export * from "./deleteCustomer";
 export * from "./editCustomer";
 export * from "./getCustomers";

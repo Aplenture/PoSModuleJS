@@ -59,9 +59,41 @@ describe("Module", () => {
                 expect(data).contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
             });
 
+            it("third", async () => {
+                const result = await m.execute("createCustomer", { firstname: 'the', lastname: 'third', nickname: 'entity' }) as CoreJS.JSONResponse;
+
+                expect(result).is.not.undefined;
+
+                const data = JSON.parse(result.data);
+
+                expect(data).contains({ id: 3, firstname: 'the', lastname: 'third', nickname: 'entity' });
+            });
+
+            it("fourth", async () => {
+                const result = await m.execute("createCustomer", { firstname: 'the', lastname: 'fourth', nickname: 'entity' }) as CoreJS.JSONResponse;
+
+                expect(result).is.not.undefined;
+
+                const data = JSON.parse(result.data);
+
+                expect(data).contains({ id: 4, firstname: 'the', lastname: 'fourth', nickname: 'entity' });
+            });
+
             it("catches missing firstname", () => m.execute("createCustomer", { lastname: 'world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'firstname', type: 'string' } })));
             it("catches missing lastname", () => m.execute("createCustomer", { firstname: 'hello' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'lastname', type: 'string' } })));
             it("catches duplicate", () => m.execute("createCustomer", { firstname: 'hello', lastname: 'world', nickname: '2' }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
+        });
+
+        describe("Edit", () => {
+            it("changes firstname", () => m.execute("editCustomer", { id: 1, firstname: 'test1' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes lastname", () => m.execute("editCustomer", { id: 3, lastname: 'test2' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes nickname", () => m.execute("editCustomer", { id: 4, nickname: 'test3' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing id", () => m.execute("editCustomer", { lastname: 'world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'id', type: 'number' } })));
+        });
+
+        describe("Delete", () => {
+            it("second entity", () => m.execute("deleteCustomer", { id: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing id", () => m.execute("deleteCustomer").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'id', type: 'number' } })));
         });
 
         describe("Get", () => {
@@ -72,75 +104,47 @@ describe("Module", () => {
 
                 const data = JSON.parse(result.data);
 
+                expect(data).has.length(3);
+                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: '' });
+                expect(data[1], 'customer at 1').contains({ id: 3, firstname: 'the', lastname: 'test2', nickname: 'entity' });
+                expect(data[2], 'customer at 2').contains({ id: 4, firstname: 'the', lastname: 'fourth', nickname: 'test3' });
+            });
+
+            it("limit 2", async () => {
+                const result = await m.execute("getCustomers", { limit: 2 }) as CoreJS.JSONResponse;
+
+                expect(result).is.not.undefined;
+
+                const data = JSON.parse(result.data);
+
                 expect(data).has.length(2);
-                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
-                expect(data[1], 'customer at 1').contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
+                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: '' });
+                expect(data[1], 'customer at 1').contains({ id: 3, firstname: 'the', lastname: 'test2', nickname: 'entity' });
             });
 
-            it("limit 1", async () => {
-                const result = await m.execute("getCustomers", { limit: 1 }) as CoreJS.JSONResponse;
+            it("first id 3", async () => {
+                const result = await m.execute("getCustomers", { firstID: 3 }) as CoreJS.JSONResponse;
 
                 expect(result).is.not.undefined;
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(1);
-                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
+                expect(data).has.length(2);
+                expect(data[0], 'customer at 0').contains({ id: 3, firstname: 'the', lastname: 'test2', nickname: 'entity' });
+                expect(data[1], 'customer at 1').contains({ id: 4, firstname: 'the', lastname: 'fourth', nickname: 'test3' });
             });
 
-            it("first id 2", async () => {
-                const result = await m.execute("getCustomers", { firstID: 2 }) as CoreJS.JSONResponse;
+            it("last id 3", async () => {
+                const result = await m.execute("getCustomers", { lastID: 3 }) as CoreJS.JSONResponse;
 
                 expect(result).is.not.undefined;
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(1);
-                expect(data[0], 'customer at 0').contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
+                expect(data).has.length(2);
+                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: '' });
+                expect(data[1], 'customer at 1').contains({ id: 3, firstname: 'the', lastname: 'test2', nickname: 'entity' });
             });
-
-            it("last id 1", async () => {
-                const result = await m.execute("getCustomers", { lastID: 1 }) as CoreJS.JSONResponse;
-
-                expect(result).is.not.undefined;
-
-                const data = JSON.parse(result.data);
-
-                expect(data).has.length(1);
-                expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '' });
-            });
-        });
-
-        describe("Edit", () => {
-            it("changes firstname", () => m.execute("editCustomer", { id: 1, firstname: 'test1' })
-                .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data}`))
-                .then(result => {
-                    expect(result).has.length(2);
-                    expect(result[0]).deep.contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: '' });
-                    expect(result[1]).deep.contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2' });
-                })
-            );
-
-            it("changes lastname", () => m.execute("editCustomer", { id: 2, lastname: 'test2' })
-                .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data}`))
-                .then(result => {
-                    expect(result).has.length(2);
-                    expect(result[0]).deep.contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: '' });
-                    expect(result[1]).deep.contains({ id: 2, firstname: 'hello', lastname: 'test2', nickname: '2' });
-                })
-            );
-
-            it("changes nickname", () => m.execute("editCustomer", { id: 1, nickname: 'test3' })
-                .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.customerRepository.data}`))
-                .then(result => {
-                    expect(result).has.length(2);
-                    expect(result[0]).deep.contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: 'test3' });
-                    expect(result[1]).deep.contains({ id: 2, firstname: 'hello', lastname: 'test2', nickname: '2' });
-                })
-            );
         });
     });
 
@@ -166,9 +170,41 @@ describe("Module", () => {
                 expect(data).contains({ id: 2, name: 'product 2', price: 150, discount: 10 });
             });
 
+            it("third", async () => {
+                const result = await m.execute("createProduct", { name: 'product 3', price: 150, discount: 10 }) as CoreJS.JSONResponse;
+
+                expect(result).is.not.undefined;
+
+                const data = JSON.parse(result.data);
+
+                expect(data).contains({ id: 3, name: 'product 3', price: 150, discount: 10 });
+            });
+
+            it("fourth", async () => {
+                const result = await m.execute("createProduct", { name: 'product 4', price: 150, discount: 10 }) as CoreJS.JSONResponse;
+
+                expect(result).is.not.undefined;
+
+                const data = JSON.parse(result.data);
+
+                expect(data).contains({ id: 4, name: 'product 4', price: 150, discount: 10 });
+            });
+
             it("catches missing name", () => m.execute("createProduct", { price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'name', type: 'string' } })));
             it("catches missing price", () => m.execute("createProduct", { name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'price', type: 'number' } })));
             it("catches duplicate", () => m.execute("createProduct", { name: 'product 1', price: 100 }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
+        });
+
+        describe("Edit", () => {
+            it("changes name", () => m.execute("editProduct", { id: 1, name: 'test1' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes price", () => m.execute("editProduct", { id: 3, price: 200 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes discount", () => m.execute("editProduct", { id: 4, discount: 20 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing id", () => m.execute("editProduct", { name: 'test1', price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'id', type: 'number' } })));
+        });
+
+        describe("Delete", () => {
+            it("second entity", () => m.execute("deleteProduct", { id: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing id", () => m.execute("deleteProduct").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'id', type: 'number' } })));
         });
 
         describe("Get", () => {
@@ -179,75 +215,47 @@ describe("Module", () => {
 
                 const data = JSON.parse(result.data);
 
+                expect(data).has.length(3);
+                expect(data[0], 'product at 0').contains({ id: 1, name: 'test1', price: 100, discount: 0 });
+                expect(data[1], 'product at 1').contains({ id: 3, name: 'product 3', price: 200, discount: 10 });
+                expect(data[2], 'product at 2').contains({ id: 4, name: 'product 4', price: 150, discount: 20 });
+            });
+
+            it("limit 2", async () => {
+                const result = await m.execute("getProducts", { limit: 2 }) as CoreJS.JSONResponse;
+
+                expect(result).is.not.undefined;
+
+                const data = JSON.parse(result.data);
+
                 expect(data).has.length(2);
-                expect(data[0], 'product at 0').contains({ id: 1, name: 'product 1', price: 100, discount: 0 });
-                expect(data[1], 'product at 1').contains({ id: 2, name: 'product 2', price: 150, discount: 10 });
+                expect(data[0], 'product at 0').contains({ id: 1, name: 'test1', price: 100, discount: 0 });
+                expect(data[1], 'product at 1').contains({ id: 3, name: 'product 3', price: 200, discount: 10 });
             });
 
-            it("limit 1", async () => {
-                const result = await m.execute("getProducts", { limit: 1 }) as CoreJS.JSONResponse;
+            it("first id 3", async () => {
+                const result = await m.execute("getProducts", { firstID: 3 }) as CoreJS.JSONResponse;
 
                 expect(result).is.not.undefined;
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(1);
-                expect(data[0], 'product at 0').contains({ id: 1, name: 'product 1', price: 100, discount: 0 });
+                expect(data).has.length(2);
+                expect(data[0], 'product at 0').contains({ id: 3, name: 'product 3', price: 200, discount: 10 });
+                expect(data[1], 'product at 1').contains({ id: 4, name: 'product 4', price: 150, discount: 20 });
             });
 
-            it("first id 2", async () => {
-                const result = await m.execute("getProducts", { firstID: 2 }) as CoreJS.JSONResponse;
+            it("last id 3", async () => {
+                const result = await m.execute("getProducts", { lastID: 3 }) as CoreJS.JSONResponse;
 
                 expect(result).is.not.undefined;
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(1);
-                expect(data[0], 'product at 0').contains({ id: 2, name: 'product 2', price: 150, discount: 10 });
+                expect(data).has.length(2);
+                expect(data[0], 'product at 0').contains({ id: 1, name: 'test1', price: 100, discount: 0 });
+                expect(data[1], 'product at 1').contains({ id: 3, name: 'product 3', price: 200, discount: 10 });
             });
-
-            it("last id 1", async () => {
-                const result = await m.execute("getProducts", { lastID: 1 }) as CoreJS.JSONResponse;
-
-                expect(result).is.not.undefined;
-
-                const data = JSON.parse(result.data);
-
-                expect(data).has.length(1);
-                expect(data[0], 'product at 0').contains({ id: 1, name: 'product 1', price: 100, discount: 0 });
-            });
-        });
-
-        describe("Edit", () => {
-            it("changes name", () => m.execute("editProduct", { id: 1, name: 'test1' })
-                .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.productRepository.data}`))
-                .then(result => {
-                    expect(result).has.length(2);
-                    expect(result[0]).deep.contains({ name: 'test1', price: 100, discount: 0 });
-                    expect(result[1]).deep.contains({ name: 'product 2', price: 150, discount: 10 });
-                })
-            );
-
-            it("changes price", () => m.execute("editProduct", { id: 2, price: 200 })
-                .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.productRepository.data}`))
-                .then(result => {
-                    expect(result).has.length(2);
-                    expect(result[0]).deep.contains({ name: 'test1', price: 100, discount: 0 });
-                    expect(result[1]).deep.contains({ name: 'product 2', price: 200, discount: 10 });
-                })
-            );
-
-            it("changes discount", () => m.execute("editProduct", { id: 1, discount: 20 })
-                .then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" }))
-                .then(() => m.database.query(`SELECT * FROM ${m.productRepository.data}`))
-                .then(result => {
-                    expect(result).has.length(2);
-                    expect(result[0]).deep.contains({ name: 'test1', price: 100, discount: 20 });
-                    expect(result[1]).deep.contains({ name: 'product 2', price: 200, discount: 10 });
-                })
-            );
         });
     });
 
