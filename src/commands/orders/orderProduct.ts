@@ -16,7 +16,7 @@ interface Args extends GlobalArgs {
     readonly discount: number;
 }
 
-export class Order extends BackendJS.Module.Command<Context, Args, Options> {
+export class OrderProduct extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'creates an order';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('order', 'id of order'),

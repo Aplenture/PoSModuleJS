@@ -6,4 +6,4 @@
  */
 
 export * from "./createOrder";
-export * from "./order";
+export * from "./orderProduct";
