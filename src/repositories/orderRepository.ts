@@ -10,6 +10,11 @@ import { OrderTables } from "../models/orderTables";
 import { Order, OrderProduct } from "../models";
 import { OrderState } from "../enums";
 
+interface UpdateOptions {
+    readonly amount?: number;
+    readonly price?: number;
+}
+
 export class OrderRepository extends BackendJS.Database.Repository<OrderTables> {
     public async createOrder(customer: number): Promise<Order | null> {
         const result = await this.database.query(`
@@ -57,6 +62,45 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
             product: result[1][0].product,
             price: result[1][0].price,
             amount: result[1][0].amount
+        };
+    }
+
+    public async updateProduct(order: number, product: number, options: UpdateOptions = {}): Promise<OrderProduct | null> {
+        const keys = [];
+        const values = [order, product];
+
+        if (options.amount) {
+            keys.push('`amount`=?');
+            values.push(options.amount);
+        }
+
+        if (options.price) {
+            keys.push('`price`=?');
+            values.push(options.price);
+        }
+
+        if (0 == keys.length)
+            return null;
+
+        values.push(order);
+        values.push(product);
+
+        values.push(order);
+        values.push(product);
+
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?) THEN
+            UPDATE ${this.data.products} SET ${keys.join(',')} WHERE \`order\`=? AND \`product\`=?;
+            SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?;
+        END IF;`, values);
+
+        if (!result.length)
+            return null;
+
+        return {
+            order: result[0][0].order,
+            product: result[0][0].product,
+            price: result[0][0].price,
+            amount: result[0][0].amount
         };
     }
 

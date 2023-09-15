@@ -7,3 +7,4 @@
 
 export * from "./createOrder";
 export * from "./orderProduct";
+export * from "./updateOrder";
