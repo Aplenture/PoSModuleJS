@@ -17,7 +17,7 @@ interface Args extends GlobalArgs {
 }
 
 export class UpdateOrder extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'creates an order';
+    public readonly description = 'updates a product from an order';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('order', 'id of order'),
         new CoreJS.NumberParameter('product', 'id of product'),
