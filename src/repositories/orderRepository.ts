@@ -30,11 +30,12 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         if (!result.length)
             return null;
 
-        const { id, created, state, paymentMethod, tip } = result[0][0];
+        const { id, created, closed, state, paymentMethod, tip } = result[0][0];
 
         return {
             id,
             created: BackendJS.Database.parseToTime(created),
+            closed: BackendJS.Database.parseToTime(closed),
             state,
             customer,
             paymentMethod,
@@ -129,11 +130,12 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         if (!result.length)
             return null;
 
-        const { created, state, customer, paymentMethod, tip } = result[0];
+        const { created, closed, state, customer, paymentMethod, tip } = result[0];
 
         return {
             id,
             created: BackendJS.Database.parseToTime(created),
+            closed: BackendJS.Database.parseToTime(closed),
             state,
             customer,
             paymentMethod,

@@ -279,7 +279,7 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ id: 1, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
+                expect(data).deep.contains({ id: 1, closed: null, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
             });
 
             it("creates for customer 3", async () => {
@@ -289,7 +289,7 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ id: 2, state: OrderState.Open, customer: 3, paymentMethod: PaymentMethod.None, tip: 0 });
+                expect(data).deep.contains({ id: 2, closed: null, state: OrderState.Open, customer: 3, paymentMethod: PaymentMethod.None, tip: 0 });
             });
 
             it("creates for customer 4", async () => {
@@ -299,7 +299,7 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ id: 3, state: OrderState.Open, customer: 4, paymentMethod: PaymentMethod.None, tip: 0 });
+                expect(data).deep.contains({ id: 3, closed: null, state: OrderState.Open, customer: 4, paymentMethod: PaymentMethod.None, tip: 0 });
             });
 
             it("catches missing customer", () => m.execute("createOrder").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
