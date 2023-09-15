@@ -49,7 +49,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
         const result = await this.context.orderRepository.closeOrder(args.order, args.paymentmethod, tip);
 
         if (!result)
-            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_open_already');
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
 
         if (PaymentMethod.Balance == args.paymentmethod) {
             await this.context.balanceRepository.decrease({
