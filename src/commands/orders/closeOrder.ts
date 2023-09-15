@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { OrderState, PaymentMethod } from "../../enums";
+import { PaymentMethod } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -20,7 +20,7 @@ interface Args extends GlobalArgs {
 export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'closes an open order';
     public readonly parameters = new CoreJS.ParameterList(
-        new CoreJS.NumberParameter('account', 'id of balance account'),
+        new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('order', 'id of order to close'),
         new CoreJS.NumberParameter('paymentmethod', 'order payment method'),
         new CoreJS.NumberParameter('amount', 'amout of payment')
@@ -36,8 +36,13 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
                 return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid_payment_method');
         }
 
-        if (!await this.context.orderRepository.isOpen(args.order))
+        const order = await this.context.orderRepository.getOrder(args.order);
+
+        if (!order)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
+
+        if (order.account != args.account)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
         const invoice = await this.context.orderRepository.getInvoice(args.order);
 
@@ -53,7 +58,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
 
         if (PaymentMethod.Balance == args.paymentmethod) {
             await this.context.balanceRepository.decrease({
-                account: args.account,
+                account: result.account,
                 depot: result.customer,
                 order: result.id,
                 asset: 1,

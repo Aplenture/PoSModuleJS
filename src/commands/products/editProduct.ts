@@ -10,7 +10,8 @@ import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
 
 interface Args extends GlobalArgs {
-    readonly id: number;
+    readonly account: number;
+    readonly product: number;
     readonly name: string;
     readonly price: number;
     readonly discount: number;
@@ -19,14 +20,23 @@ interface Args extends GlobalArgs {
 export class EditProduct extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'changes the properties of a product';
     public readonly parameters = new CoreJS.ParameterList(
-        new CoreJS.NumberParameter('id', 'id of product'),
+        new CoreJS.NumberParameter('account', 'account id'),
+        new CoreJS.NumberParameter('product', 'product id'),
         new CoreJS.StringParameter('name', 'name of product', null),
         new CoreJS.StringParameter('price', 'price of product', null),
         new CoreJS.StringParameter('discount', 'discount of product', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.productRepository.edit(args.id, args);
+        const product = await this.context.productRepository.get(args.product);
+
+        if (!product)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_product_invalid');
+
+        if (product.account != args.account)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
+        const result = await this.context.productRepository.edit(args.product, args);
 
         return new CoreJS.BoolResponse(result);
     }

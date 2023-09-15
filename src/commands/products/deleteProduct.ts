@@ -10,17 +10,27 @@ import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
 
 interface Args extends GlobalArgs {
-    readonly id: number;
+    readonly account: number;
+    readonly product: number;
 }
 
 export class DeleteProduct extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'deletes a product';
     public readonly parameters = new CoreJS.ParameterList(
-        new CoreJS.NumberParameter('id', 'id of product')
+        new CoreJS.NumberParameter('account', 'account id'),
+        new CoreJS.NumberParameter('product', 'product id')
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.productRepository.delete(args.id);
+        const product = await this.context.productRepository.get(args.product);
+
+        if (!product)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_product_invalid');
+
+        if (product.account != args.account)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
+        const result = await this.context.productRepository.delete(args.product);
 
         return new CoreJS.BoolResponse(result);
     }

@@ -17,13 +17,18 @@ interface Args extends GlobalArgs {
 export class CreateOrder extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'creates an order';
     public readonly parameters = new CoreJS.ParameterList(
-        new CoreJS.NumberParameter('account', 'account id of customer'),
+        new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id of order')
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        if (!await this.context.customerRepository.has(args.customer))
-            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid_customer');
+        const customer = await this.context.customerRepository.get(args.customer);
+
+        if (!customer)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_customer_invalid');
+
+        if (customer.account != args.account)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
         const result = await this.context.orderRepository.createOrder(args.account, args.customer);
 

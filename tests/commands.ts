@@ -105,15 +105,17 @@ describe("Commands", () => {
         });
 
         describe("Edit", () => {
-            it("changes firstname", () => m.execute("editCustomer", { id: 1, firstname: 'test1' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("changes lastname", () => m.execute("editCustomer", { id: 3, lastname: 'test2' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("changes nickname", () => m.execute("editCustomer", { id: 4, nickname: 'test3' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("catches missing id", () => m.execute("editCustomer", { lastname: 'world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'id', type: 'number' } })));
+            it("changes firstname", () => m.execute("editCustomer", { account: 1, customer: 1, firstname: 'test1' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes lastname", () => m.execute("editCustomer", { account: 1, customer: 3, lastname: 'test2' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes nickname", () => m.execute("editCustomer", { account: 1, customer: 4, nickname: 'test3' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing account", () => m.execute("editCustomer", { customer: 1, lastname: 'hello world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing customer", () => m.execute("editCustomer", { account: 1, lastname: 'hello world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'customer', type: 'number' } })));
         });
 
         describe("Delete", () => {
-            it("second entity", () => m.execute("deleteCustomer", { id: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("catches missing id", () => m.execute("deleteCustomer").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'id', type: 'number' } })));
+            it("second entity", () => m.execute("deleteCustomer", { account: 1, customer: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing account", () => m.execute("deleteCustomer", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing customer", () => m.execute("deleteCustomer", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'customer', type: 'number' } })));
         });
 
         describe("Get", () => {
@@ -242,15 +244,17 @@ describe("Commands", () => {
         });
 
         describe("Edit", () => {
-            it("changes name", () => m.execute("editProduct", { id: 1, name: 'test1' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("changes price", () => m.execute("editProduct", { id: 3, price: 200 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("changes discount", () => m.execute("editProduct", { id: 4, discount: 20 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("catches missing id", () => m.execute("editProduct", { name: 'test1', price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'id', type: 'number' } })));
+            it("changes name", () => m.execute("editProduct", { account: 1, product: 1, name: 'test1' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes price", () => m.execute("editProduct", { account: 1, product: 3, price: 200 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes discount", () => m.execute("editProduct", { account: 1, product: 4, discount: 20 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing account", () => m.execute("editProduct", { product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing product", () => m.execute("editProduct", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'product', type: 'number' } })));
         });
 
         describe("Delete", () => {
-            it("second entity", () => m.execute("deleteProduct", { id: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("catches missing id", () => m.execute("deleteProduct").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'id', type: 'number' } })));
+            it("second entity", () => m.execute("deleteProduct", { account: 1, product: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing account", () => m.execute("deleteProduct", { product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing product", () => m.execute("deleteProduct", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'product', type: 'number' } })));
         });
 
         describe("Get", () => {
@@ -372,13 +376,13 @@ describe("Commands", () => {
 
             it("catches missing account", () => m.execute("createOrder", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
             it("catches missing customer", () => m.execute("createOrder", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
-            it("catches deleted customer", () => m.execute("createOrder", { account: 1, customer: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_customer" })));
+            it("catches deleted customer", () => m.execute("createOrder", { account: 1, customer: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_customer_invalid" })));
             it("catches currently open order", () => m.execute("createOrder", { account: 1, customer: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_open_already" })));
         });
 
         describe("Order Products", () => {
             it("orders product 1 for customer 1", async () => {
-                const result = await m.execute("orderProduct", { order: 1, product: 1 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 1, product: 1 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -388,7 +392,7 @@ describe("Commands", () => {
             });
 
             it("orders product 1 for customer 1 with amount 9", async () => {
-                const result = await m.execute("orderProduct", { order: 1, product: 1, amount: 9 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 1, product: 1, amount: 9 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -398,7 +402,7 @@ describe("Commands", () => {
             });
 
             it("orders product 3 for customer 1 with amount 10", async () => {
-                const result = await m.execute("orderProduct", { order: 1, product: 3, amount: 10 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 1, product: 3, amount: 10 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -408,7 +412,7 @@ describe("Commands", () => {
             });
 
             it("orders product 4 for customer 1", async () => {
-                const result = await m.execute("orderProduct", { order: 1, product: 4 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 1, product: 4 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -418,7 +422,7 @@ describe("Commands", () => {
             });
 
             it("orders product 1 for customer 3", async () => {
-                const result = await m.execute("orderProduct", { order: 2, product: 1 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 2, product: 1 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -428,7 +432,7 @@ describe("Commands", () => {
             });
 
             it("orders product 1 for customer 4", async () => {
-                const result = await m.execute("orderProduct", { order: 3, product: 1 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 3, product: 1 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -438,7 +442,7 @@ describe("Commands", () => {
             });
 
             it("orders product 3 for customer 4 with amount 10 and discount 0", async () => {
-                const result = await m.execute("orderProduct", { order: 3, product: 3, amount: 10, discount: 0 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 3, product: 3, amount: 10, discount: 0 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -448,7 +452,7 @@ describe("Commands", () => {
             });
 
             it("orders product 4 for customer 4 with amount 10 and discount 5", async () => {
-                const result = await m.execute("orderProduct", { order: 3, product: 4, amount: 10, discount: 5 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 3, product: 4, amount: 10, discount: 5 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -458,7 +462,7 @@ describe("Commands", () => {
             });
 
             it("orders product 1 for customer 5", async () => {
-                const result = await m.execute("orderProduct", { order: 4, product: 1 }) as CoreJS.Response;
+                const result = await m.execute("orderProduct", { account: 1, order: 4, product: 1 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -467,15 +471,16 @@ describe("Commands", () => {
                 expect(data).deep.contains({ order: 4, product: 1 });
             });
 
-            it("catches missing order", () => m.execute("orderProduct", { product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
-            it("catches invalid order", () => m.execute("orderProduct", { order: Number.MAX_SAFE_INTEGER, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
-            it("catches missing product", () => m.execute("orderProduct", { order: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "product", type: "number" } })));
-            it("catches deleted product", () => m.execute("orderProduct", { order: 1, product: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
+            it("catches missing account", () => m.execute("orderProduct", { order: 1, product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing order", () => m.execute("orderProduct", { account: 1, product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
+            it("catches invalid order", () => m.execute("orderProduct", { account: 1, order: Number.MAX_SAFE_INTEGER, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
+            it("catches missing product", () => m.execute("orderProduct", { account: 1, order: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "product", type: "number" } })));
+            it("catches deleted product", () => m.execute("orderProduct", { account: 1, order: 1, product: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
         });
 
         describe("Update Orders", () => {
             it("decreases amount of product 3 for customer 1", async () => {
-                const result = await m.execute("updateOrder", { order: 1, product: 3, amount: 3 }) as CoreJS.Response;
+                const result = await m.execute("updateOrder", { account: 1, order: 1, product: 3, amount: 3 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -485,7 +490,7 @@ describe("Commands", () => {
             });
 
             it("increases amount of product 4 for customer 1", async () => {
-                const result = await m.execute("updateOrder", { order: 1, product: 4, amount: 20 }) as CoreJS.Response;
+                const result = await m.execute("updateOrder", { account: 1, order: 1, product: 4, amount: 20 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -495,7 +500,7 @@ describe("Commands", () => {
             });
 
             it("changes discount of product 1 for customer 1", async () => {
-                const result = await m.execute("updateOrder", { order: 1, product: 1, discount: 10 }) as CoreJS.Response;
+                const result = await m.execute("updateOrder", { account: 1, order: 1, product: 1, discount: 10 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -504,21 +509,23 @@ describe("Commands", () => {
                 expect(data).deep.contains({ order: 1, product: 1, price: 90, amount: 10 });
             });
 
-            it("catches no updates", () => m.execute("updateOrder", { order: 1, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
-            it("catches missing order", () => m.execute("updateOrder", { product: 1, amount: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
-            it("catches invalid order", () => m.execute("updateOrder", { order: Number.MAX_SAFE_INTEGER, product: 1, amount: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
-            it("catches missing product", () => m.execute("updateOrder", { order: 1, amount: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "product", type: "number" } })));
-            it("catches deleted product", () => m.execute("updateOrder", { order: 1, product: 2, amount: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
-            it("catches not ordered product", () => m.execute("updateOrder", { order: 2, product: 3, amount: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
+            it("catches no updates", () => m.execute("updateOrder", { account: 1, order: 1, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
+            it("catches missing account", () => m.execute("updateOrder", { order: 1, product: 1, amount: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing order", () => m.execute("updateOrder", { account: 1, product: 1, amount: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
+            it("catches invalid order", () => m.execute("updateOrder", { account: 1, order: Number.MAX_SAFE_INTEGER, product: 1, amount: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
+            it("catches missing product", () => m.execute("updateOrder", { account: 1, order: 1, amount: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "product", type: "number" } })));
+            it("catches deleted product", () => m.execute("updateOrder", { account: 1, order: 1, product: 2, amount: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
+            it("catches not ordered product", () => m.execute("updateOrder", { account: 1, order: 2, product: 3, amount: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
         });
 
         describe("Cancel Products", () => {
-            it("cancels product 1 for customer 4", () => m.execute("cancelProduct", { order: 3, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("catches not existing product", () => m.execute("cancelProduct", { order: 3, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
-            it("catches missing order", () => m.execute("cancelProduct", { product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
-            it("catches invalid order", () => m.execute("cancelProduct", { order: Number.MAX_SAFE_INTEGER, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
-            it("catches missing product", () => m.execute("cancelProduct", { order: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "product", type: "number" } })));
-            it("catches deleted product", () => m.execute("cancelProduct", { order: 1, product: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
+            it("cancels product 1 for customer 4", () => m.execute("cancelProduct", { account: 1, order: 3, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing account", () => m.execute("cancelProduct", { order: 1, product: 1, amount: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches not existing product", () => m.execute("cancelProduct", { account: 1, order: 3, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
+            it("catches missing order", () => m.execute("cancelProduct", { account: 1, product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
+            it("catches invalid order", () => m.execute("cancelProduct", { account: 1, order: Number.MAX_SAFE_INTEGER, product: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
+            it("catches missing product", () => m.execute("cancelProduct", { account: 1, order: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "product", type: "number" } })));
+            it("catches deleted product", () => m.execute("cancelProduct", { account: 1, order: 1, product: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid_product" })));
         });
 
         describe("Close Orders", () => {
@@ -553,6 +560,7 @@ describe("Commands", () => {
             });
 
             it("catches missing account", () => m.execute("closeOrder", { order: 2, amount: 10000, paymentmethod: PaymentMethod.Balance }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+            it("catches invalid account", () => m.execute("closeOrder", { account: Number.MAX_SAFE_INTEGER, order: 2, amount: 10000, paymentmethod: PaymentMethod.Balance }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_permission_denied" })));
             it("catches missing order", () => m.execute("closeOrder", { account: 1, amount: 10000, paymentmethod: PaymentMethod.Balance }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
             it("catches closed order", () => m.execute("closeOrder", { account: 1, order: 1, amount: 10000, paymentmethod: PaymentMethod.Balance }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_not_open" })));
             it("catches missing payment method", () => m.execute("closeOrder", { account: 1, order: 2, amount: 10000 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "paymentmethod", type: "number" } })));
@@ -562,10 +570,11 @@ describe("Commands", () => {
         });
 
         describe("Delete Open Orders", () => {
-            it("deletes open order 2", () => m.execute("deleteOrder", { id: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("catches missing order", () => m.execute("deleteOrder", {}).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "id", type: "number" } })));
-            it("catches invalid order", () => m.execute("deleteOrder", { id: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
-            it("catches closed order", () => m.execute("deleteOrder", { id: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
+            it("deletes open order 2", () => m.execute("deleteOrder", { account: 1, order: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing account", () => m.execute("deleteOrder", { order: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing order", () => m.execute("deleteOrder", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
+            it("catches invalid order", () => m.execute("deleteOrder", { account: 1, order: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
+            it("catches closed order", () => m.execute("deleteOrder", { account: 1, order: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
         });
     });
 
