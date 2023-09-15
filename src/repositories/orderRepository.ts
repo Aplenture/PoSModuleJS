@@ -104,6 +104,19 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         };
     }
 
+    public async cancelProduct(order: number, product: number): Promise<boolean> {
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?) THEN
+            DELETE FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?;
+        END IF;`, [
+            order,
+            product,
+            order,
+            product
+        ]);
+
+        return 1 == result.affectedRows;
+    }
+
     public hasOrder(id: number): Promise<boolean> {
         return this.getOrder(id).then(result => !!result);
     }
