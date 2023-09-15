@@ -16,14 +16,16 @@ interface UpdateOptions {
 }
 
 export class OrderRepository extends BackendJS.Database.Repository<OrderTables> {
-    public async createOrder(customer: number): Promise<Order | null> {
+    public async createOrder(account: number, customer: number): Promise<Order | null> {
         const result = await this.database.query(`
-        IF NOT EXISTS (SELECT * FROM ${this.data.orders} WHERE \`customer\`=? AND \`state\`=?) THEN
-            INSERT INTO ${this.data.orders} (\`customer\`) VALUES (?);
-            SELECT * FROM ${this.data.orders} WHERE \`id\`=LAST_INSERT_ID();
+        IF NOT EXISTS (SELECT * FROM ${this.data.orders} WHERE \`account\`=? AND \`customer\`=? AND \`state\`=? LIMIT 1) THEN
+            INSERT INTO ${this.data.orders} (\`account\`,\`customer\`) VALUES (?,?);
+            SELECT * FROM ${this.data.orders} WHERE \`id\`=LAST_INSERT_ID() LIMIT 1;
         END IF;`, [
+            account,
             customer,
             OrderState.Open,
+            account,
             customer
         ]);
 
@@ -34,6 +36,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
 
         return {
             id,
+            account,
             created: BackendJS.Database.parseToTime(created),
             closed: BackendJS.Database.parseToTime(closed),
             state,
@@ -44,9 +47,9 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
     }
 
     public async closeOrder(id: number, paymentMethod: PaymentMethod, tip = 0): Promise<Order | null> {
-        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=?) THEN
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=? LIMIT 1) THEN
             UPDATE ${this.data.orders} SET \`closed\`=FROM_UNIXTIME(?),\`state\`=?,\`paymentMethod\`=?,\`tip\`=? WHERE \`id\`=?;
-            SELECT * FROM ${this.data.orders} WHERE \`id\`=?;
+            SELECT * FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1;
         END IF;`, [
             id,
             OrderState.Open,
@@ -63,6 +66,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
 
         return {
             id: result[0][0].id,
+            account: result[0][0].account,
             created: BackendJS.Database.parseToTime(result[0][0].created),
             closed: BackendJS.Database.parseToTime(result[0][0].closed),
             state: result[0][0].state,
@@ -73,7 +77,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
     }
 
     public async deleteOrder(id: number): Promise<boolean> {
-        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=?) THEN
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=? LIMIT 1) THEN
             DELETE FROM ${this.data.orders} WHERE \`id\`=?;
             DELETE FROM ${this.data.products} WHERE \`order\`=?;
         END IF;`, [
@@ -90,7 +94,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         const result = await this.database.query(`
             INSERT INTO ${this.data.products} (\`order\`,\`product\`,\`price\`,\`amount\`) VALUES (?,?,?,?)
             ON DUPLICATE KEY UPDATE \`amount\`=\`amount\`+?;
-            SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?;
+            SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=? LIMIT 1;
         `, [
             order,
             product,
@@ -132,9 +136,9 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         values.push(order);
         values.push(product);
 
-        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?) THEN
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=? LIMIT 1) THEN
             UPDATE ${this.data.products} SET ${keys.join(',')} WHERE \`order\`=? AND \`product\`=?;
-            SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?;
+            SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=? LIMIT 1;
         END IF;`, values);
 
         if (!result.length)
@@ -149,7 +153,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
     }
 
     public async cancelProduct(order: number, product: number): Promise<boolean> {
-        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?) THEN
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=? LIMIT 1) THEN
             DELETE FROM ${this.data.products} WHERE \`order\`=? AND \`product\`=?;
         END IF;`, [
             order,
@@ -185,17 +189,18 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
     }
 
     public async getOrder(id: number): Promise<Order | null> {
-        const result = await this.database.query(`SELECT * FROM ${this.data.orders} WHERE \`id\`=?`, [
+        const result = await this.database.query(`SELECT * FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1`, [
             id
         ]);
 
         if (!result.length)
             return null;
 
-        const { created, closed, state, customer, paymentMethod, tip } = result[0];
+        const { account, created, closed, state, customer, paymentMethod, tip } = result[0];
 
         return {
             id,
+            account,
             created: BackendJS.Database.parseToTime(created),
             closed: BackendJS.Database.parseToTime(closed),
             state,

@@ -29,15 +29,16 @@ interface GetAllOptions {
 }
 
 export class CustomerRepository extends BackendJS.Database.Repository<string> {
-    public async create(firstname: string, options: CreateOptions = {}): Promise<Customer> {
+    public async create(account: number, firstname: string, options: CreateOptions = {}): Promise<Customer> {
         const lastname = options.lastname || '';
         const nickname = options.nickname || '';
         const paymentMethods = options.paymentMethods || -1;
 
         const result = await this.database.query(`
-            INSERT INTO ${this.data} (\`firstname\`,\`lastname\`,\`nickname\`,\`paymentMethods\`) VALUES (?,?,?,?);
+            INSERT INTO ${this.data} (\`account\`,\`firstname\`,\`lastname\`,\`nickname\`,\`paymentMethods\`) VALUES (?,?,?,?,?);
             SELECT * FROM ${this.data} WHERE \`id\`=LAST_INSERT_ID() LIMIT 1;
         `, [
+            account,
             firstname,
             lastname,
             nickname,
@@ -49,6 +50,7 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
 
         return {
             id,
+            account,
             created: BackendJS.Database.parseToTime(created),
             firstname,
             lastname,
@@ -99,17 +101,18 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
     }
 
     public async get(id: number): Promise<Customer | null> {
-        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=?`, [
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=? LIMIT 1`, [
             id
         ]);
 
         if (!result.length)
             return null;
 
-        const { created, firstname, lastname, nickname, paymentMethods } = result[0];
+        const { account, created, firstname, lastname, nickname, paymentMethods } = result[0];
 
         return {
             id,
+            account,
             created: BackendJS.Database.parseToTime(created),
             firstname,
             lastname,
@@ -118,10 +121,10 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         };
     }
 
-    public async getAll(options: GetAllOptions = {}): Promise<Customer[]> {
+    public async getAll(account: number, options: GetAllOptions = {}): Promise<Customer[]> {
         const limit = Math.min(MAX_LIMIT, options.limit || MAX_LIMIT);
-        const values = [];
-        const keys = [];
+        const values = [account];
+        const keys = ['`account`=?'];
 
         if (options.firstID) {
             values.push(options.firstID);
@@ -133,14 +136,11 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             keys.push('`id`<=?');
         }
 
-        const where = keys.length
-            ? 'WHERE ' + keys.join(' AND ')
-            : '';
-
-        const result = await this.database.query(`SELECT * FROM ${this.data} ${where} LIMIT ${limit};`, values);
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC LIMIT ${limit}`, values);
 
         return result.map(data => ({
             id: data.id,
+            account: data.account,
             created: BackendJS.Database.parseToTime(data.created),
             firstname: data.firstname,
             lastname: data.lastname,

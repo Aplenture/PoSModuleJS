@@ -10,6 +10,7 @@ import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
 
 interface Args extends GlobalArgs {
+    readonly account: number;
     readonly firstname: string;
     readonly lastname: string;
     readonly nickname: string;
@@ -19,6 +20,7 @@ interface Args extends GlobalArgs {
 export class CreateCustomer extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'creates a customer';
     public readonly parameters = new CoreJS.ParameterList(
+        new CoreJS.NumberParameter('account', 'account id of customer'),
         new CoreJS.StringParameter('firstname', 'firstname of customer'),
         new CoreJS.StringParameter('lastname', 'lastname of customer', ''),
         new CoreJS.StringParameter('nickname', 'nickname of customer', ''),
@@ -26,7 +28,7 @@ export class CreateCustomer extends BackendJS.Module.Command<Context, Args, Opti
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.customerRepository.create(args.firstname, args);
+        const result = await this.context.customerRepository.create(args.account, args.firstname, args);
 
         return new CoreJS.JSONResponse(result);
     }

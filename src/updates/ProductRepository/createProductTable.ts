@@ -23,10 +23,12 @@ export class CreateProductTable extends BackendJS.Database.Update<string> {
         this.revert = `DROP TABLE IF EXISTS ${table}`;
         this.update = `CREATE TABLE IF NOT EXISTS ${table} (
             \`id\` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+            \`account\` BIGINT NOT NULL,
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            \`name\` CHAR(24) UNIQUE NOT NULL,
+            \`name\` CHAR(24) NOT NULL,
             \`price\` INT NOT NULL,
-            \`discount\` INT NOT NULL
+            \`discount\` INT NOT NULL,
+            UNIQUE (\`account\`,\`name\`)
         ) DEFAULT CHARSET=utf8`;
     }
 }

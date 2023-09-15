@@ -7,6 +7,7 @@
 
 export interface Product {
     readonly id: number;
+    readonly account: number;
     readonly created: number;
     readonly name: string;
     readonly price: number;

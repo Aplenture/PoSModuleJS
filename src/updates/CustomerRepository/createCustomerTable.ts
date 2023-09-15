@@ -23,12 +23,13 @@ export class CreateCustomerTable extends BackendJS.Database.Update<string> {
         this.revert = `DROP TABLE IF EXISTS ${table}`;
         this.update = `CREATE TABLE IF NOT EXISTS ${table} (
             \`id\` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+            \`account\` BIGINT NOT NULL,
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             \`firstname\` CHAR(32) NOT NULL,
             \`lastname\` CHAR(24) NOT NULL,
             \`nickname\` CHAR(24) DEFAULT '',
             \`paymentMethods\` INT DEFAULT -1,
-            UNIQUE (\`firstname\`,\`lastname\`,\`nickname\`)
+            UNIQUE (\`account\`,\`firstname\`,\`lastname\`,\`nickname\`)
         ) DEFAULT CHARSET=utf8`;
     }
 }

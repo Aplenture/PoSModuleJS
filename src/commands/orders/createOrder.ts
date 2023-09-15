@@ -10,12 +10,14 @@ import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
 
 interface Args extends GlobalArgs {
+    readonly account: number;
     readonly customer: number;
 }
 
 export class CreateOrder extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'creates an order';
     public readonly parameters = new CoreJS.ParameterList(
+        new CoreJS.NumberParameter('account', 'account id of customer'),
         new CoreJS.NumberParameter('customer', 'customer id of order')
     );
 
@@ -23,7 +25,7 @@ export class CreateOrder extends BackendJS.Module.Command<Context, Args, Options
         if (!await this.context.customerRepository.has(args.customer))
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid_customer');
 
-        const result = await this.context.orderRepository.createOrder(args.customer);
+        const result = await this.context.orderRepository.createOrder(args.account, args.customer);
 
         if (!result)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_open_already');

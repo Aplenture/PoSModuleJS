@@ -10,6 +10,7 @@ import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
 
 interface Args extends GlobalArgs {
+    readonly account: number;
     readonly limit: number;
     readonly firstID: number;
     readonly lastID: number;
@@ -18,13 +19,14 @@ interface Args extends GlobalArgs {
 export class GetCustomers extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'returns all customers';
     public readonly parameters = new CoreJS.ParameterList(
+        new CoreJS.NumberParameter('account', 'account id of customer'),
         new CoreJS.NumberParameter('limit', 'max number of returning customers', 1000),
         new CoreJS.NumberParameter('firstID', 'id of first returning customer', null),
         new CoreJS.NumberParameter('lastID', 'id of last returned customer', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.customerRepository.getAll(args);
+        const result = await this.context.customerRepository.getAll(args.account, args);
 
         return new CoreJS.JSONResponse(result);
     }

@@ -24,12 +24,14 @@ export class CreateOrderTable extends BackendJS.Database.Update<OrderTables> {
         this.revert = `DROP TABLE IF EXISTS ${tables.orders}`;
         this.update = `CREATE TABLE IF NOT EXISTS ${tables.orders} (
             \`id\` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+            \`account\` BIGINT NOT NULL,
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             \`closed\` TIMESTAMP NULL DEFAULT NULL,
             \`state\` INT DEFAULT 0,
             \`customer\` BIGINT NOT NULL,
             \`paymentMethod\` INT DEFAULT 0,
-            \`tip\` INT DEFAULT 0
+            \`tip\` INT DEFAULT 0,
+            UNIQUE (\`account\`,\`customer\`)
         ) DEFAULT CHARSET=utf8`;
     }
 }

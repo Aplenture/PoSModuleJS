@@ -23,11 +23,12 @@ interface GetAllOptions {
 }
 
 export class ProductRepository extends BackendJS.Database.Repository<string> {
-    public async create(name: string, price: number, discount = 0): Promise<Product> {
+    public async create(account: number, name: string, price: number, discount = 0): Promise<Product> {
         const result = await this.database.query(`
-            INSERT INTO ${this.data} (\`name\`,\`price\`,\`discount\`) VALUES (?,?,?);
+            INSERT INTO ${this.data} (\`account\`,\`name\`,\`price\`,\`discount\`) VALUES (?,?,?,?);
             SELECT * FROM ${this.data} WHERE \`id\`=LAST_INSERT_ID() LIMIT 1;
         `, [
+            account,
             name,
             price,
             discount
@@ -38,6 +39,7 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
 
         return {
             id,
+            account,
             created: BackendJS.Database.parseToTime(created),
             name,
             price,
@@ -87,17 +89,18 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
     }
 
     public async get(id: number): Promise<Product | null> {
-        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=?`, [
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=? LIMIT 1`, [
             id
         ]);
 
         if (!result.length)
             return null;
 
-        const { created, name, price, discount } = result[0];
+        const { account, created, name, price, discount } = result[0];
 
         return {
             id,
+            account,
             created: BackendJS.Database.parseToTime(created),
             name,
             price,
@@ -105,10 +108,10 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
         };
     }
 
-    public async getAll(options: GetAllOptions = {}): Promise<Product[]> {
+    public async getAll(account: number, options: GetAllOptions = {}): Promise<Product[]> {
         const limit = Math.min(MAX_LIMIT, options.limit || MAX_LIMIT);
-        const values = [];
-        const keys = [];
+        const values = [account];
+        const keys = ['`account`=?'];
 
         if (options.firstID) {
             values.push(options.firstID);
@@ -120,14 +123,11 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
             keys.push('`id`<=?');
         }
 
-        const where = keys.length
-            ? 'WHERE ' + keys.join(' AND ')
-            : '';
-
-        const result = await this.database.query(`SELECT * FROM ${this.data} ${where} LIMIT ${limit};`, values);
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC LIMIT ${limit};`, values);
 
         return result.map(data => ({
             id: data.id,
+            account: data.account,
             created: BackendJS.Database.parseToTime(data.created),
             name: data.name,
             price: data.price,
