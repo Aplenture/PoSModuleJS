@@ -9,6 +9,7 @@ import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args, Options, Context } from "./core";
 import { CustomerRepository, OrderRepository, ProductRepository } from "./repositories";
+import { OrderTables } from "./models/orderTables";
 
 export class Module extends BackendJS.Module.Module<Context, Args, Options> implements Context {
     public readonly allowedRequestHeaders: readonly string[] = [];
@@ -24,21 +25,21 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
             new CoreJS.DictionaryParameter('databaseConfig', 'database config', BackendJS.Database.Parameters),
             new CoreJS.StringParameter('customerTable', 'database table customer name', '`customers`'),
             new CoreJS.StringParameter('productTable', 'database table product name', '`products`'),
-            new CoreJS.DictionaryParameter('orderTables', 'database table order names', [
+            new CoreJS.DictionaryParameter<OrderTables>('orderTables', 'database table order names', [
                 new CoreJS.StringParameter('orders', 'database table order name', '`orders`'),
                 new CoreJS.StringParameter('products', 'database table order product name', '`orderProducts`')
             ], {
                 orders: '`orders`',
                 products: '`orderProducts`'
             }),
-            new CoreJS.DictionaryParameter('balanceTables', 'database table order names', [
+            new CoreJS.DictionaryParameter<BackendJS.Balance.Tables>('balanceTables', 'database table order names', [
                 new CoreJS.StringParameter('balanceTable', 'database table order name', '`balances`'),
                 new CoreJS.StringParameter('updateTable', 'database table order product name', '`balanceUpdates`'),
                 new CoreJS.StringParameter('historyTable', 'database table order product name', '`balanceHistories`')
             ], {
-                balances: '`balances`',
-                balanceUpdates: '`balanceUpdates`',
-                balanceHistories: '`balanceHistories`'
+                balanceTable: '`balances`',
+                updateTable: '`balanceUpdates`',
+                historyTable: '`balanceHistories`'
             })
         );
 
