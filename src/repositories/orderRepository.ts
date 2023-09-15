@@ -72,6 +72,20 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         };
     }
 
+    public async deleteOrder(id: number): Promise<boolean> {
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=?) THEN
+            DELETE FROM ${this.data.orders} WHERE \`id\`=?;
+            DELETE FROM ${this.data.products} WHERE \`order\`=?;
+        END IF;`, [
+            id,
+            OrderState.Open,
+            id,
+            id
+        ]);
+
+        return 0 < result.affectedRows;
+    }
+
     public async orderProduct(order: number, product: number, price: number, amount = 1): Promise<OrderProduct | null> {
         const result = await this.database.query(`
             INSERT INTO ${this.data.products} (\`order\`,\`product\`,\`price\`,\`amount\`) VALUES (?,?,?,?)

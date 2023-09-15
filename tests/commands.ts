@@ -501,6 +501,13 @@ describe("Commands", () => {
             it("catches missing amount", () => m.execute("closeOrder", { account: 1, order: 2, paymentmethod: PaymentMethod.Balance }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "amount", type: "number" } })));
             it("catches invalid amount", () => m.execute("closeOrder", { account: 1, order: 2, amount: 1, paymentmethod: PaymentMethod.Balance }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_not_enough_amount" })));
         });
+
+        describe("Delete Open Orders", () => {
+            it("deletes open order 2", () => m.execute("deleteOrder", { id: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing order", () => m.execute("deleteOrder", {}).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "id", type: "number" } })));
+            it("catches invalid order", () => m.execute("deleteOrder", { id: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
+            it("catches closed order", () => m.execute("deleteOrder", { id: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
+        });
     });
 
     describe("Deinitialization", () => {
