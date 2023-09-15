@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import { OrderTables } from "../models/orderTables";
 import { Order, OrderProduct } from "../models";
-import { OrderState } from "../enums";
+import { OrderState, PaymentMethod } from "../enums";
 
 interface UpdateOptions {
     readonly amount?: number;
@@ -40,6 +40,35 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
             customer,
             paymentMethod,
             tip
+        };
+    }
+
+    public async closeOrder(id: number, paymentMethod: PaymentMethod, tip = 0): Promise<Order | null> {
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=?) THEN
+            UPDATE ${this.data.orders} SET \`closed\`=FROM_UNIXTIME(?),\`state\`=?,\`paymentMethod\`=?,\`tip\`=? WHERE \`id\`=?;
+            SELECT * FROM ${this.data.orders} WHERE \`id\`=?;
+        END IF;`, [
+            id,
+            OrderState.Open,
+            BackendJS.Database.parseFromTime(),
+            OrderState.Closed,
+            paymentMethod,
+            tip,
+            id,
+            id
+        ]);
+
+        if (!result.length)
+            return null;
+
+        return {
+            id: result[0][0].id,
+            created: BackendJS.Database.parseToTime(result[0][0].created),
+            closed: BackendJS.Database.parseToTime(result[0][0].closed),
+            state: result[0][0].state,
+            customer: result[0][0].customer,
+            paymentMethod: result[0][0].paymentMethod,
+            tip: result[0][0].tip
         };
     }
 
@@ -122,6 +151,25 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         return this.getOrder(id).then(result => !!result);
     }
 
+    public isOpen(id: number): Promise<boolean> {
+        return this.hasState(id, OrderState.Open);
+    }
+
+    public hasState(id: number, state: OrderState): Promise<boolean> {
+        return this.getState(id).then(result => result == state);
+    }
+
+    public async getState(id: number): Promise<OrderState | null> {
+        const result = await this.database.query(`SELECT \`state\` FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1`, [
+            id
+        ]);
+
+        if (!result.length)
+            return null;
+
+        return result[0].state;
+    }
+
     public async getOrder(id: number): Promise<Order | null> {
         const result = await this.database.query(`SELECT * FROM ${this.data.orders} WHERE \`id\`=?`, [
             id
@@ -141,5 +189,20 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
             paymentMethod,
             tip
         };
+    }
+
+    public async getInvoice(order: number): Promise<number | null> {
+        const result = await this.database.query(`
+        LOCK TABLES ${this.data.orders} WRITE, ${this.data.products} WRITE;
+            SELECT \`order\`,SUM(\`price\`*\`amount\`) AS \`sum\` FROM ${this.data.products} WHERE \`order\`=? GROUP BY \`order\` LIMIT 1;
+        UNLOCK TABLES;
+        `, [
+            order
+        ]);
+
+        if (!result.length)
+            return null;
+
+        return result[1][0].sum;
     }
 }

@@ -6,6 +6,7 @@
  */
 
 export * from "./cancelProduct";
+export * from "./closeOrder";
 export * from "./createOrder";
 export * from "./orderProduct";
 export * from "./updateOrder";
