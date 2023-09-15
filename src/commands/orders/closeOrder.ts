@@ -57,8 +57,8 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
             await this.context.balanceRepository.decrease({
                 account: args.account,
                 depot: order.customer,
+                order: order.id,
                 asset: 1,
-                product: order.id,
                 value: invoice,
                 data: 'order invoice',
             });
