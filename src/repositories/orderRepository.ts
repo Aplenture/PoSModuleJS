@@ -144,7 +144,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
             product
         ]);
 
-        return 1 == result.affectedRows;
+        return 0 < result.affectedRows;
     }
 
     public hasOrder(id: number): Promise<boolean> {

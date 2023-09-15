@@ -71,7 +71,7 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
 
         const result = await this.database.query(`UPDATE ${this.data} SET ${keys.join(',')} WHERE \`id\`=?`, values);
 
-        return 1 == result.affectedRows;
+        return 0 < result.affectedRows;
     }
 
     public async delete(id: number): Promise<boolean> {
@@ -79,7 +79,7 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
             id
         ]);
 
-        return 1 == result.affectedRows;
+        return 0 < result.affectedRows;
     }
 
     public has(id: number): Promise<boolean> {

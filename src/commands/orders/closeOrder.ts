@@ -18,7 +18,7 @@ interface Args extends GlobalArgs {
 }
 
 export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'creates an order';
+    public readonly description = 'closes an open order';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'id of balance account'),
         new CoreJS.NumberParameter('order', 'id of order to close'),
@@ -36,9 +36,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
                 return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid_payment_method');
         }
 
-        const order = await this.context.orderRepository.getOrder(args.order);
-
-        if (OrderState.Open != order.state)
+        if (!await this.context.orderRepository.isOpen(args.order))
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
 
         const invoice = await this.context.orderRepository.getInvoice(args.order);
@@ -56,8 +54,8 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
         if (PaymentMethod.Balance == args.paymentmethod) {
             await this.context.balanceRepository.decrease({
                 account: args.account,
-                depot: order.customer,
-                order: order.id,
+                depot: result.customer,
+                order: result.id,
                 asset: 1,
                 value: invoice,
                 data: 'order invoice',
