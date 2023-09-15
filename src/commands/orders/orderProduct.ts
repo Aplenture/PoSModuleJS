@@ -40,9 +40,6 @@ export class OrderProduct extends BackendJS.Module.Command<Context, Args, Option
 
         const result = await this.context.orderRepository.orderProduct(args.order, args.product, price, args.amount);
 
-        if (!result)
-            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_open_already');
-
         return new CoreJS.JSONResponse(result);
     }
 }
