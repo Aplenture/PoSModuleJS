@@ -11,6 +11,7 @@ import { Customer } from "../models";
 const MAX_LIMIT = 1000;
 
 interface CreateOptions {
+    readonly lastname?: string;
     readonly nickname?: string;
     readonly paymentMethods?: number;
 }
@@ -28,7 +29,8 @@ interface GetAllOptions {
 }
 
 export class CustomerRepository extends BackendJS.Database.Repository<string> {
-    public async create(firstname: string, lastname: string, options: CreateOptions = {}): Promise<Customer> {
+    public async create(firstname: string, options: CreateOptions = {}): Promise<Customer> {
+        const lastname = options.lastname || '';
         const nickname = options.nickname || '';
         const paymentMethods = options.paymentMethods || -1;
 

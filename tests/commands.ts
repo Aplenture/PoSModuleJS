@@ -39,7 +39,7 @@ describe("Commands", () => {
 
     describe("Customers", () => {
         describe("Create", () => {
-            it("without nickname", async () => {
+            it("creates customer without nickname", async () => {
                 const result = await m.execute("createCustomer", { firstname: 'hello', lastname: 'world' }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
@@ -49,7 +49,7 @@ describe("Commands", () => {
                 expect(data).contains({ id: 1, firstname: 'hello', lastname: 'world', nickname: '', paymentMethods: -1 });
             });
 
-            it("with nickname", async () => {
+            it("creates customer with nickname", async () => {
                 const result = await m.execute("createCustomer", { firstname: 'hello', lastname: 'world', nickname: '2' }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
@@ -59,7 +59,7 @@ describe("Commands", () => {
                 expect(data).contains({ id: 2, firstname: 'hello', lastname: 'world', nickname: '2', paymentMethods: -1 });
             });
 
-            it("with payment method balance", async () => {
+            it("creates customer with payment method balance", async () => {
                 const result = await m.execute("createCustomer", { firstname: 'with', lastname: 'payment method', nickname: 'balance', paymentMethods: PaymentMethod.Balance }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
@@ -69,7 +69,7 @@ describe("Commands", () => {
                 expect(data).contains({ id: 3, firstname: 'with', lastname: 'payment method', nickname: 'balance', paymentMethods: PaymentMethod.Balance });
             });
 
-            it("with payment method balance and cash", async () => {
+            it("creates customer with payment method balance and cash", async () => {
                 const result = await m.execute("createCustomer", { firstname: 'with', lastname: 'payment method', nickname: 'balance+cash', paymentMethods: PaymentMethod.Balance | PaymentMethod.Cash }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
@@ -79,8 +79,17 @@ describe("Commands", () => {
                 expect(data).contains({ id: 4, firstname: 'with', lastname: 'payment method', nickname: 'balance+cash', paymentMethods: PaymentMethod.Balance | PaymentMethod.Cash });
             });
 
+            it("creates customer without lastname", async () => {
+                const result = await m.execute("createCustomer", { firstname: 'IHaveNoLastNameAndNoNickNameBro' }) as CoreJS.JSONResponse;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).contains({ id: 5, firstname: 'IHaveNoLastNameAndNoNickNameBro', lastname: '', nickname: '' });
+            });
+
             it("catches missing firstname", () => m.execute("createCustomer", { lastname: 'world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'firstname', type: 'string' } })));
-            it("catches missing lastname", () => m.execute("createCustomer", { firstname: 'hello' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'lastname', type: 'string' } })));
             it("catches duplicate", () => m.execute("createCustomer", { firstname: 'hello', lastname: 'world', nickname: '2' }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
         });
 
@@ -104,10 +113,11 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(3);
+                expect(data).has.length(4);
                 expect(data[0], 'customer at 0').contains({ id: 1, firstname: 'test1', lastname: 'world', nickname: '', paymentMethods: -1 });
                 expect(data[1], 'customer at 1').contains({ id: 3, firstname: 'with', lastname: 'test2', nickname: 'balance', paymentMethods: PaymentMethod.Balance });
                 expect(data[2], 'customer at 2').contains({ id: 4, firstname: 'with', lastname: 'payment method', nickname: 'test3', paymentMethods: PaymentMethod.Balance | PaymentMethod.Cash });
+                expect(data[3], 'customer at 3').contains({ id: 5, firstname: 'IHaveNoLastNameAndNoNickNameBro', lastname: '', nickname: '', paymentMethods: -1 });
             });
 
             it("limit 2", async () => {
@@ -129,9 +139,10 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(2);
+                expect(data).has.length(3);
                 expect(data[0], 'customer at 0').contains({ id: 3, firstname: 'with', lastname: 'test2', nickname: 'balance', paymentMethods: PaymentMethod.Balance });
                 expect(data[1], 'customer at 1').contains({ id: 4, firstname: 'with', lastname: 'payment method', nickname: 'test3', paymentMethods: PaymentMethod.Balance | PaymentMethod.Cash });
+                expect(data[2], 'customer at 2').contains({ id: 5, firstname: 'IHaveNoLastNameAndNoNickNameBro', lastname: '', nickname: '', paymentMethods: -1 });
             });
 
             it("last id 3", async () => {
