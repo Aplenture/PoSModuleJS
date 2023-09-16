@@ -25,10 +25,17 @@ const config = {
     }
 };
 
-const m = new Module(args, config);
+const app = {
+    onMessage: new CoreJS.Event<any, string>('app.onMessage'),
+    onError: new CoreJS.Event<any, Error>('app.onError'),
+    config: new CoreJS.Config(),
+    execute: async () => CoreJS.RESPONSE_OK
+};
+
+const m = new Module(app, args, config);
 const log = BackendJS.Log.Log.createFileLog('./test.log', true);
 
-m.onMessage.on(message => log.write(message));
+app.onMessage.on(message => log.write(message));
 
 describe("Commands", () => {
     describe("Initialization", () => {

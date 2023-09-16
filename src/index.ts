@@ -20,8 +20,8 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
     public readonly orderRepository: OrderRepository;
     public readonly productRepository: ProductRepository;
 
-    constructor(args: BackendJS.Module.Args, options: Options, ...params: CoreJS.Parameter<any>[]) {
-        super(args, options, ...params,
+    constructor(app: BackendJS.Module.IApp, args: BackendJS.Module.Args, options: Options, ...params: CoreJS.Parameter<any>[]) {
+        super(app, args, options, ...params,
             new CoreJS.DictionaryParameter('databaseConfig', 'database config', BackendJS.Database.Parameters),
             new CoreJS.StringParameter('customerTable', 'database table customer name', '`customers`'),
             new CoreJS.StringParameter('productTable', 'database table product name', '`products`'),
@@ -46,9 +46,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.database = new BackendJS.Database.Database(this.options.databaseConfig, {
             debug: args.debug,
             multipleStatements: true
-        });
-
-        this.database.onMessage.on(message => this.onMessage.emit(this, `database '${this.options.databaseConfig.database}' ${message}`));
+        }, app);
 
         this.balanceRepository = new BackendJS.Balance.Repository(this.options.balanceTables, this.database);
         this.customerRepository = new CustomerRepository(this.options.customerTable, this.database, __dirname + '/updates/' + CustomerRepository.name);
