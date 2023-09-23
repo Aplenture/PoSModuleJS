@@ -10,7 +10,7 @@ import { OrderTables } from "../models/orderTables";
 import { Order, OrderProduct } from "../models";
 import { OrderState, PaymentMethod } from "../enums";
 
-const MAX_LIMIT = 1000;
+const MAX_LIMIT = 100;
 
 interface UpdateOptions {
     readonly amount?: number;
