@@ -34,6 +34,12 @@ export class DepositBalance extends BackendJS.Module.Command<Context, Args, Opti
             data: 'deposit'
         });
 
-        return new CoreJS.JSONResponse(result);
+        return new CoreJS.JSONResponse({
+            timestamp: result.timestamp,
+            account: result.account,
+            customer: result.depot,
+            paymentMethod: result.asset,
+            value: result.value
+        });
     }
 }

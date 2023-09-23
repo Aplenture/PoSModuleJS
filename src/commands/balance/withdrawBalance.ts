@@ -34,6 +34,12 @@ export class WithdrawBalance extends BackendJS.Module.Command<Context, Args, Opt
             data: 'withdraw'
         });
 
-        return new CoreJS.JSONResponse(result);
+        return new CoreJS.JSONResponse({
+            timestamp: result.timestamp,
+            account: result.account,
+            customer: result.depot,
+            paymentMethod: result.asset,
+            value: result.value
+        });
     }
 }
