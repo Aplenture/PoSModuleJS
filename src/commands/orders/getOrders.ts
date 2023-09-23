@@ -20,7 +20,7 @@ interface Args extends GlobalArgs {
 }
 
 export class GetOrders extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'creates an order';
+    public readonly description = 'returns filtered orders and products';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id of order', null),
