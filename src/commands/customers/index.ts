@@ -5,7 +5,7 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
-export * from "./createCustomer";
-export * from "./deleteCustomer";
+export * from "./addCustomer";
+export * from "./removeCustomer";
 export * from "./editCustomer";
 export * from "./getCustomers";

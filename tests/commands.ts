@@ -45,9 +45,9 @@ describe("Commands", () => {
     });
 
     describe("Customers", () => {
-        describe("Create", () => {
-            it("creates customer without nickname", async () => {
-                const result = await m.execute("createCustomer", { account: 1, firstname: 'hello', lastname: 'world' }) as CoreJS.JSONResponse;
+        describe("add", () => {
+            it("adds customer without nickname", async () => {
+                const result = await m.execute("addCustomer", { account: 1, firstname: 'hello', lastname: 'world' }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -56,8 +56,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 1, account: 1, firstname: 'hello', lastname: 'world', nickname: '', paymentMethods: -1 });
             });
 
-            it("creates customer with nickname", async () => {
-                const result = await m.execute("createCustomer", { account: 1, firstname: 'hello', lastname: 'world', nickname: '2' }) as CoreJS.JSONResponse;
+            it("adds customer with nickname", async () => {
+                const result = await m.execute("addCustomer", { account: 1, firstname: 'hello', lastname: 'world', nickname: '2' }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -66,8 +66,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 2, account: 1, firstname: 'hello', lastname: 'world', nickname: '2', paymentMethods: -1 });
             });
 
-            it("creates customer with payment method balance", async () => {
-                const result = await m.execute("createCustomer", { account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance', paymentMethods: PaymentMethod.Balance }) as CoreJS.JSONResponse;
+            it("adds customer with payment method balance", async () => {
+                const result = await m.execute("addCustomer", { account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance', paymentMethods: PaymentMethod.Balance }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -76,8 +76,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 3, account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance', paymentMethods: PaymentMethod.Balance });
             });
 
-            it("creates customer with payment method balance and cash", async () => {
-                const result = await m.execute("createCustomer", { account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance+cash', paymentMethods: PaymentMethod.Balance | PaymentMethod.Cash }) as CoreJS.JSONResponse;
+            it("adds customer with payment method balance and cash", async () => {
+                const result = await m.execute("addCustomer", { account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance+cash', paymentMethods: PaymentMethod.Balance | PaymentMethod.Cash }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -86,8 +86,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 4, account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance+cash', paymentMethods: PaymentMethod.Balance | PaymentMethod.Cash });
             });
 
-            it("creates customer without lastname", async () => {
-                const result = await m.execute("createCustomer", { account: 1, firstname: 'IHaveNoLastNameAndNoNickNameBro' }) as CoreJS.JSONResponse;
+            it("adds customer without lastname", async () => {
+                const result = await m.execute("addCustomer", { account: 1, firstname: 'IHaveNoLastNameAndNoNickNameBro' }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -96,8 +96,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 5, account: 1, firstname: 'IHaveNoLastNameAndNoNickNameBro', lastname: '', nickname: '' });
             });
 
-            it("creates customer on different account", async () => {
-                const result = await m.execute("createCustomer", { account: 2, firstname: 'hello', lastname: 'world', nickname: '2' }) as CoreJS.JSONResponse;
+            it("adds customer on different account", async () => {
+                const result = await m.execute("addCustomer", { account: 2, firstname: 'hello', lastname: 'world', nickname: '2' }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -106,9 +106,9 @@ describe("Commands", () => {
                 expect(data).contains({ id: 6, account: 2, firstname: 'hello', lastname: 'world', nickname: '2', paymentMethods: -1 });
             });
 
-            it("catches missing account", () => m.execute("createCustomer", { firstname: 'world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
-            it("catches missing firstname", () => m.execute("createCustomer", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'firstname', type: 'string' } })));
-            it("catches duplicate", () => m.execute("createCustomer", { account: 1, firstname: 'hello', lastname: 'world', nickname: '2' }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
+            it("catches missing account", () => m.execute("addCustomer", { firstname: 'world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing firstname", () => m.execute("addCustomer", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'firstname', type: 'string' } })));
+            it("catches duplicate", () => m.execute("addCustomer", { account: 1, firstname: 'hello', lastname: 'world', nickname: '2' }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
         });
 
         describe("Edit", () => {
@@ -119,10 +119,10 @@ describe("Commands", () => {
             it("catches missing customer", () => m.execute("editCustomer", { account: 1, lastname: 'hello world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'customer', type: 'number' } })));
         });
 
-        describe("Delete", () => {
-            it("second entity", () => m.execute("deleteCustomer", { account: 1, customer: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("catches missing account", () => m.execute("deleteCustomer", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
-            it("catches missing customer", () => m.execute("deleteCustomer", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'customer', type: 'number' } })));
+        describe("remove", () => {
+            it("second entity", () => m.execute("removeCustomer", { account: 1, customer: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing account", () => m.execute("removeCustomer", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing customer", () => m.execute("removeCustomer", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'customer', type: 'number' } })));
         });
 
         describe("Get", () => {
@@ -193,9 +193,9 @@ describe("Commands", () => {
     });
 
     describe("Products", () => {
-        describe("Create", () => {
-            it("creates product without discount", async () => {
-                const result = await m.execute("createProduct", { account: 1, name: 'product 1', price: 100 }) as CoreJS.JSONResponse;
+        describe("add", () => {
+            it("adds product without discount", async () => {
+                const result = await m.execute("addProduct", { account: 1, name: 'product 1', price: 100 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -204,8 +204,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 1, account: 1, name: 'product 1', price: 100, discount: 0 });
             });
 
-            it("creates product with discount", async () => {
-                const result = await m.execute("createProduct", { account: 1, name: 'product 2', price: 150, discount: 10 }) as CoreJS.JSONResponse;
+            it("adds product with discount", async () => {
+                const result = await m.execute("addProduct", { account: 1, name: 'product 2', price: 150, discount: 10 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -214,8 +214,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 2, account: 1, name: 'product 2', price: 150, discount: 10 });
             });
 
-            it("creates product third", async () => {
-                const result = await m.execute("createProduct", { account: 1, name: 'product 3', price: 150, discount: 10 }) as CoreJS.JSONResponse;
+            it("adds product third", async () => {
+                const result = await m.execute("addProduct", { account: 1, name: 'product 3', price: 150, discount: 10 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -224,8 +224,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 3, account: 1, name: 'product 3', price: 150, discount: 10 });
             });
 
-            it("creates product fourth", async () => {
-                const result = await m.execute("createProduct", { account: 1, name: 'product 4', price: 150, discount: 10 }) as CoreJS.JSONResponse;
+            it("adds product fourth", async () => {
+                const result = await m.execute("addProduct", { account: 1, name: 'product 4', price: 150, discount: 10 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -234,8 +234,8 @@ describe("Commands", () => {
                 expect(data).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 10 });
             });
 
-            it("creates product for additional account", async () => {
-                const result = await m.execute("createProduct", { account: 2, name: 'product 4', price: 150, discount: 10 }) as CoreJS.JSONResponse;
+            it("adds product for additional account", async () => {
+                const result = await m.execute("addProduct", { account: 2, name: 'product 4', price: 150, discount: 10 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -244,10 +244,10 @@ describe("Commands", () => {
                 expect(data).contains({ id: 5, account: 2, name: 'product 4', price: 150, discount: 10 });
             });
 
-            it("catches missing account", () => m.execute("createProduct", { name: 'product 1', price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
-            it("catches missing name", () => m.execute("createProduct", { account: 1, price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'name', type: 'string' } })));
-            it("catches missing price", () => m.execute("createProduct", { account: 1, name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'price', type: 'number' } })));
-            it("catches duplicate", () => m.execute("createProduct", { account: 1, name: 'product 1', price: 100 }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
+            it("catches missing account", () => m.execute("addProduct", { name: 'product 1', price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing name", () => m.execute("addProduct", { account: 1, price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'name', type: 'string' } })));
+            it("catches missing price", () => m.execute("addProduct", { account: 1, name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'price', type: 'number' } })));
+            it("catches duplicate", () => m.execute("addProduct", { account: 1, name: 'product 1', price: 100 }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
         });
 
         describe("Edit", () => {
@@ -258,10 +258,10 @@ describe("Commands", () => {
             it("catches missing product", () => m.execute("editProduct", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'product', type: 'number' } })));
         });
 
-        describe("Delete", () => {
-            it("second entity", () => m.execute("deleteProduct", { account: 1, product: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("catches missing account", () => m.execute("deleteProduct", { product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
-            it("catches missing product", () => m.execute("deleteProduct", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'product', type: 'number' } })));
+        describe("remove", () => {
+            it("second entity", () => m.execute("removeProduct", { account: 1, product: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("catches missing account", () => m.execute("removeProduct", { product: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing product", () => m.execute("removeProduct", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'product', type: 'number' } })));
         });
 
         describe("Get", () => {

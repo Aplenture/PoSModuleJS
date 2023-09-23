@@ -17,7 +17,7 @@ interface Args extends GlobalArgs {
     readonly paymentmethods: number;
 }
 
-export class CreateCustomer extends BackendJS.Module.Command<Context, Args, Options> {
+export class AddCustomer extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'creates a customer';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
