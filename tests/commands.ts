@@ -794,6 +794,22 @@ describe("Commands", () => {
             it("catches missing account", () => m.execute("getBalance", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
             it("catches missing customer", () => m.execute("getBalance", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
         });
+
+        describe("Get All", () => {
+            it("returns all balances", async () => {
+                const result = await m.execute("getBalances", { account: 1 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).has.length(2);
+                expect(data[0], "order at index 0").deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: 100 });
+                expect(data[1], "order at index 1").deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 1580 });
+            });
+
+            it("catches missing account", () => m.execute("getBalances", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+        });
     });
 
     describe("Deinitialization", () => {
