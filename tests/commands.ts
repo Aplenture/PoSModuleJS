@@ -540,23 +540,23 @@ describe("Commands", () => {
 
         describe("Close Orders", () => {
             it("closes open order 1 paid with cash without tip", async () => {
-                const result = await m.execute("closeOrder", { account: 1, order: 1, paymentmethod: PaymentMethod.Cash, amount: 3840 }) as CoreJS.Response;
+                const result = await m.execute("closeOrder", { account: 1, order: 1, paymentmethod: PaymentMethod.Cash, amount: 4000 }) as CoreJS.Response;
 
                 expect(result, result.data).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ id: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
+                expect(data).deep.contains({ id: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 160 });
             });
 
             it("closes open order 3 paid with balance with tip", async () => {
-                const result = await m.execute("closeOrder", { account: 1, order: 3, paymentmethod: PaymentMethod.Balance, amount: 4000 }) as CoreJS.Response;
+                const result = await m.execute("closeOrder", { account: 1, order: 3, paymentmethod: PaymentMethod.Balance, amount: 3420 }) as CoreJS.Response;
 
                 expect(result, result.data).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ id: 3, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 580 });
+                expect(data).deep.contains({ id: 3, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 0 });
             });
 
             it("catches missing account", () => m.execute("closeOrder", { order: 2, amount: 10000, paymentmethod: PaymentMethod.Balance }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
@@ -618,21 +618,21 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(5);
-                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
+                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 160 });
                 expect(data[0].products, "products of order at index 0").has.length(3);
                 expect(data[0].products[0], "product at index 0 of order at index 0").deep.contains({ order: 1, product: 1, price: 90, amount: 10 });
                 expect(data[0].products[1], "product at index 1 of order at index 0").deep.contains({ order: 1, product: 3, price: 180, amount: 3 });
                 expect(data[0].products[2], "product at index 1 of order at index 0").deep.contains({ order: 1, product: 4, price: 120, amount: 20 });
-                
-                expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 580 });
+
+                expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 0 });
                 expect(data[1].products, "products of order at index 1").has.length(2);
                 expect(data[1].products[0], "product at index 0 of order at index 1").deep.contains({ order: 3, product: 3, price: 200, amount: 10 });
                 expect(data[1].products[1], "product at index 1 of order at index 1").deep.contains({ order: 3, product: 4, price: 142, amount: 10 });
-                
+
                 expect(data[2], "order at index 2").deep.contains({ id: 4, account: 1, state: OrderState.Open, customer: 5, paymentMethod: PaymentMethod.None, tip: 0 });
                 expect(data[2].products, "products of order at index 2").has.length(1);
                 expect(data[2].products[0], "product at index 0 of order at index 2").deep.contains({ order: 4, product: 1 });
-                
+
                 expect(data[3], "order at index 3").deep.contains({ id: 6, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
                 expect(data[3].products, "products of order at index 3").has.length(0);
 
@@ -660,7 +660,7 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(3);
-                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
+                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 160 });
                 expect(data[1], "order at index 1").deep.contains({ id: 6, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
                 expect(data[2], "order at index 2").deep.contains({ id: 7, account: 1, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
             });
@@ -673,7 +673,7 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(2);
-                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
+                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 160 });
                 expect(data[1], "order at index 1").deep.contains({ id: 6, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
             });
 
@@ -685,8 +685,8 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(5);
-                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
-                expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 580 });
+                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 160 });
+                expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 0 });
                 expect(data[2], "order at index 2").deep.contains({ id: 4, account: 1, state: OrderState.Open, customer: 5, paymentMethod: PaymentMethod.None, tip: 0 });
                 expect(data[3], "order at index 3").deep.contains({ id: 6, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
                 expect(data[4], "order at index 4").deep.contains({ id: 7, account: 1, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
@@ -700,8 +700,8 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(5);
-                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
-                expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 580 });
+                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 160 });
+                expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 0 });
                 expect(data[2], "order at index 2").deep.contains({ id: 4, account: 1, state: OrderState.Open, customer: 5, paymentMethod: PaymentMethod.None, tip: 0 });
                 expect(data[3], "order at index 3").deep.contains({ id: 6, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
                 expect(data[4], "order at index 4").deep.contains({ id: 7, account: 1, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
@@ -727,8 +727,8 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(3);
-                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
-                expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 580 });
+                expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 160 });
+                expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 0 });
                 expect(data[2], "order at index 2").deep.contains({ id: 4, account: 1, state: OrderState.Open, customer: 5, paymentMethod: PaymentMethod.None, tip: 0 });
             });
 
@@ -738,6 +738,50 @@ describe("Commands", () => {
 
             start = BackendJS.Database.parseToTime(result[0].updated) as number;
             end = BackendJS.Database.parseToTime(result[result.length - 1].updated) as number;
+        });
+    });
+
+    describe("Balance", () => {
+        describe("Deposit", () => {
+            it("deposits for customer 1", async () => {
+                const result = await m.execute("depositBalance", { account: 1, customer: 1, value: 1000 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ account: 1, depot: 1, asset: 1, value: 1000 });
+            });
+
+            it("deposits for customer 4", async () => {
+                const result = await m.execute("depositBalance", { account: 1, customer: 4, value: 5000 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ account: 1, depot: 4, asset: 1, value: 1580 });
+            });
+
+            it("catches missing account", () => m.execute("depositBalance", { customer: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+            it("catches missing customer", () => m.execute("depositBalance", { account: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
+            it("catches missing value", () => m.execute("depositBalance", { account: 1, customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "value", type: "number" } })));
+        });
+
+        describe("Withdraw", () => {
+            it("withdraws for customer 1", async () => {
+                const result = await m.execute("withdrawBalance", { account: 1, customer: 1, value: 900 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ account: 1, depot: 1, asset: 1, value: 100 });
+            });
+
+            it("catches missing account", () => m.execute("withdrawBalance", { customer: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+            it("catches missing customer", () => m.execute("withdrawBalance", { account: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
+            it("catches missing value", () => m.execute("withdrawBalance", { account: 1, customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "value", type: "number" } })));
         });
     });
 
