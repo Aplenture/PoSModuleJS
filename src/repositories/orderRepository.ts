@@ -10,9 +10,20 @@ import { OrderTables } from "../models/orderTables";
 import { Order, OrderProduct } from "../models";
 import { OrderState, PaymentMethod } from "../enums";
 
+const MAX_LIMIT = 1000;
+
 interface UpdateOptions {
     readonly amount?: number;
     readonly price?: number;
+}
+
+interface GetOrdersOptions {
+    readonly order?: number;
+    readonly customer?: number;
+    readonly start?: number;
+    readonly end?: number;
+    readonly state?: OrderState;
+    readonly limit?: number;
 }
 
 export class OrderRepository extends BackendJS.Database.Repository<OrderTables> {
@@ -32,13 +43,12 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         if (!result.length)
             return null;
 
-        const { id, created, closed, state, paymentMethod, tip } = result[0][0];
+        const { id, updated, state, paymentMethod, tip } = result[0][0];
 
         return {
             id,
             account,
-            created: BackendJS.Database.parseToTime(created),
-            closed: BackendJS.Database.parseToTime(closed),
+            updated: BackendJS.Database.parseToTime(updated),
             state,
             customer,
             paymentMethod,
@@ -48,12 +58,11 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
 
     public async closeOrder(id: number, paymentMethod: PaymentMethod, tip = 0): Promise<Order | null> {
         const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=? LIMIT 1) THEN
-            UPDATE ${this.data.orders} SET \`closed\`=FROM_UNIXTIME(?),\`state\`=?,\`paymentMethod\`=?,\`tip\`=? WHERE \`id\`=?;
+            UPDATE ${this.data.orders} SET \`state\`=?,\`paymentMethod\`=?,\`tip\`=? WHERE \`id\`=?;
             SELECT * FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1;
         END IF;`, [
             id,
             OrderState.Open,
-            BackendJS.Database.parseFromTime(),
             OrderState.Closed,
             paymentMethod,
             tip,
@@ -67,8 +76,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         return {
             id: result[0][0].id,
             account: result[0][0].account,
-            created: BackendJS.Database.parseToTime(result[0][0].created),
-            closed: BackendJS.Database.parseToTime(result[0][0].closed),
+            updated: BackendJS.Database.parseToTime(result[0][0].updated),
             state: result[0][0].state,
             customer: result[0][0].customer,
             paymentMethod: result[0][0].paymentMethod,
@@ -188,6 +196,44 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         return result[0].state;
     }
 
+    public async getOrders(account: number, options: GetOrdersOptions = {}): Promise<Order[]> {
+        const limit = Math.min(MAX_LIMIT, options.limit || MAX_LIMIT);
+        const values = [account];
+        const keys = ['`account`=?'];
+
+        if (options.customer) {
+            values.push(options.customer);
+            keys.push('`customer`=?');
+        }
+
+        if (options.state) {
+            values.push(options.state);
+            keys.push('`state`=?');
+        }
+
+        if (options.start) {
+            values.push(BackendJS.Database.parseFromTime(options.start));
+            keys.push('`updated`>=FROM_UNIXTIME(?)');
+        }
+
+        if (options.end) {
+            values.push(BackendJS.Database.parseFromTime(options.end));
+            keys.push('`updated`<=FROM_UNIXTIME(?)');
+        }
+
+        const result = await this.database.query(`SELECT * FROM ${this.data.orders} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC LIMIT ${limit}`, values);
+
+        return result.map(data => ({
+            id: data.id,
+            account: data.account,
+            updated: BackendJS.Database.parseToTime(data.updated),
+            state: data.state,
+            customer: data.customer,
+            paymentMethod: data.paymentMethod,
+            tip: data.tip
+        }));
+    }
+
     public async getOrder(id: number): Promise<Order | null> {
         const result = await this.database.query(`SELECT * FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1`, [
             id
@@ -196,13 +242,12 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         if (!result.length)
             return null;
 
-        const { account, created, closed, state, customer, paymentMethod, tip } = result[0];
+        const { account, updated, state, customer, paymentMethod, tip } = result[0];
 
         return {
             id,
             account,
-            created: BackendJS.Database.parseToTime(created),
-            closed: BackendJS.Database.parseToTime(closed),
+            updated: BackendJS.Database.parseToTime(updated),
             state,
             customer,
             paymentMethod,
@@ -220,7 +265,10 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         ]);
 
         if (!result.length)
-            return null;
+            return 0;
+
+        if (!result[1].length)
+            return 0;
 
         return result[1][0].sum;
     }

@@ -123,7 +123,7 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
             keys.push('`id`<=?');
         }
 
-        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC LIMIT ${limit};`, values);
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC LIMIT ${limit}`, values);
 
         return result.map(data => ({
             id: data.id,

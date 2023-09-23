@@ -6,6 +6,6 @@
  */
 
 export enum OrderState {
-    Open = 0,
+    Open = 1,
     Closed
 }

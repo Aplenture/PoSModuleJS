@@ -10,8 +10,7 @@ import { OrderState, PaymentMethod } from "../enums";
 export interface Order {
     readonly id: number;
     readonly account: number;
-    readonly created: number;
-    readonly closed: number;
+    readonly updated: number;
     readonly state: OrderState;
     readonly customer: number;
     readonly paymentMethod: PaymentMethod;
