@@ -6,4 +6,5 @@
  */
 
 export * from "./depositBalance";
+export * from "./getBalance";
 export * from "./withdrawBalance";

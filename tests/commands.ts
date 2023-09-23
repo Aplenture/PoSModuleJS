@@ -783,6 +783,17 @@ describe("Commands", () => {
             it("catches missing customer", () => m.execute("withdrawBalance", { account: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
             it("catches missing value", () => m.execute("withdrawBalance", { account: 1, customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "value", type: "number" } })));
         });
+
+        describe("Get Current", () => {
+            it("returns balance of customer 1", () => m.execute("getBalance", { account: 1, customer: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "100" })));
+            it("returns balance of customer 3", () => m.execute("getBalance", { account: 1, customer: 3 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" })));
+            it("returns balance of customer 4", () => m.execute("getBalance", { account: 1, customer: 4 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1580" })));
+            it("returns balance of customer 5", () => m.execute("getBalance", { account: 1, customer: 5 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" })));
+            it("returns balance of customer 6", () => m.execute("getBalance", { account: 1, customer: 6 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" })));
+
+            it("catches missing account", () => m.execute("getBalance", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+            it("catches missing customer", () => m.execute("getBalance", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
+        });
     });
 
     describe("Deinitialization", () => {
