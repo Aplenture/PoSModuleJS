@@ -8,6 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
+import { PaymentMethod } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -28,7 +29,7 @@ export class WithdrawBalance extends BackendJS.Module.Command<Context, Args, Opt
             account: args.account,
             depot: args.customer,
             order: 0,
-            asset: 1,
+            asset: PaymentMethod.Balance,
             value: args.value,
             data: 'withdraw'
         });

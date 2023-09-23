@@ -56,14 +56,23 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
         if (!result)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
 
-        if (PaymentMethod.Balance == args.paymentmethod) {
-            await this.context.balanceRepository.decrease({
+        await this.context.balanceRepository.decrease({
+            account: result.account,
+            depot: result.customer,
+            order: result.id,
+            asset: args.paymentmethod,
+            value: invoice,
+            data: 'invoice',
+        });
+
+        if (tip) {
+            await this.context.balanceRepository.increase({
                 account: result.account,
-                depot: result.customer,
+                depot: 0,
                 order: result.id,
-                asset: 1,
-                value: invoice,
-                data: 'invoice',
+                asset: args.paymentmethod,
+                value: tip,
+                data: 'tip',
             });
         }
 

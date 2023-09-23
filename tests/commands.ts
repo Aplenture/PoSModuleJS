@@ -750,7 +750,7 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ account: 1, depot: 1, asset: 1, value: 1000 });
+                expect(data).deep.contains({ account: 1, depot: 1, asset: PaymentMethod.Balance, value: 1000 });
             });
 
             it("deposits for customer 4", async () => {
@@ -760,7 +760,7 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ account: 1, depot: 4, asset: 1, value: 1580 });
+                expect(data).deep.contains({ account: 1, depot: 4, asset: PaymentMethod.Balance, value: 1580 });
             });
 
             it("catches missing account", () => m.execute("depositBalance", { customer: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
@@ -776,7 +776,7 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).deep.contains({ account: 1, depot: 1, asset: 1, value: 100 });
+                expect(data).deep.contains({ account: 1, depot: 1, asset: PaymentMethod.Balance, value: 100 });
             });
 
             it("catches missing account", () => m.execute("withdrawBalance", { customer: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
