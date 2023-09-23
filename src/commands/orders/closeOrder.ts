@@ -63,7 +63,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
                 order: result.id,
                 asset: 1,
                 value: invoice,
-                data: 'order invoice',
+                data: 'invoice',
             });
         }
 
