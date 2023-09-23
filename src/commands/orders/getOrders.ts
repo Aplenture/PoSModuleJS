@@ -31,7 +31,10 @@ export class GetOrders extends BackendJS.Module.Command<Context, Args, Options> 
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.orderRepository.getOrders(args.account, args);
+        const orders = await this.context.orderRepository.getOrders(args.account, args);
+        const result = await Promise.all(orders.map(async order => Object.assign(order, {
+            products: await this.context.orderRepository.getProducts(order.id)
+        })));
 
         return new CoreJS.JSONResponse(result);
     }

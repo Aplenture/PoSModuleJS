@@ -234,6 +234,19 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         }));
     }
 
+    public async getProducts(order: number): Promise<OrderProduct[]> {
+        const result = await this.database.query(`SELECT * FROM ${this.data.products} WHERE \`order\`=?`, [
+            order
+        ]);
+
+        return result.map(data => ({
+            order: data.order,
+            product: data.product,
+            price: data.price,
+            amount: data.amount
+        }));
+    }
+
     public async getOrder(id: number): Promise<Order | null> {
         const result = await this.database.query(`SELECT * FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1`, [
             id

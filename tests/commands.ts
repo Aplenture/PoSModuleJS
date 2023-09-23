@@ -610,7 +610,7 @@ describe("Commands", () => {
         }).beforeAll(() => CoreJS.sleep(2000));
 
         describe("Get Orders", () => {
-            it("returns all orders", async () => {
+            it("returns all orders with his products", async () => {
                 const result = await m.execute("getOrders", { account: 1 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
@@ -619,10 +619,25 @@ describe("Commands", () => {
 
                 expect(data).has.length(5);
                 expect(data[0], "order at index 0").deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
+                expect(data[0].products, "products of order at index 0").has.length(3);
+                expect(data[0].products[0], "product at index 0 of order at index 0").deep.contains({ order: 1, product: 1, price: 90, amount: 10 });
+                expect(data[0].products[1], "product at index 1 of order at index 0").deep.contains({ order: 1, product: 3, price: 180, amount: 3 });
+                expect(data[0].products[2], "product at index 1 of order at index 0").deep.contains({ order: 1, product: 4, price: 120, amount: 20 });
+                
                 expect(data[1], "order at index 1").deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 580 });
+                expect(data[1].products, "products of order at index 1").has.length(2);
+                expect(data[1].products[0], "product at index 0 of order at index 1").deep.contains({ order: 3, product: 3, price: 200, amount: 10 });
+                expect(data[1].products[1], "product at index 1 of order at index 1").deep.contains({ order: 3, product: 4, price: 142, amount: 10 });
+                
                 expect(data[2], "order at index 2").deep.contains({ id: 4, account: 1, state: OrderState.Open, customer: 5, paymentMethod: PaymentMethod.None, tip: 0 });
+                expect(data[2].products, "products of order at index 2").has.length(1);
+                expect(data[2].products[0], "product at index 0 of order at index 2").deep.contains({ order: 4, product: 1 });
+                
                 expect(data[3], "order at index 3").deep.contains({ id: 6, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
+                expect(data[3].products, "products of order at index 3").has.length(0);
+
                 expect(data[4], "order at index 4").deep.contains({ id: 7, account: 1, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
+                expect(data[4].products, "products of order at index 4").has.length(0);
             });
 
             it("returns open orders", async () => {
