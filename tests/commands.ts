@@ -812,6 +812,12 @@ describe("Commands", () => {
         });
     });
 
+    describe("Billing", () => {
+        describe("Create", () => {
+            it("creates billing", () => m.execute("createBilling").then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
+        });
+    });
+
     describe("Deinitialization", () => {
         it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
         it("closes", () => m.deinit());
