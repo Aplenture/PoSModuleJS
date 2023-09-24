@@ -21,18 +21,16 @@ export class GetBalances extends BackendJS.Module.Command<Context, Args, Options
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = [];
+        const result = await this.context.balanceRepository.getUpdates(args.account, {
+            asset: PaymentMethod.Balance
+        });
 
-        await this.context.balanceRepository.fetchCurrent(args.account, async data => result.push({
+        return new CoreJS.JSONResponse(result.map(data => ({
             timestamp: data.timestamp,
             account: data.account,
             customer: data.depot,
             paymentMethod: data.asset,
             value: data.value
-        }), {
-            asset: PaymentMethod.Balance
-        });
-
-        return new CoreJS.JSONResponse(result);
+        })));
     }
 }

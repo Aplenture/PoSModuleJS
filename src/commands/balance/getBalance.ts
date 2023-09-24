@@ -23,15 +23,14 @@ export class GetBalance extends BackendJS.Module.Command<Context, Args, Options>
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.balanceRepository.getCurrent(
-            args.account,
-            args.customer,
-            PaymentMethod.Balance
-        );
+        const result = await this.context.balanceRepository.getUpdates(args.account, {
+            depot: args.customer,
+            asset: PaymentMethod.Balance
+        });
 
-        if (!result)
+        if (0 == result.length)
             return new CoreJS.NumberResponse(0);
 
-        return new CoreJS.NumberResponse(result.value);
+        return new CoreJS.NumberResponse(result[0].value);
     }
 }

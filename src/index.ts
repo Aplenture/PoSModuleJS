@@ -37,9 +37,8 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
                 new CoreJS.StringParameter('updateTable', 'database table order product name', '`balanceUpdates`'),
                 new CoreJS.StringParameter('historyTable', 'database table order product name', '`balanceHistories`')
             ], {
-                balanceTable: '`balances`',
-                updateTable: '`balanceUpdates`',
-                historyTable: '`balanceHistories`'
+                eventTable: '`balanceEvents`',
+                updateTable: '`balanceUpdates`'
             })
         );
 

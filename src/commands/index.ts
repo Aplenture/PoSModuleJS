@@ -6,7 +6,6 @@
  */
 
 export * from "./balance";
-export * from "./billing";
 export * from "./customers";
 export * from "./orders";
 export * from "./other";

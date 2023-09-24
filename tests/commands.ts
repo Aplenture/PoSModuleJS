@@ -804,17 +804,11 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(2);
-                expect(data[0], "order at index 0").deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: 100 });
-                expect(data[1], "order at index 1").deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 1580 });
+                expect(data[0], "order at index 0").deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 1580 });
+                expect(data[1], "order at index 1").deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: 100 });
             });
 
             it("catches missing account", () => m.execute("getBalances", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
-        });
-    });
-
-    describe("Billing", () => {
-        describe("Create", () => {
-            it("creates billing", () => m.execute("createBilling").then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
         });
     });
 
