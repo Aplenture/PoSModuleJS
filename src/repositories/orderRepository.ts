@@ -274,7 +274,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         };
     }
 
-    public async getInvoice(order: number): Promise<number | null> {
+    public async getInvoice(order: number): Promise<number> {
         const result = await this.database.query(`
         LOCK TABLES ${this.data.orders} WRITE, ${this.data.products} WRITE;
             SELECT \`order\`,SUM(\`price\`*\`amount\`) AS \`sum\` FROM ${this.data.products} WHERE \`order\`=? GROUP BY \`order\` LIMIT 1;

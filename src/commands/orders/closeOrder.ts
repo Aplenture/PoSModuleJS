@@ -66,9 +66,9 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
         });
 
         if (tip) {
-            await this.context.balanceRepository.increase({
+            await this.context.balanceRepository.decrease({
                 account: result.account,
-                depot: 0,
+                depot: result.customer,
                 order: result.id,
                 asset: args.paymentmethod,
                 value: tip,
