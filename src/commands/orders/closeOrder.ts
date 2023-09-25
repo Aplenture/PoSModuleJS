@@ -13,7 +13,7 @@ import { PaymentMethod } from "../../enums";
 interface Args extends GlobalArgs {
     readonly account: number;
     readonly order: number;
-    readonly paymentmethod: number;
+    readonly paymentmethod: PaymentMethod;
     readonly amount: number;
 }
 
@@ -60,7 +60,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
             account: result.account,
             depot: result.customer,
             order: result.id,
-            asset: args.paymentmethod,
+            asset: result.paymentMethod,
             value: invoice,
             data: 'invoice',
         });

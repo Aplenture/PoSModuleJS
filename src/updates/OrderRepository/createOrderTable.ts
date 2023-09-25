@@ -28,7 +28,7 @@ export class CreateOrderTable extends BackendJS.Database.Update<OrderTables> {
             \`updated\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             \`state\` INT DEFAULT 1,
             \`customer\` BIGINT NOT NULL,
-            \`paymentMethod\` INT DEFAULT 0,
+            \`paymentMethod\` INT NOT NULL,
             \`tip\` INT DEFAULT 0
         ) DEFAULT CHARSET=utf8`;
     }

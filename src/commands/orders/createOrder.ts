@@ -8,17 +8,20 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
+import { PaymentMethod } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
     readonly customer: number;
+    readonly paymentmethod: PaymentMethod;
 }
 
 export class CreateOrder extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'creates an order';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
-        new CoreJS.NumberParameter('customer', 'customer id of order')
+        new CoreJS.NumberParameter('customer', 'customer id of order'),
+        new CoreJS.NumberParameter('paymentmethod', 'order payment method', PaymentMethod.None)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
@@ -30,7 +33,7 @@ export class CreateOrder extends BackendJS.Module.Command<Context, Args, Options
         if (customer.account != args.account)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
-        const result = await this.context.orderRepository.createOrder(args.account, args.customer);
+        const result = await this.context.orderRepository.createOrder(args.account, args.customer, args.paymentmethod);
 
         if (!result)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_open_already');

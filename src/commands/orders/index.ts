@@ -6,6 +6,7 @@
  */
 
 export * from "./cancelProduct";
+export * from "./closeAllOpenBalanceOrders";
 export * from "./closeOrder";
 export * from "./createOrder";
 export * from "./deleteOrder";

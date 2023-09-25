@@ -18,32 +18,33 @@ interface UpdateOptions {
 }
 
 interface GetOrdersOptions {
-    readonly order?: number;
     readonly customer?: number;
     readonly start?: number;
     readonly end?: number;
     readonly state?: OrderState;
     readonly limit?: number;
+    readonly paymentMethod?: PaymentMethod;
 }
 
 export class OrderRepository extends BackendJS.Database.Repository<OrderTables> {
-    public async createOrder(account: number, customer: number): Promise<Order | null> {
+    public async createOrder(account: number, customer: number, paymentMethod = PaymentMethod.None): Promise<Order | null> {
         const result = await this.database.query(`
         IF NOT EXISTS (SELECT * FROM ${this.data.orders} WHERE \`account\`=? AND \`customer\`=? AND \`state\`=? LIMIT 1) THEN
-            INSERT INTO ${this.data.orders} (\`account\`,\`customer\`) VALUES (?,?);
+            INSERT INTO ${this.data.orders} (\`account\`,\`customer\`,\`paymentMethod\`) VALUES (?,?,?);
             SELECT * FROM ${this.data.orders} WHERE \`id\`=LAST_INSERT_ID() LIMIT 1;
         END IF;`, [
             account,
             customer,
             OrderState.Open,
             account,
-            customer
+            customer,
+            paymentMethod
         ]);
 
         if (!result.length)
             return null;
 
-        const { id, updated, state, paymentMethod, tip } = result[0][0];
+        const { id, updated, state, tip } = result[0][0];
 
         return {
             id,
@@ -209,6 +210,11 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         if (options.state) {
             values.push(options.state);
             keys.push('`state`=?');
+        }
+
+        if (undefined != options.paymentMethod) {
+            values.push(options.paymentMethod);
+            keys.push('`paymentMethod`=?');
         }
 
         if (options.start) {
