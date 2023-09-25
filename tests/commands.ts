@@ -814,6 +814,16 @@ describe("Commands", () => {
         });
 
         describe("Finances", () => {
+            it("returns previous month", async () => {
+                const result = await m.execute("getFinances", { account: 1, start: CoreJS.reduceUTCDate({ months: 1 }) }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+            });
+
             it("returns invoices and tips", async () => {
                 const result = await m.execute("getFinances", { account: 1 }) as CoreJS.Response;
 
