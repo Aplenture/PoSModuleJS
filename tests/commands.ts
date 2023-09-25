@@ -151,18 +151,6 @@ describe("Commands", () => {
                 expect(data[0], 'customer at 0').contains({ id: 6, account: 2, firstname: 'hello', lastname: 'world', nickname: '2', paymentMethods: -1 });
             });
 
-            it("returns limit 2", async () => {
-                const result = await m.execute("getCustomers", { account: 1, limit: 2 }) as CoreJS.JSONResponse;
-
-                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
-
-                const data = JSON.parse(result.data);
-
-                expect(data).has.length(2);
-                expect(data[0]).contains({ id: 1, account: 1, firstname: 'test1', lastname: 'world', nickname: '', paymentMethods: -1 });
-                expect(data[1]).contains({ id: 3, account: 1, firstname: 'with', lastname: 'test2', nickname: 'balance', paymentMethods: PaymentMethod.Balance });
-            });
-
             it("returns first id 3", async () => {
                 const result = await m.execute("getCustomers", { account: 1, firstID: 3 }) as CoreJS.JSONResponse;
 
@@ -287,18 +275,6 @@ describe("Commands", () => {
 
                 expect(data).has.length(1);
                 expect(data[0]).contains({ id: 5, account: 2, name: 'product 4', price: 150, discount: 10 });
-            });
-
-            it("returns limit 2", async () => {
-                const result = await m.execute("getProducts", { account: 1, limit: 2 }) as CoreJS.JSONResponse;
-
-                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
-
-                const data = JSON.parse(result.data);
-
-                expect(data).has.length(2);
-                expect(data[0], 'product at 0').contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0 });
-                expect(data[1], 'product at 1').contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10 });
             });
 
             it("returns first id 3", async () => {

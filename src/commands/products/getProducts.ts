@@ -11,7 +11,6 @@ import { Args as GlobalArgs, Context, Options } from "../../core";
 
 interface Args extends GlobalArgs {
     readonly account: number;
-    readonly limit: number;
     readonly firstID: number;
     readonly lastID: number;
 }
@@ -20,7 +19,6 @@ export class GetProducts extends BackendJS.Module.Command<Context, Args, Options
     public readonly description = 'returns all products';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
-        new CoreJS.NumberParameter('limit', 'max number of returning products', 1000),
         new CoreJS.NumberParameter('firstID', 'id of first returning product', null),
         new CoreJS.NumberParameter('lastID', 'id of last returned product', null)
     );

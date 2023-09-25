@@ -16,7 +16,6 @@ interface Args extends GlobalArgs {
     readonly start: number;
     readonly end: number;
     readonly state: OrderState;
-    readonly limit: number;
 }
 
 export class GetOrders extends BackendJS.Module.Command<Context, Args, Options> {
@@ -26,8 +25,7 @@ export class GetOrders extends BackendJS.Module.Command<Context, Args, Options> 
         new CoreJS.NumberParameter('customer', 'customer id of order', null),
         new CoreJS.NumberParameter('start', 'lowest updated timestamp of all orders', null),
         new CoreJS.NumberParameter('end', 'highest updated timestamp of all orders', null),
-        new CoreJS.NumberParameter('state', 'order state', null),
-        new CoreJS.NumberParameter('limit', 'max number of orders', null)
+        new CoreJS.NumberParameter('state', 'order state', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
