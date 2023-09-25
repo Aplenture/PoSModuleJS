@@ -872,7 +872,8 @@ describe("Commands", () => {
                 expect(data[6]).deep.contains({ id: 7, type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, order: 9, value: 100, data: 'invoice' });
             });
 
-            it("catches missing account", () => m.execute("getSales").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+            it("catches missing account", () => m.execute("getSales", { start }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+            it("catches missing start", () => m.execute("getSales", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "start", type: "number" } })));
         });
     });
 
