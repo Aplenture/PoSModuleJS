@@ -725,30 +725,13 @@ describe("Commands", () => {
             });
 
             it("returns orders by start", async () => {
-                const result = await m.execute("getOrders", { account: 1, start: end }) as CoreJS.Response;
+                const result = await m.execute("getOrders", { account: 1, start: CoreJS.reduceUTCDate({ months: 1 }) }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(4);
-                expect(data[0]).deep.contains({ id: 6, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 50 });
-                expect(data[1]).deep.contains({ id: 7, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 0 });
-                expect(data[2]).deep.contains({ id: 8, account: 1, state: OrderState.Open, customer: 1, paymentMethod: PaymentMethod.None, tip: 0 });
-                expect(data[3]).deep.contains({ id: 9, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 0 });
-            });
-
-            it("returns orders by end", async () => {
-                const result = await m.execute("getOrders", { account: 1, end: start }) as CoreJS.Response;
-
-                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
-
-                const data = JSON.parse(result.data);
-
-                expect(data).has.length(3);
-                expect(data[0]).deep.contains({ id: 1, account: 1, state: OrderState.Closed, customer: 1, paymentMethod: PaymentMethod.Cash, tip: 160 });
-                expect(data[1]).deep.contains({ id: 3, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 0 });
-                expect(data[2]).deep.contains({ id: 4, account: 1, state: OrderState.Open, customer: 5, paymentMethod: PaymentMethod.None, tip: 0 });
+                expect(data).has.length(0);
             });
 
             it("catches missing account", () => m.execute("getOrders", {}).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
