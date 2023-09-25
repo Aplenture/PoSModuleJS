@@ -16,7 +16,7 @@ interface Args extends GlobalArgs {
 }
 
 export class GetFinances extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'returns list of sales';
+    public readonly description = 'returns finances of a month';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id', null),

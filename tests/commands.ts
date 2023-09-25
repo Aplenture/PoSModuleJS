@@ -306,9 +306,6 @@ describe("Commands", () => {
     });
 
     describe("Orders", () => {
-        let start: number;
-        let end: number;
-
         describe("Create Orders", () => {
             it("creates for customer 1", async () => {
                 const result = await m.execute("createOrder", { account: 1, customer: 1 }) as CoreJS.Response;
@@ -743,11 +740,6 @@ describe("Commands", () => {
             });
 
             it("catches missing account", () => m.execute("getOrders", {}).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
-        }).beforeAll(async () => {
-            const result = await m.database.query(`SELECT \`updated\` FROM ${m.orderRepository.data.orders} ORDER BY \`updated\` ASC`);
-
-            start = BackendJS.Database.parseToTime(result[0].updated) as number;
-            end = BackendJS.Database.parseToTime(result[result.length - 1].updated) as number;
         });
     });
 
