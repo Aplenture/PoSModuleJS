@@ -38,9 +38,6 @@ const log = BackendJS.Log.Log.createFileLog('./test.log', true);
 app.onMessage.on(message => log.write(message));
 
 describe("Commands", () => {
-    let start: number;
-    let end: number;
-
     describe("Initialization", () => {
         it("initializes", () => m.init());
         it("updates", () => m.execute('update').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
@@ -333,6 +330,9 @@ describe("Commands", () => {
     });
 
     describe("Orders", () => {
+        let start: number;
+        let end: number;
+
         describe("Create Orders", () => {
             it("creates for customer 1", async () => {
                 const result = await m.execute("createOrder", { account: 1, customer: 1 }) as CoreJS.Response;
@@ -856,7 +856,7 @@ describe("Commands", () => {
 
         describe("Sales", () => {
             it("returns sales by customers", async () => {
-                const result = await m.execute("getSales", { account: 1, start }) as CoreJS.Response;
+                const result = await m.execute("getSales", { account: 1 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -872,8 +872,7 @@ describe("Commands", () => {
                 expect(data[6]).deep.contains({ id: 7, type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, order: 9, value: 100, data: 'invoice' });
             });
 
-            it("catches missing account", () => m.execute("getSales", { start }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
-            it("catches missing start", () => m.execute("getSales", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "start", type: "number" } })));
+            it("catches missing account", () => m.execute("getSales").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
         });
     });
 

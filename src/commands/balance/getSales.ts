@@ -11,20 +11,19 @@ import { Args as GlobalArgs, Context, Options } from "../../core";
 
 interface Args extends GlobalArgs {
     readonly account: number;
-    readonly start: number;
 }
 
 export class GetSales extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'returns list of sales';
     public readonly parameters = new CoreJS.ParameterList(
-        new CoreJS.NumberParameter('account', 'account id'),
-        new CoreJS.NumberParameter('start', 'start timestamp of sales')
+        new CoreJS.NumberParameter('account', 'account id')
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
+        const firstOfMonth = Number(CoreJS.calcUTCDate(new Date(), 1));
         const invoices = await this.context.balanceRepository.getEvents(args.account, {
             data: ['invoice', 'tip'],
-            start: args.start
+            start: firstOfMonth
         });
 
         return new CoreJS.JSONResponse(invoices.map(data => ({
