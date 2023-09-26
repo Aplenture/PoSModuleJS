@@ -28,8 +28,8 @@ export class GetOrders extends BackendJS.Module.Command<Context, Args, Options> 
 
     public async execute(args: Args): Promise<CoreJS.Response> {
         const firstOfMonth = args.start
-            ? CoreJS.calcUTCDate(new Date(args.start), 1)
-            : CoreJS.calcUTCDate(new Date(), 1);
+            ? CoreJS.calcUTCDate({ date: new Date(args.start), monthDay: 1 })
+            : CoreJS.calcUTCDate({ monthDay: 1 });
 
         const firstOfNextMonth = CoreJS.addUTCDate({ date: firstOfMonth, months: 1 });
 
