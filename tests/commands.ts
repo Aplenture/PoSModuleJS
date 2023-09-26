@@ -626,7 +626,7 @@ describe("Commands", () => {
 
                 expect(data).deep.contains({ order: 9, product: 1, price: 100, amount: 1 });
             });
-        }).beforeAll(() => CoreJS.sleep(2000));
+        });
 
         describe("Close All Open Balance Orders", () => {
             it("closes all open balance orders", async () => {
