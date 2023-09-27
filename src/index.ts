@@ -20,6 +20,10 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
     public readonly orderRepository: OrderRepository;
     public readonly productRepository: ProductRepository;
 
+    private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders", { account: 1 }), CoreJS.addUTCDate({ days: 1 }), {
+        days: 1
+    });
+
     constructor(app: BackendJS.Module.IApp, args: BackendJS.Module.Args, options: Options, ...params: CoreJS.Parameter<any>[]) {
         super(app, args, options, ...params,
             new CoreJS.DictionaryParameter('databaseConfig', 'database config', BackendJS.Database.Parameters),
@@ -59,10 +63,14 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         await BackendJS.Database.Database.create(this.options.databaseConfig);
         await this.database.init();
         await super.init();
+
+        CoreJS.GlobalUpdateLoop.add(this.closeAllOpenBalanceOrdersCronjob, true);
     }
 
     public async deinit(): Promise<void> {
         await this.database.close();
         await super.deinit();
+
+        CoreJS.GlobalUpdateLoop.remove(this.closeAllOpenBalanceOrdersCronjob, true);
     }
 }
