@@ -46,16 +46,16 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
 
         const invoice = await this.context.orderRepository.getInvoice(args.order);
 
-        const tip = args.amount - invoice;
-
-        if (0 > tip)
+        if (args.amount < invoice)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_enough_amount');
 
+        const tip = args.amount - invoice;
         const result = await this.context.orderRepository.closeOrder(args.order, args.paymentmethod, tip);
 
         if (!result)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
 
+        // decrease customer balance by invoice
         await this.context.balanceRepository.decrease({
             account: result.account,
             depot: result.customer,
@@ -66,6 +66,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
         });
 
         if (tip) {
+            // decrease customer balance by tip
             await this.context.balanceRepository.decrease({
                 account: result.account,
                 depot: result.customer,

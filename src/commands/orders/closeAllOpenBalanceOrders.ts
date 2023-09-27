@@ -30,6 +30,7 @@ export class CloseAllOpenBalanceOrders extends BackendJS.Module.Command<Context,
             const result = await this.context.orderRepository.closeOrder(order.id, order.paymentMethod);
             const invoice = await this.context.orderRepository.getInvoice(order.id);
 
+            // decrease customer balance by invoice
             await this.context.balanceRepository.decrease({
                 account: result.account,
                 depot: result.customer,
