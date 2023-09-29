@@ -8,6 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
+import { OrderState } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -35,6 +36,9 @@ export class OrderProduct extends BackendJS.Module.Command<Context, Args, Option
 
         if (order.account != args.account)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
+        if (order.state != OrderState.Open)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
 
         const product = await this.context.productRepository.get(args.product);
 

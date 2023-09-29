@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { PaymentMethod } from "../../enums";
+import { OrderState, PaymentMethod } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -39,10 +39,13 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
         const order = await this.context.orderRepository.getOrder(args.order);
 
         if (!order)
-            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid');
 
         if (order.account != args.account)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
+        if (order.state != OrderState.Open)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
 
         const invoice = await this.context.orderRepository.getInvoice(args.order);
 
@@ -53,7 +56,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
         const result = await this.context.orderRepository.closeOrder(args.order, args.paymentmethod, tip);
 
         if (!result)
-            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid');
 
         // decrease customer balance by invoice
         await this.context.balanceRepository.decrease({

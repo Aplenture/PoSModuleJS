@@ -547,7 +547,7 @@ describe("Commands", () => {
             it("catches missing account", () => m.execute("deleteOrder", { order: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
             it("catches missing order", () => m.execute("deleteOrder", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "order", type: "number" } })));
             it("catches invalid order", () => m.execute("deleteOrder", { account: 1, order: 2 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_invalid" })));
-            it("catches closed order", () => m.execute("deleteOrder", { account: 1, order: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "0" })));
+            it("catches closed order", () => m.execute("deleteOrder", { account: 1, order: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_order_not_open" })));
         });
 
         describe("Create Orders after closing previous", () => {
