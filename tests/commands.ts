@@ -67,7 +67,7 @@ describe("Commands", () => {
             });
 
             it("adds customer with payment method balance", async () => {
-                const result = await m.execute("addCustomer", { account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance', paymentMethods: PaymentMethod.Balance }) as CoreJS.JSONResponse;
+                const result = await m.execute("addCustomer", { account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance', paymentmethods: PaymentMethod.Balance }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -77,7 +77,7 @@ describe("Commands", () => {
             });
 
             it("adds customer with payment method balance and cash", async () => {
-                const result = await m.execute("addCustomer", { account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance+cash', paymentMethods: PaymentMethod.Balance | PaymentMethod.Cash }) as CoreJS.JSONResponse;
+                const result = await m.execute("addCustomer", { account: 1, firstname: 'with', lastname: 'payment method', nickname: 'balance+cash', paymentmethods: PaymentMethod.Balance | PaymentMethod.Cash }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 

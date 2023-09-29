@@ -28,7 +28,11 @@ export class AddCustomer extends BackendJS.Module.Command<Context, Args, Options
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.customerRepository.create(args.account, args.firstname, args);
+        const result = await this.context.customerRepository.create(args.account, args.firstname, {
+            lastname: args.lastname,
+            nickname: args.nickname,
+            paymentMethods: args.paymentmethods,
+        });
 
         return new CoreJS.JSONResponse(result);
     }
