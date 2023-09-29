@@ -26,6 +26,7 @@ interface GetAllOptions {
     readonly limit?: number;
     readonly firstID?: number;
     readonly lastID?: number;
+    readonly paymentMethods?: number;
 }
 
 export class CustomerRepository extends BackendJS.Database.Repository<string> {
@@ -134,6 +135,11 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         if (options.lastID) {
             values.push(options.lastID);
             keys.push('`id`<=?');
+        }
+
+        if (options.paymentMethods) {
+            values.push(options.paymentMethods);
+            keys.push('(`paymentMethods`&?)>0');
         }
 
         const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC LIMIT ${limit}`, values);

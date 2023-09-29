@@ -13,6 +13,7 @@ interface Args extends GlobalArgs {
     readonly account: number;
     readonly firstID: number;
     readonly lastID: number;
+    readonly paymentmethods: number;
 }
 
 export class GetCustomers extends BackendJS.Module.Command<Context, Args, Options> {
@@ -20,11 +21,16 @@ export class GetCustomers extends BackendJS.Module.Command<Context, Args, Option
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('firstID', 'id of first returning customer', null),
-        new CoreJS.NumberParameter('lastID', 'id of last returned customer', null)
+        new CoreJS.NumberParameter('lastID', 'id of last returned customer', null),
+        new CoreJS.NumberParameter('paymentmethods', 'payment methods bit mask to filter returning customers', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.customerRepository.getAll(args.account, args);
+        const result = await this.context.customerRepository.getAll(args.account, {
+            firstID: args.firstID,
+            lastID: args.lastID,
+            paymentMethods: args.paymentmethods
+        });
 
         return new CoreJS.JSONResponse(result);
     }
