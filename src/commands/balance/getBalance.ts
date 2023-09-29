@@ -16,10 +16,10 @@ interface Args extends GlobalArgs {
 }
 
 export class GetBalance extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'returns current balance of a customer';
+    public readonly description = 'returns current balance of a specific customer or all customers';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
-        new CoreJS.NumberParameter('customer', 'customer id')
+        new CoreJS.NumberParameter('customer', 'customer id', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
@@ -28,9 +28,15 @@ export class GetBalance extends BackendJS.Module.Command<Context, Args, Options>
             asset: PaymentMethod.Balance
         });
 
-        if (0 == result.length)
-            return new CoreJS.NumberResponse(0);
+        if (args.customer)
+            return new CoreJS.NumberResponse(result.length && result[0].value || 0);
 
-        return new CoreJS.NumberResponse(result[0].value);
+        return new CoreJS.JSONResponse(result.map(data => ({
+            timestamp: data.timestamp,
+            account: data.account,
+            customer: data.depot,
+            paymentMethod: data.asset,
+            value: data.value
+        })));
     }
 }

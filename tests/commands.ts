@@ -799,7 +799,7 @@ describe("Commands", () => {
 
         describe("Get All", () => {
             it("returns all balances", async () => {
-                const result = await m.execute("getBalances", { account: 1 }) as CoreJS.Response;
+                const result = await m.execute("getBalance", { account: 1 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -810,7 +810,7 @@ describe("Commands", () => {
                 expect(data[1]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 1480 });
             });
 
-            it("catches missing account", () => m.execute("getBalances", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+            it("catches missing account", () => m.execute("getBalance", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
         });
 
         describe("Finances", () => {
