@@ -20,9 +20,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
     public readonly orderRepository: OrderRepository;
     public readonly productRepository: ProductRepository;
 
-    private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders", { account: 1 }), CoreJS.addUTCDate({ days: 1 }), {
-        days: 1
-    });
+    private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders", { account: 1 }), { days: 1 }, CoreJS.addLocaleDate({ days: 1, minutes: -1 }));
 
     constructor(app: BackendJS.Module.IApp, args: BackendJS.Module.Args, options: Options, ...params: CoreJS.Parameter<any>[]) {
         super(app, args, options, ...params,
