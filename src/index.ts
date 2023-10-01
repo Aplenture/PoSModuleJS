@@ -55,6 +55,8 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.productRepository = new ProductRepository(this.options.productTable, this.database, __dirname + '/updates/' + ProductRepository.name);
 
         this.addCommands(Object.values(require('./commands')).map((constructor: any) => new constructor(this)));
+
+        this.closeAllOpenBalanceOrdersCronjob.onExecute.on(next => app.onMessage.emit(this, `closing all open balance orders (next update: ${new Date(next).toLocaleString()})`));
     }
 
     public async init(): Promise<void> {
