@@ -25,9 +25,9 @@ export class CreateCustomerTable extends BackendJS.Database.Update<string> {
             \`id\` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
             \`account\` BIGINT NOT NULL,
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            \`firstname\` CHAR(32) NOT NULL,
-            \`lastname\` CHAR(24) NOT NULL,
-            \`nickname\` CHAR(24) DEFAULT '',
+            \`firstname\` VARCHAR(64) NOT NULL,
+            \`lastname\` VARCHAR(32) NOT NULL,
+            \`nickname\` VARCHAR(32) DEFAULT '',
             \`paymentMethods\` INT DEFAULT -1,
             UNIQUE (\`account\`,\`firstname\`,\`lastname\`,\`nickname\`)
         ) DEFAULT CHARSET=utf8`;
