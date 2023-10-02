@@ -29,7 +29,8 @@ export class UpdateOrder extends BackendJS.Module.Command<Context, Args, Options
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        if (!args.amount && undefined == args.discount)
+        // catch no changes
+        if (undefined == args.amount && undefined == args.discount)
             return new CoreJS.BoolResponse(false);
 
         const order = await this.context.orderRepository.getOrder(args.order);
@@ -51,6 +52,16 @@ export class UpdateOrder extends BackendJS.Module.Command<Context, Args, Options
         const price = undefined == args.discount
             ? undefined
             : CoreJS.Currency.percentage(product.price, 100 - args.discount);
+
+        if (undefined != args.amount && 0 >= args.amount) {
+            await this.context.orderRepository.cancelProduct(args.order, args.product);
+
+            return new CoreJS.JSONResponse({
+                order: order.id,
+                product: product.id,
+                amount: 0
+            });
+        }
 
         const result = await this.context.orderRepository.updateProduct(args.order, args.product, {
             amount: args.amount,
