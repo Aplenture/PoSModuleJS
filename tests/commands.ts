@@ -722,7 +722,7 @@ describe("Commands", () => {
             });
 
             it("returns orders by start", async () => {
-                let result = await m.execute("getOrders", { account: 1, start: CoreJS.reduceDate({ months: 1 }) }) as CoreJS.Response;
+                let result = await m.execute("getOrders", { account: 1, start: "2022-09-25" }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -730,7 +730,25 @@ describe("Commands", () => {
 
                 expect(data).has.length(0);
 
-                result = await m.execute("getOrders", { account: 1, start: CoreJS.reduceDate({ months: 0 }) }) as CoreJS.Response;
+                result = await m.execute("getOrders", { account: 1, start: CoreJS.calcDate() }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                data = JSON.parse(result.data);
+
+                expect(data).has.length(7);
+            });
+
+            it("returns orders by end", async () => {
+                let result = await m.execute("getOrders", { account: 1, end: CoreJS.calcDate() }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+
+                result = await m.execute("getOrders", { account: 1, end: Date.now() + CoreJS.Milliseconds.Hour }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -814,8 +832,8 @@ describe("Commands", () => {
         });
 
         describe("Finances", () => {
-            it("returns by date", async () => {
-                let result = await m.execute("getFinances", { account: 1, start: CoreJS.reduceDate({ months: 1 }) }) as CoreJS.Response;
+            it("returns by start", async () => {
+                let result = await m.execute("getFinances", { account: 1, start: "2022-09-25" }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -823,7 +841,25 @@ describe("Commands", () => {
 
                 expect(data).has.length(0);
 
-                result = await m.execute("getFinances", { account: 1, start: CoreJS.reduceDate({ months: 0 }) }) as CoreJS.Response;
+                result = await m.execute("getFinances", { account: 1, start: CoreJS.calcDate() }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                data = JSON.parse(result.data);
+
+                expect(data).has.length(7);
+            });
+
+            it("returns by end", async () => {
+                let result = await m.execute("getFinances", { account: 1, end: CoreJS.calcDate() }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+
+                result = await m.execute("getFinances", { account: 1, end: Date.now() + CoreJS.Milliseconds.Hour }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
