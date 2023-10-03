@@ -28,21 +28,21 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
     public async execute(args: Args): Promise<CoreJS.Response> {
         const start = CoreJS.TimeFrame.Month == args.timeframe
             ? args.start
-                ? CoreJS.calcUTCDate({ date: new Date(args.start), monthDay: 1 })
-                : CoreJS.calcUTCDate({ monthDay: 1 })
+                ? CoreJS.calcDate({ date: new Date(args.start), monthDay: 1 })
+                : CoreJS.calcDate({ monthDay: 1 })
             : CoreJS.TimeFrame.Day == args.timeframe
                 ? args.start
-                    ? CoreJS.calcUTCDate({ date: new Date(args.start) })
-                    : CoreJS.calcUTCDate()
+                    ? CoreJS.calcDate({ date: new Date(args.start) })
+                    : CoreJS.calcDate()
                 : null;
 
         if (!start)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, "#_time_frame_invalid");
 
         const end = CoreJS.TimeFrame.Month == args.timeframe
-            ? CoreJS.addUTCDate({ date: start, months: 1 })
+            ? CoreJS.addDate({ date: start, months: 1 })
             : CoreJS.TimeFrame.Day == args.timeframe
-                ? CoreJS.addUTCDate({ date: start, days: 1 })
+                ? CoreJS.addDate({ date: start, days: 1 })
                 : null;
 
         if (!end)
