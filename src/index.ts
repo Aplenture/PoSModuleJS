@@ -64,13 +64,13 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         await this.database.init();
         await super.init();
 
-        CoreJS.GlobalUpdateLoop.add(this.closeAllOpenBalanceOrdersCronjob, true);
+        this.app.updateLoop.add(this.closeAllOpenBalanceOrdersCronjob, true);
     }
 
     public async deinit(): Promise<void> {
         await this.database.close();
         await super.deinit();
 
-        CoreJS.GlobalUpdateLoop.remove(this.closeAllOpenBalanceOrdersCronjob, true);
+        this.app.updateLoop.remove(this.closeAllOpenBalanceOrdersCronjob, true);
     }
 }
