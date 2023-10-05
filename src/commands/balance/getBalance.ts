@@ -13,19 +13,27 @@ import { PaymentMethod } from "../../enums";
 interface Args extends GlobalArgs {
     readonly account: number;
     readonly customer: number;
+    readonly timestamp: number;
 }
 
 export class GetBalance extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'returns current balance of a specific customer or all customers';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
-        new CoreJS.NumberParameter('customer', 'customer id', null)
+        new CoreJS.NumberParameter('customer', 'customer id', null),
+        new CoreJS.TimeParameter('timestamp', 'timestamp of balance', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
+        const limit = args.customer
+            ? 1
+            : undefined;
+
         const result = await this.context.balanceRepository.getUpdates(args.account, {
+            asset: PaymentMethod.Balance,
             depot: args.customer,
-            asset: PaymentMethod.Balance
+            start: args.timestamp,
+            limit
         });
 
         if (args.customer)
