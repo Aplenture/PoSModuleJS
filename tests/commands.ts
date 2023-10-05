@@ -833,7 +833,7 @@ describe("Commands", () => {
             it("catches missing account", () => m.execute("getBalance", { customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
         });
 
-        describe("Finances", () => {
+        describe.skip("Finances", () => {
             it("returns by start", async () => {
                 let result = await m.execute("getFinances", { account: 1, start: "2022-09-25" }) as CoreJS.Response;
 

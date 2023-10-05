@@ -8,6 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
+import { OrderState, PaymentMethod } from "../../enums";
 
 const MAX_DURATION = CoreJS.Milliseconds.Day * 32; // one more than highest month lenght
 
@@ -16,7 +17,6 @@ interface Args extends GlobalArgs {
     readonly customer: number;
     readonly start: number;
     readonly end: number;
-    readonly timeframe: CoreJS.TimeFrame;
 }
 
 export class GetFinances extends BackendJS.Module.Command<Context, Args, Options> {
@@ -24,9 +24,8 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id', null),
-        new CoreJS.TimeParameter('start', 'start timestamp of finances', null),
-        new CoreJS.TimeParameter('end', 'end timestamp of orders', null),
-        new CoreJS.NumberParameter('timeframe', 'supports day and month', CoreJS.TimeFrame.Month)
+        new CoreJS.TimeParameter('start', 'start timestamp of finances'),
+        new CoreJS.TimeParameter('end', 'end timestamp of orders', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
@@ -40,23 +39,58 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
             ? null
             : ['invoice', 'tip'];
 
-        const invoices = await this.context.balanceRepository.getEvents(args.account, {
+        const result = [];
+
+        const events = await this.context.balanceRepository.getEvents(args.account, {
             depot: args.customer,
             start,
             end,
             data
         });
 
-        return new CoreJS.JSONResponse(invoices.map(data => ({
-            id: data.id,
+        events.forEach(data => result.push({
             timestamp: data.timestamp,
             type: data.type,
-            account: data.account,
             customer: data.depot,
             paymentMethod: data.asset,
-            order: data.order,
             value: data.value,
             data: data.data
-        })));
+        }));
+
+        if (args.customer) {
+            const initialBalances = await this.context.balanceRepository.getUpdates(args.account, {
+                asset: PaymentMethod.Balance,
+                depot: args.customer,
+                start: args.start,
+                limit: 1
+            });
+
+            const openOrders = await this.context.orderRepository.getOrders(args.account, {
+                state: OrderState.Open,
+                customer: args.customer,
+                start,
+                end
+            });
+
+            initialBalances.forEach(data => result.push({
+                timestamp: data.timestamp,
+                type: BackendJS.Balance.EventType.Increase,
+                customer: data.depot,
+                paymentMethod: data.asset,
+                value: data.value,
+                data: 'previous_balance'
+            }));
+
+            await Promise.all(openOrders.map(async data => result.push({
+                timestamp: data.updated,
+                type: BackendJS.Balance.EventType.Decrease,
+                customer: data.customer,
+                paymentMethod: data.paymentMethod,
+                value: await this.context.orderRepository.getInvoice(data.id),
+                data: 'open_invoice'
+            })));
+        }
+
+        return new CoreJS.JSONResponse(result.sort((a, b) => a.timestamp - b.timestamp));
     }
 }
