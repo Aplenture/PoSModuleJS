@@ -240,6 +240,46 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         }));
     }
 
+    public async fetchOrders(account: number, callback: (order: Order, index: number) => Promise<void>, options: GetOrdersOptions = {}): Promise<void> {
+        const values = [account];
+        const keys = ['`account`=?'];
+
+        if (options.customer) {
+            values.push(options.customer);
+            keys.push('`customer`=?');
+        }
+
+        if (options.state) {
+            values.push(options.state);
+            keys.push('`state`=?');
+        }
+
+        if (undefined != options.paymentMethod) {
+            values.push(options.paymentMethod);
+            keys.push('`paymentMethod`=?');
+        }
+
+        if (options.start) {
+            values.push(BackendJS.Database.parseFromTime(options.start));
+            keys.push('`updated`>=FROM_UNIXTIME(?)');
+        }
+
+        if (options.end) {
+            values.push(BackendJS.Database.parseFromTime(options.end));
+            keys.push('`updated`<=FROM_UNIXTIME(?)');
+        }
+
+        await this.database.fetch(`SELECT * FROM ${this.data.orders} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC`, (data, index) => callback({
+            id: data.id,
+            account: data.account,
+            updated: BackendJS.Database.parseToTime(data.updated),
+            state: data.state,
+            customer: data.customer,
+            paymentMethod: data.paymentMethod,
+            tip: data.tip
+        }, index), values);
+    }
+
     public async getProducts(order: number): Promise<OrderProduct[]> {
         const result = await this.database.query(`SELECT * FROM ${this.data.products} WHERE \`order\`=?`, [
             order

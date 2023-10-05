@@ -21,27 +21,27 @@ export class CloseAllOpenBalanceOrders extends BackendJS.Module.Command<Context,
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const orders = await this.context.orderRepository.getOrders(args.account, {
-            state: OrderState.Open,
-            paymentMethod: PaymentMethod.Balance
-        });
+        const result = [];
 
-        const result = await Promise.all(orders.map(async order => {
-            const result = await this.context.orderRepository.closeOrder(order.id, order.paymentMethod);
+        await this.context.orderRepository.fetchOrders(args.account, async order => {
+            const closedOrder = await this.context.orderRepository.closeOrder(order.id, order.paymentMethod);
             const invoice = await this.context.orderRepository.getInvoice(order.id);
 
             // decrease customer balance by invoice
             await this.context.balanceRepository.decrease({
-                account: result.account,
-                depot: result.customer,
-                order: result.id,
-                asset: result.paymentMethod,
+                account: order.account,
+                depot: order.customer,
+                order: order.id,
+                asset: order.paymentMethod,
                 value: invoice,
                 data: 'invoice',
             });
 
-            return result;
-        }));
+            result.push(closedOrder);
+        }, {
+            state: OrderState.Open,
+            paymentMethod: PaymentMethod.Balance
+        });
 
         return new CoreJS.JSONResponse(result);
     }
