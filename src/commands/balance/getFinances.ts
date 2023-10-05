@@ -58,7 +58,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
         }));
 
         if (args.customer) {
-            const initialBalances = await this.context.balanceRepository.getUpdates(args.account, {
+            const previousBalances = await this.context.balanceRepository.getUpdates(args.account, {
                 asset: PaymentMethod.Balance,
                 depot: args.customer,
                 end: args.start,
@@ -72,7 +72,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
                 end
             });
 
-            initialBalances.forEach(data => result.push({
+            previousBalances.forEach(data => result.push({
                 timestamp: data.timestamp,
                 type: BackendJS.Balance.EventType.Increase,
                 customer: data.depot,
