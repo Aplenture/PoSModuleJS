@@ -61,7 +61,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
             const initialBalances = await this.context.balanceRepository.getUpdates(args.account, {
                 asset: PaymentMethod.Balance,
                 depot: args.customer,
-                start: args.start,
+                end: args.start,
                 limit: 1
             });
 
