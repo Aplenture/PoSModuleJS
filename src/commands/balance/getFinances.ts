@@ -24,7 +24,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id', null),
-        new CoreJS.TimeParameter('start', 'start timestamp of finances'),
+        new CoreJS.TimeParameter('start', 'start timestamp of finances', null),
         new CoreJS.TimeParameter('end', 'end timestamp of orders', null)
     );
 
