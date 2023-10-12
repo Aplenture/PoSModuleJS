@@ -12,4 +12,5 @@ export * from "./createOrder";
 export * from "./deleteOrder";
 export * from "./getOrders";
 export * from "./orderProduct";
+export * from "./reopenOrder";
 export * from "./updateOrder";

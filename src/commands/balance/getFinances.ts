@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { OrderState, PaymentMethod } from "../../enums";
+import { BalanceEvent, OrderState, PaymentMethod } from "../../enums";
 
 const MAX_DURATION = CoreJS.Milliseconds.Day * 32; // one more than highest month lenght
 
@@ -37,7 +37,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
 
         const data = args.customer
             ? null
-            : ['invoice', 'tip'];
+            : [BalanceEvent.Invoice, BalanceEvent.Tip, BalanceEvent.UndoInvoice, BalanceEvent.UndoTip];
 
         const result = [];
 
@@ -49,21 +49,23 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
         });
 
         events.forEach(data => result.push({
+            account: data.account,
             timestamp: data.timestamp,
             type: data.type,
             customer: data.depot,
+            order: data.order,
             paymentMethod: data.asset,
             value: data.value,
             data: data.data
         }));
 
         if (args.customer) {
-            const previousBalances = await this.context.balanceRepository.getUpdates(args.account, {
+            const previousBalances = args.start ? await this.context.balanceRepository.getUpdates(args.account, {
                 asset: PaymentMethod.Balance,
                 depot: args.customer,
                 end: args.start,
                 limit: 1
-            });
+            }) : [];
 
             const openOrders = await this.context.orderRepository.getOrders(args.account, {
                 state: OrderState.Open,
@@ -73,24 +75,27 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
             });
 
             previousBalances.forEach(data => result.push({
+                account: data.account,
                 timestamp: data.timestamp,
                 type: BackendJS.Balance.EventType.Increase,
                 customer: data.depot,
                 paymentMethod: data.asset,
                 value: data.value,
-                data: 'previous_balance'
+                data: BalanceEvent.PreviousBalance
             }));
 
             await Promise.all(openOrders.map(async data => result.push({
+                account: data.account,
                 timestamp: data.updated,
                 type: BackendJS.Balance.EventType.Decrease,
                 customer: data.customer,
+                order: data.id,
                 paymentMethod: data.paymentMethod,
                 value: await this.context.orderRepository.getInvoice(data.id),
-                data: 'open_invoice'
+                data: BalanceEvent.OpenInvoice
             })));
         }
 
-        return new CoreJS.JSONResponse(result.sort((a, b) => a.timestamp - b.timestamp));
+        return new CoreJS.JSONResponse(result);
     }
 }

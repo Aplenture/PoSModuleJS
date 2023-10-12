@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { OrderState, PaymentMethod } from "../../enums";
+import { BalanceEvent, OrderState, PaymentMethod } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -65,7 +65,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
             order: result.id,
             asset: result.paymentMethod,
             value: invoice,
-            data: 'invoice',
+            data: BalanceEvent.Invoice,
         });
 
         if (tip) {
@@ -76,7 +76,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
                 order: result.id,
                 asset: args.paymentmethod,
                 value: tip,
-                data: 'tip',
+                data: BalanceEvent.Tip,
             });
         }
 

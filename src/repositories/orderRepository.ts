@@ -85,6 +85,33 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         };
     }
 
+    public async reopenOrder(id: number, paymentMethod: PaymentMethod): Promise<Order | null> {
+        const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=? LIMIT 1) THEN
+            UPDATE ${this.data.orders} SET \`state\`=?,\`paymentMethod\`=?,\`tip\`=0 WHERE \`id\`=?;
+            SELECT * FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1;
+        END IF;`, [
+            id,
+            OrderState.Closed,
+            OrderState.Open,
+            paymentMethod,
+            id,
+            id
+        ]);
+
+        if (!result.length)
+            return null;
+
+        return {
+            id: result[0][0].id,
+            account: result[0][0].account,
+            updated: BackendJS.Database.parseToTime(result[0][0].updated),
+            state: result[0][0].state,
+            customer: result[0][0].customer,
+            paymentMethod: result[0][0].paymentMethod,
+            tip: result[0][0].tip
+        };
+    }
+
     public async deleteOrder(id: number): Promise<boolean> {
         const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=? LIMIT 1) THEN
             DELETE FROM ${this.data.orders} WHERE \`id\`=?;

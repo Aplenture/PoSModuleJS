@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { OrderState, PaymentMethod } from "../../enums";
+import { BalanceEvent, OrderState, PaymentMethod } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -34,7 +34,7 @@ export class CloseAllOpenBalanceOrders extends BackendJS.Module.Command<Context,
                 order: order.id,
                 asset: order.paymentMethod,
                 value: invoice,
-                data: 'invoice',
+                data: BalanceEvent.Invoice,
             });
 
             result.push(closedOrder);
