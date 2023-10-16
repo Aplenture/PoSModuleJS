@@ -40,13 +40,17 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
             : [BalanceEvent.Invoice, BalanceEvent.Tip, BalanceEvent.UndoInvoice, BalanceEvent.UndoTip];
 
         const result = [];
-
-        const events = await this.context.balanceRepository.getEvents(args.account, {
+        const options = {
             depot: args.customer,
             start,
             end,
-            data
-        });
+            data,
+            groupDepots: !args.customer
+        };
+
+        const events = args.customer
+            ? await this.context.balanceRepository.getEvents(args.account, options)
+            : await this.context.balanceRepository.getEventSum(args.account, options);
 
         events.forEach(data => result.push({
             account: data.account,

@@ -984,7 +984,11 @@ describe("Commands", () => {
 
                 data = JSON.parse(result.data);
 
-                expect(data).has.length(19);
+                expect(data).has.length(4);
+                expect(data[0]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, value: 0 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: -3520 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, value: -4150 });
+                expect(data[3]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, value: -250 });
             });
 
             it("returns by end", async () => {
@@ -1002,7 +1006,11 @@ describe("Commands", () => {
 
                 data = JSON.parse(result.data);
 
-                expect(data).has.length(19);
+                expect(data).has.length(4);
+                expect(data[0]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, value: 0 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: -3520 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, value: -4150 });
+                expect(data[3]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, value: -250 });
             });
 
             it("returns invoices and tips", async () => {
@@ -1012,26 +1020,11 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(19);
-                expect(data[0]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, order: 1, value: 3840, data: BalanceEvent.Invoice });
-                expect(data[1]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, order: 1, value: 160, data: BalanceEvent.Tip });
-                expect(data[2]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, order: 3, value: 3420, data: BalanceEvent.Invoice });
-                expect(data[3]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, order: 6, value: 100, data: BalanceEvent.Invoice });
-                expect(data[4]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, order: 6, value: 50, data: BalanceEvent.Tip });
-                expect(data[5]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, order: 7, value: 0, data: BalanceEvent.Invoice });
-                expect(data[6]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 10, value: 100, data: BalanceEvent.Invoice });
-                expect(data[7]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 10, value: 50, data: BalanceEvent.Tip });
-                expect(data[8]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 11, value: 100, data: BalanceEvent.Invoice });
-                expect(data[9]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 11, value: 50, data: BalanceEvent.Tip });
-                expect(data[10]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, order: 9, value: 100, data: BalanceEvent.Invoice });
-                expect(data[11]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, order: 12, value: 100, data: BalanceEvent.Invoice });
-                expect(data[12]).deep.contains({ type: BackendJS.Balance.EventType.Increase, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 10, value: 100, data: BalanceEvent.UndoInvoice });
-                expect(data[13]).deep.contains({ type: BackendJS.Balance.EventType.Increase, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 10, value: 50, data: BalanceEvent.UndoTip });
-                expect(data[14]).deep.contains({ type: BackendJS.Balance.EventType.Increase, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 11, value: 100, data: BalanceEvent.UndoInvoice });
-                expect(data[15]).deep.contains({ type: BackendJS.Balance.EventType.Increase, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 11, value: 50, data: BalanceEvent.UndoTip });
-                expect(data[16]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 11, value: 100, data: BalanceEvent.Invoice });
-                expect(data[17]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, order: 11, value: 150, data: BalanceEvent.Tip });
-                expect(data[18]).deep.contains({ type: BackendJS.Balance.EventType.Increase, account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, order: 12, value: 100, data: BalanceEvent.UndoInvoice });
+                expect(data).has.length(4);
+                expect(data[0]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, value: 0 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: -3520 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, value: -4150 });
+                expect(data[3]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, value: -250 });
             });
 
             it("returns finances of customer 1", async () => {
