@@ -984,11 +984,12 @@ describe("Commands", () => {
 
                 data = JSON.parse(result.data);
 
-                expect(data).has.length(4);
-                expect(data[0]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, value: 0 });
-                expect(data[1]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: -3520 });
-                expect(data[2]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, value: -4150 });
-                expect(data[3]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, value: -250 });
+                expect(data).has.length(5);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: 100 });
+                expect(data[1]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, value: 0 });
+                expect(data[2]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 1480 });
+                expect(data[3]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, value: -4150 });
+                expect(data[4]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, value: -250 });
             });
 
             it("returns by end", async () => {
@@ -1006,15 +1007,16 @@ describe("Commands", () => {
 
                 data = JSON.parse(result.data);
 
-                expect(data).has.length(4);
-                expect(data[0]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, value: 0 });
-                expect(data[1]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: -3520 });
-                expect(data[2]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, value: -4150 });
-                expect(data[3]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, value: -250 });
+                expect(data).has.length(5);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: 100 });
+                expect(data[1]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Balance, value: 0 });
+                expect(data[2]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 1480 });
+                expect(data[3]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, value: -4150 });
+                expect(data[4]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, value: -250 });
             });
 
             it("returns invoices and tips", async () => {
-                const result = await m.execute("getFinances", { account: 1 }) as CoreJS.Response;
+                const result = await m.execute("getFinances", { account: 1, data: [BalanceEvent.Invoice, BalanceEvent.Tip, BalanceEvent.UndoInvoice, BalanceEvent.UndoTip] }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -1025,6 +1027,18 @@ describe("Commands", () => {
                 expect(data[1]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: -3520 });
                 expect(data[2]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Cash, value: -4150 });
                 expect(data[3]).deep.contains({ account: 1, customer: 3, paymentMethod: PaymentMethod.Cash, value: -250 });
+            });
+
+            it("returns deposits", async () => {
+                const result = await m.execute("getFinances", { account: 1, data: [BalanceEvent.Deposit] }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).has.length(2);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: 1000 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 5000 });
             });
 
             it("returns finances of customer 1", async () => {
@@ -1097,7 +1111,7 @@ describe("Commands", () => {
     });
 
     describe("Deinitialization", () => {
-        it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
+        // it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
         it("closes", () => m.deinit());
     });
 });

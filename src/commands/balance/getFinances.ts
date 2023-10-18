@@ -17,6 +17,7 @@ interface Args extends GlobalArgs {
     readonly customer: number;
     readonly start: number;
     readonly end: number;
+    readonly data: readonly string[];
 }
 
 export class GetFinances extends BackendJS.Module.Command<Context, Args, Options> {
@@ -25,7 +26,8 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id', null),
         new CoreJS.TimeParameter('start', 'start timestamp of finances', null),
-        new CoreJS.TimeParameter('end', 'end timestamp of orders', null)
+        new CoreJS.TimeParameter('end', 'end timestamp of orders', null),
+        new CoreJS.ArrayParameter('data', 'array of finance data', new CoreJS.StringParameter('', ''), null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
@@ -35,16 +37,12 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
         // clamp end by start + max duration
         const end = Math.min(args.end || (start + MAX_DURATION), start + MAX_DURATION);
 
-        const data = args.customer
-            ? null
-            : [BalanceEvent.Invoice, BalanceEvent.Tip, BalanceEvent.UndoInvoice, BalanceEvent.UndoTip];
-
         const result = [];
         const options = {
             depot: args.customer,
             start,
             end,
-            data,
+            data: args.data,
             groupDepots: !args.customer
         };
 
