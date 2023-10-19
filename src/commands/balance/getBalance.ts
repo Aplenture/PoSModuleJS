@@ -14,6 +14,8 @@ interface Args extends GlobalArgs {
     readonly account: number;
     readonly customer: number;
     readonly start: number;
+    readonly end: number;
+    readonly resolution: BackendJS.Balance.UpdateResolution;
 }
 
 export class GetBalance extends BackendJS.Module.Command<Context, Args, Options> {
@@ -21,7 +23,9 @@ export class GetBalance extends BackendJS.Module.Command<Context, Args, Options>
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id', null),
-        new CoreJS.TimeParameter('start', 'start of balance', null)
+        new CoreJS.TimeParameter('start', 'start of balance', null),
+        new CoreJS.TimeParameter('end', 'end of balance', null),
+        new CoreJS.NumberParameter('resolution', 'resolution of balance', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
@@ -33,6 +37,8 @@ export class GetBalance extends BackendJS.Module.Command<Context, Args, Options>
             asset: PaymentMethod.Balance,
             depot: args.customer,
             start: args.start,
+            end: args.end,
+            resolution: args.resolution,
             limit
         });
 
