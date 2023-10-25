@@ -25,6 +25,9 @@ export class WithdrawBalance extends BackendJS.Module.Command<Context, Args, Opt
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
+        if (!await this.context.customerRepository.hasPermissions(args.account, args.customer))
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
         const result = await this.context.balanceRepository.decrease({
             account: args.account,
             depot: args.customer,

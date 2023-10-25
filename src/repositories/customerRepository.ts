@@ -154,4 +154,16 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             paymentMethods: data.paymentMethods
         }));
     }
+
+    public async hasPermissions(account: number, customer: number): Promise<boolean> {
+        if (!customer)
+            return true;
+
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=? AND \`account\`=? LIMIT 1`, [
+            customer,
+            account
+        ]);
+
+        return 0 < result.length;
+    }
 }
