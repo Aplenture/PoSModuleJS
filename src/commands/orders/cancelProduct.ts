@@ -12,20 +12,20 @@ import { OrderState } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
-    readonly order: number;
+    readonly customer: number;
     readonly product: number;
 }
 
 export class CancelProduct extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'removes a product from an order';
+    public readonly description = 'removes a product from an order of a customer';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
-        new CoreJS.NumberParameter('order', 'id of order'),
+        new CoreJS.NumberParameter('customer', 'id of customer'),
         new CoreJS.NumberParameter('product', 'id of product')
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const order = await this.context.orderRepository.getOrder(args.order);
+        const order = await this.context.orderRepository.getOpenOrderByCustomer(args.customer);
 
         if (!order)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid');
@@ -41,8 +41,15 @@ export class CancelProduct extends BackendJS.Module.Command<Context, Args, Optio
         if (!product)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid_product');
 
-        const result = await this.context.orderRepository.cancelProduct(args.order, args.product);
+        const result = await this.context.orderRepository.cancelProduct(order.id, args.product);
 
-        return new CoreJS.BoolResponse(result);
+        if (await this.context.orderRepository.hasProducts(order.id))
+            return new CoreJS.BoolResponse(result);
+
+        this.message(`delete empty order '${order.id}'`);
+
+        await this.context.orderRepository.deleteOrder(order.id);
+
+        return new CoreJS.TextResponse('#_order_deleted');
     }
 }

@@ -12,17 +12,17 @@ import { OrderState } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
-    readonly order: number;
+    readonly customer: number;
     readonly product: number;
     readonly amount: number;
     readonly discount: number;
 }
 
 export class UpdateOrder extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'updates a product from an order';
+    public readonly description = 'updates a product from an order of a customer';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
-        new CoreJS.NumberParameter('order', 'id of order'),
+        new CoreJS.NumberParameter('customer', 'id of customer'),
         new CoreJS.NumberParameter('product', 'id of product'),
         new CoreJS.NumberParameter('amount', 'amount of product', null),
         new CoreJS.NumberParameter('discount', 'should the product discount be considered', null)
@@ -33,7 +33,10 @@ export class UpdateOrder extends BackendJS.Module.Command<Context, Args, Options
         if (undefined == args.amount && undefined == args.discount)
             return new CoreJS.BoolResponse(false);
 
-        const order = await this.context.orderRepository.getOrder(args.order);
+        if (0 > args.amount)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, "#_product_amount_invalid");
+
+        const order = await this.context.orderRepository.getOpenOrderByCustomer(args.customer);
 
         if (!order)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid');
@@ -53,17 +56,23 @@ export class UpdateOrder extends BackendJS.Module.Command<Context, Args, Options
             ? undefined
             : CoreJS.Currency.percentage(product.price, 100 - args.discount);
 
-        if (undefined != args.amount && 0 >= args.amount) {
-            await this.context.orderRepository.cancelProduct(args.order, args.product);
+        if (0 === args.amount) {
+            await this.context.orderRepository.cancelProduct(order.id, args.product);
 
-            return new CoreJS.JSONResponse({
+            if (await this.context.orderRepository.hasProducts(order.id)) return new CoreJS.JSONResponse({
                 order: order.id,
                 product: product.id,
                 amount: 0
             });
+
+            this.message(`delete empty order '${order.id}'`);
+
+            await this.context.orderRepository.deleteOrder(order.id);
+
+            return new CoreJS.TextResponse('#_order_deleted');
         }
 
-        const result = await this.context.orderRepository.updateProduct(args.order, args.product, {
+        const result = await this.context.orderRepository.updateProduct(order.id, args.product, {
             amount: args.amount,
             price
         });

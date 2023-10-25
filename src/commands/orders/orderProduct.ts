@@ -12,24 +12,33 @@ import { OrderState } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
-    readonly order: number;
+    readonly customer: number;
     readonly product: number;
     readonly amount: number;
     readonly discount: number;
 }
 
 export class OrderProduct extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'adds a product to an order';
+    public readonly description = 'adds a product to an order of a customer';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
-        new CoreJS.NumberParameter('order', 'id of order'),
+        new CoreJS.NumberParameter('customer', 'id of customer'),
         new CoreJS.NumberParameter('product', 'id of product'),
         new CoreJS.NumberParameter('amount', 'amount of product', 1),
         new CoreJS.NumberParameter('discount', 'should the product discount be considered', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const order = await this.context.orderRepository.getOrder(args.order);
+        const customer = await this.context.customerRepository.get(args.customer);
+
+        if (!customer)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_customer_invalid');
+
+        if (customer.account != args.account)
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
+        const order = await this.context.orderRepository.getOpenOrderByCustomer(args.customer)
+            || await this.context.orderRepository.createOrder(args.account, args.customer, customer.paymentMethods);
 
         if (!order)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid');
@@ -52,7 +61,7 @@ export class OrderProduct extends BackendJS.Module.Command<Context, Args, Option
             ? CoreJS.Currency.percentage(product.price, 100 - product.discount)
             : CoreJS.Currency.percentage(product.price, 100 - args.discount);
 
-        const result = await this.context.orderRepository.orderProduct(args.order, args.product, price, args.amount);
+        const result = await this.context.orderRepository.orderProduct(order.id, args.product, price, args.amount);
 
         return new CoreJS.JSONResponse(result);
     }

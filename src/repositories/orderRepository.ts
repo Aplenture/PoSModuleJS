@@ -201,10 +201,6 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         return 0 < result.affectedRows;
     }
 
-    public hasOrder(id: number): Promise<boolean> {
-        return this.getOrder(id).then(result => !!result);
-    }
-
     public isOpen(id: number): Promise<boolean> {
         return this.hasState(id, OrderState.Open);
     }
@@ -241,7 +237,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
 
         if (undefined != options.paymentMethod) {
             values.push(options.paymentMethod);
-            keys.push('`paymentMethod`=?');
+            keys.push('(`paymentMethod`&?)!=0');
         }
 
         if (options.start) {
@@ -283,7 +279,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
 
         if (undefined != options.paymentMethod) {
             values.push(options.paymentMethod);
-            keys.push('`paymentMethod`=?');
+            keys.push('(`paymentMethod`&?)!=0');
         }
 
         if (options.start) {
@@ -305,6 +301,14 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
             paymentMethod: data.paymentMethod,
             tip: data.tip
         }, index), values);
+    }
+
+    public async hasProducts(order: number): Promise<boolean> {
+        const result = await this.database.query(`SELECT * FROM ${this.data.products} WHERE \`order\`=? LIMIT 1`, [
+            order
+        ]);
+
+        return !!result.length;
     }
 
     public async getProducts(order: number): Promise<OrderProduct[]> {
@@ -329,6 +333,28 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
             return null;
 
         const { account, updated, state, customer, paymentMethod, tip } = result[0];
+
+        return {
+            id,
+            account,
+            updated: BackendJS.Database.parseToTime(updated),
+            state,
+            customer,
+            paymentMethod,
+            tip
+        };
+    }
+
+    public async getOpenOrderByCustomer(customer: number): Promise<Order | null> {
+        const result = await this.database.query(`SELECT * FROM ${this.data.orders} WHERE \`customer\`=? AND \`state\`=? LIMIT 1`, [
+            customer,
+            OrderState.Open
+        ]);
+
+        if (!result.length)
+            return null;
+
+        const { id, account, updated, state, paymentMethod, tip } = result[0];
 
         return {
             id,
