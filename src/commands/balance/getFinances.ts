@@ -31,6 +31,9 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
+        if (!await this.context.customerRepository.hasPermissions(args.account, args.customer))
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
         // if start not set calc start by end or now and max duration
         const start = args.start || ((args.end || Date.now()) - MAX_DURATION);
 
