@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { OrderState, PaymentMethod } from "../../enums";
+import { OrderState } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
