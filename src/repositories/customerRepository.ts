@@ -164,6 +164,6 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             account
         ]);
 
-        return 0 < result.length;
+        return !!result.length;
     }
 }
