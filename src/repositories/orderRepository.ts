@@ -85,7 +85,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         };
     }
 
-    public async reopenOrder(id: number, paymentMethod: PaymentMethod): Promise<Order | null> {
+    public async reopenOrder(id: number, paymentMethod = PaymentMethod.None): Promise<Order | null> {
         const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=? LIMIT 1) THEN
             UPDATE ${this.data.orders} SET \`state\`=?,\`paymentMethod\`=?,\`tip\`=0 WHERE \`id\`=?;
             SELECT * FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1;

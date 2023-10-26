@@ -35,7 +35,7 @@ export class ReopenOrder extends BackendJS.Module.Command<Context, Args, Options
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_closed');
 
         const invoice = await this.context.orderRepository.getInvoice(args.order);
-        const result = await this.context.orderRepository.reopenOrder(args.order, order.paymentMethod);
+        const result = await this.context.orderRepository.reopenOrder(args.order);
 
         if (!result)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid');

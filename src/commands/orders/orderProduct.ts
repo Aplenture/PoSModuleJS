@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { OrderState } from "../../enums";
+import { OrderState, PaymentMethod } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -38,7 +38,7 @@ export class OrderProduct extends BackendJS.Module.Command<Context, Args, Option
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
         const order = await this.context.orderRepository.getOpenOrderByCustomer(args.customer)
-            || await this.context.orderRepository.createOrder(args.account, args.customer, customer.paymentMethods);
+            || await this.context.orderRepository.createOrder(args.account, args.customer);
 
         if (!order)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid');

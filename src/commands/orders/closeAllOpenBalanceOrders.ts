@@ -24,7 +24,10 @@ export class CloseAllOpenBalanceOrders extends BackendJS.Module.Command<Context,
         const result = [];
 
         await this.context.orderRepository.fetchOrders(args.account, async order => {
-            const closedOrder = await this.context.orderRepository.closeOrder(order.id, order.paymentMethod);
+            if (!await this.context.customerRepository.canPayWith(order.customer, PaymentMethod.Balance))
+                return;
+
+            const closedOrder = await this.context.orderRepository.closeOrder(order.id, PaymentMethod.Balance);
             const invoice = await this.context.orderRepository.getInvoice(order.id);
 
             // decrease customer balance by invoice
@@ -32,16 +35,13 @@ export class CloseAllOpenBalanceOrders extends BackendJS.Module.Command<Context,
                 account: order.account,
                 depot: order.customer,
                 order: order.id,
-                asset: order.paymentMethod,
+                asset: PaymentMethod.Balance,
                 value: invoice,
                 data: BalanceEvent.Invoice,
             });
 
             result.push(closedOrder);
-        }, {
-            state: OrderState.Open,
-            paymentMethod: PaymentMethod.Balance
-        });
+        }, { state: OrderState.Open });
 
         return new CoreJS.JSONResponse(result);
     }
