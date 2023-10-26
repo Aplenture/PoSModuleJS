@@ -47,6 +47,9 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
         if (order.state != OrderState.Open)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_open');
 
+        if (!await this.context.customerRepository.canPayWith(order.customer, args.paymentmethod))
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_customer_invalid_payment_method');
+
         const invoice = await this.context.orderRepository.getInvoice(args.order);
 
         if (args.amount < invoice)

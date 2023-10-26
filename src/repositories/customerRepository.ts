@@ -7,6 +7,7 @@
 
 import * as BackendJS from "backendjs";
 import { Customer } from "../models";
+import { PaymentMethod } from "../enums";
 
 const MAX_LIMIT = 1000;
 
@@ -153,6 +154,15 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             nickname: data.nickname,
             paymentMethods: data.paymentMethods
         }));
+    }
+
+    public async canPayWith(customer: number, method: PaymentMethod): Promise<boolean> {
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=? AND (\`paymentMethods\`&?)!=0 LIMIT 1`, [
+            customer,
+            method
+        ]);
+        
+        return !!result.length;
     }
 
     public async hasPermissions(account: number, customer: number): Promise<boolean> {
