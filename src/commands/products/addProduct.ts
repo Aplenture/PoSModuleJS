@@ -26,13 +26,23 @@ export class AddProduct extends BackendJS.Module.Command<Context, Args, Options>
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.productRepository.create(
-            args.account,
-            args.name,
-            args.price,
-            args.discount
-        );
+        try {
+            const result = await this.context.productRepository.create(
+                args.account,
+                args.name,
+                args.price,
+                args.discount
+            );
 
-        return new CoreJS.JSONResponse(result);
+            return new CoreJS.JSONResponse(result);
+        } catch (error) {
+            switch (error.code) {
+                case CoreJS.CoreErrorCode.Duplicate:
+                    return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_product_duplicate_name');
+
+                default:
+                    throw error;
+            }
+        }
     }
 }

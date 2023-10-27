@@ -128,7 +128,7 @@ describe("Commands", () => {
 
             it("catches missing account", () => m.execute("addCustomer", { firstname: 'world' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
             it("catches missing firstname", () => m.execute("addCustomer", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'firstname', type: 'string' } })));
-            it("catches duplicate", () => m.execute("addCustomer", { account: 1, firstname: 'hello', lastname: 'world', nickname: '2' }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
+            it("catches duplicate", () => m.execute("addCustomer", { account: 1, firstname: 'hello', lastname: 'world', nickname: '2' }).then(result => expect(result).contains({ code: CoreJS.ResponseCode.Forbidden, data: '#_customer_duplicate_name' })));
         });
 
         describe("Edit", () => {
@@ -259,7 +259,7 @@ describe("Commands", () => {
             it("catches missing account", () => m.execute("addProduct", { name: 'product 1', price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
             it("catches missing name", () => m.execute("addProduct", { account: 1, price: 100 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'name', type: 'string' } })));
             it("catches missing price", () => m.execute("addProduct", { account: 1, name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'price', type: 'number' } })));
-            it("catches duplicate", () => m.execute("addProduct", { account: 1, name: 'product 1', price: 100 }).catch(error => expect(error).contains({ code: CoreJS.CoreErrorCode.Duplicate })));
+            it("catches duplicate", () => m.execute("addProduct", { account: 1, name: 'product 1', price: 100 }).then(result => expect(result).contains({ code: CoreJS.ResponseCode.Forbidden, data: '#_product_duplicate_name' })));
         });
 
         describe("Edit", () => {
@@ -1104,14 +1104,14 @@ describe("Commands", () => {
                 expect(data[3]).deep.contains({ type: BackendJS.Balance.EventType.Increase, account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, order: 0, value: 5000, data: BalanceEvent.Deposit });
                 expect(data[4]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 1, customer: 4, paymentMethod: PaymentMethod.None, order: 13, value: 100, data: BalanceEvent.OpenInvoice });
             });
-            
+
             it("returns finances of customer 6", async () => {
                 const result = await m.execute("getFinances", { account: 2, customer: 6 }) as CoreJS.Response;
-                
+
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
-                
+
                 const data = JSON.parse(result.data);
-                
+
                 expect(data).has.length(1);
                 expect(data[0]).deep.contains({ type: BackendJS.Balance.EventType.Decrease, account: 2, customer: 6, paymentMethod: PaymentMethod.None, order: 5, value: 135, data: BalanceEvent.OpenInvoice });
             });

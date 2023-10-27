@@ -28,12 +28,22 @@ export class AddCustomer extends BackendJS.Module.Command<Context, Args, Options
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.customerRepository.create(args.account, args.firstname, {
-            lastname: args.lastname,
-            nickname: args.nickname,
-            paymentMethods: args.paymentmethods,
-        });
+        try {
+            const result = await this.context.customerRepository.create(args.account, args.firstname, {
+                lastname: args.lastname,
+                nickname: args.nickname,
+                paymentMethods: args.paymentmethods,
+            });
 
-        return new CoreJS.JSONResponse(result);
+            return new CoreJS.JSONResponse(result);
+        } catch (error) {
+            switch (error.code) {
+                case CoreJS.CoreErrorCode.Duplicate:
+                    return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_customer_duplicate_name');
+
+                default:
+                    throw error;
+            }
+        }
     }
 }
