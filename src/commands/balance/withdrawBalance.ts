@@ -14,6 +14,7 @@ interface Args extends GlobalArgs {
     readonly account: number;
     readonly customer: number;
     readonly value: number;
+    readonly date: number;
 }
 
 export class WithdrawBalance extends BackendJS.Module.Command<Context, Args, Options> {
@@ -21,7 +22,8 @@ export class WithdrawBalance extends BackendJS.Module.Command<Context, Args, Opt
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id'),
-        new CoreJS.NumberParameter('value', 'amount of decrease')
+        new CoreJS.NumberParameter('value', 'amount of decrease'),
+        new CoreJS.TimeParameter('date', 'when was the deposit', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
@@ -29,6 +31,7 @@ export class WithdrawBalance extends BackendJS.Module.Command<Context, Args, Opt
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
         const result = await this.context.balanceRepository.decrease({
+            date: args.date && new Date(args.date) || null,
             account: args.account,
             depot: args.customer,
             order: 0,
