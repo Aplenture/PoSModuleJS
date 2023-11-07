@@ -65,10 +65,10 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
         }));
 
         if (args.customer) {
-            const previousBalances = args.start ? await this.context.balanceRepository.getUpdates(args.account, {
+            const previousBalances = args.start ? await this.context.balanceRepository.getBalance(args.account, {
                 asset: PaymentMethod.Balance,
                 depot: args.customer,
-                end: args.start,
+                time: args.start,
                 limit: 1
             }) : [];
 
