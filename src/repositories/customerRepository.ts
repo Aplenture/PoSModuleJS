@@ -47,7 +47,6 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             paymentMethods
         ]);
 
-
         const { id, created } = result[1][0];
 
         return {
