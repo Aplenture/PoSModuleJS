@@ -21,7 +21,7 @@ export class CreateTransactionLabel extends BackendJS.Module.Command<Context, Ar
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('type', 'type of transaction'),
-        new CoreJS.StringParameter('name', 'name of label'),
+        new CoreJS.StringParameter('name', 'name of label')
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {

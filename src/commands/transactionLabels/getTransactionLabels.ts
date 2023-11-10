@@ -23,7 +23,7 @@ export class GetTransactionLabels extends BackendJS.Module.Command<Context, Args
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const result = await this.context.transactionLabelRepository.get(args.account, args.type);
+        const result = await this.context.transactionLabelRepository.getAll(args.account, args.type);
 
         return new CoreJS.JSONResponse(result);
     }

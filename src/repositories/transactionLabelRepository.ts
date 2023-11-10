@@ -25,7 +25,7 @@ export class TransactionLabelRepository extends BackendJS.Database.Repository<st
         };
     }
 
-    public async get(account: number, type?: TransactionType): Promise<TransactionLabel[]> {
+    public async getAll(account: number, type?: TransactionType): Promise<TransactionLabel[]> {
         const where = ['`account`=?'];
         const values = [account];
 
