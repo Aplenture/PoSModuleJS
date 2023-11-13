@@ -26,7 +26,7 @@ export class CreateTransactionLabelTable extends BackendJS.Database.Update<strin
             \`account\` BIGINT NOT NULL,
             \`type\` INT NOT NULL,
             \`name\` VARCHAR(64) NOT NULL,
-            UNIQUE (\`account\`,\`name\`)
+            UNIQUE (\`account\`,\`type\`,\`name\`)
         ) DEFAULT CHARSET=utf8`;
     }
 }
