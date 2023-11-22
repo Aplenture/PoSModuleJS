@@ -9,7 +9,7 @@ import * as BackendJS from 'backendjs';
 import * as CoreJS from 'corejs';
 import { expect } from "chai";
 import { Module } from "../src";
-import { BalanceEvent, OrderState, PaymentMethod } from '../src/enums';
+import { BalanceEvent, OrderState, PaymentMethod, TransactionType } from '../src/enums';
 
 const args = {
     debug: true
@@ -1118,6 +1118,60 @@ describe("Commands", () => {
 
             it("catches missing account", () => m.execute("getFinances").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
             it("catches invalid account", () => m.execute("getFinances", { account: 2, customer: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_permission_denied" })));
+        });
+    });
+
+    describe("Transaction Labels", () => {
+        describe("Create", () => {
+            it("deposit label", () => m.execute('createTransactionLabel', { account: 1, type: TransactionType.Deposit, name: 'my_first_deposit_label' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON })));
+            it("withdraw label", () => m.execute('createTransactionLabel', { account: 1, type: TransactionType.Withdraw, name: 'my_first_withdraw_label' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON })));
+            it("second deposit label", () => m.execute('createTransactionLabel', { account: 1, type: TransactionType.Deposit, name: 'my_second_deposit_label' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON })));
+            it("label for another account", () => m.execute('createTransactionLabel', { account: 2, type: TransactionType.Deposit, name: 'my_first_deposit_label' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON })));
+
+            it("catches missing account", () => m.execute('createTransactionLabel', { type: TransactionType.Deposit, name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing type", () => m.execute('createTransactionLabel', { account: 1, name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'type', type: 'number' } })));
+            it("catches missing name", () => m.execute('createTransactionLabel', { account: 1, type: TransactionType.Deposit }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'name', type: 'string' } })));
+            it("catches duplicate name", () => m.execute('createTransactionLabel', { account: 1, type: TransactionType.Deposit, name: 'my_first_deposit_label' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: '#_transaction_label_duplicate_name' })));
+        });
+
+        describe("Get", () => {
+            it("all of account 1", async () => {
+                const result = await m.execute('getTransactionLabels', { account: 1 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).has.length(3);
+                expect(data[0]).deep.contains({ id: 1, account: 1, type: TransactionType.Deposit, name: 'my_first_deposit_label' });
+                expect(data[1]).deep.contains({ id: 2, account: 1, type: TransactionType.Withdraw, name: 'my_first_withdraw_label' });
+                expect(data[2]).deep.contains({ id: 3, account: 1, type: TransactionType.Deposit, name: 'my_second_deposit_label' });
+            });
+
+            it("all of account 2", async () => {
+                const result = await m.execute('getTransactionLabels', { account: 2 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).has.length(1);
+                expect(data[0]).deep.contains({ id: 4, account: 2, type: TransactionType.Deposit, name: 'my_first_deposit_label' });;
+            });
+
+            it("type specific", async () => {
+                const result = await m.execute('getTransactionLabels', { account: 1, type: TransactionType.Deposit }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).has.length(2);
+                expect(data[0]).deep.contains({ id: 1, account: 1, type: TransactionType.Deposit, name: 'my_first_deposit_label' });;
+                expect(data[1]).deep.contains({ id: 3, account: 1, type: TransactionType.Deposit, name: 'my_second_deposit_label' });;
+            });
+
+            it("catches missing account", () => m.execute('getTransactionLabels', { type: TransactionType.Deposit, name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
         });
     });
 

@@ -24,6 +24,7 @@ export class Reset extends BackendJS.Module.Command<Context, Args, Options> {
         await this.context.customerRepository.reset({ versions: args.versions });
         await this.context.orderRepository.reset({ versions: args.versions });
         await this.context.productRepository.reset({ versions: args.versions });
+        await this.context.transactionLabelRepository.reset({ versions: args.versions });
 
         return new CoreJS.TextResponse('reset');
     }

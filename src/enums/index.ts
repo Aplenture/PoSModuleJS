@@ -8,3 +8,4 @@
 export * from "./balanceEvent";
 export * from "./orderState";
 export * from "./paymentMethod";
+export * from "./transactionType";

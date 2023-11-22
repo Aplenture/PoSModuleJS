@@ -8,3 +8,4 @@
 export * from "./customerRepository";
 export * from "./orderRepository";
 export * from "./productRepository";
+export * from "./transactionLabelRepository";

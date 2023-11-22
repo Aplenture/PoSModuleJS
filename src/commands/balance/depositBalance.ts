@@ -15,6 +15,7 @@ interface Args extends GlobalArgs {
     readonly customer: number;
     readonly value: number;
     readonly date: number;
+    readonly label: string;
 }
 
 export class DepositBalance extends BackendJS.Module.Command<Context, Args, Options> {
@@ -23,7 +24,8 @@ export class DepositBalance extends BackendJS.Module.Command<Context, Args, Opti
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id'),
         new CoreJS.NumberParameter('value', 'amount of increase'),
-        new CoreJS.TimeParameter('date', 'when was the deposit', null)
+        new CoreJS.TimeParameter('date', 'when was the deposit', null),
+        new CoreJS.StringParameter('label', 'transaction label', BalanceEvent.Deposit)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
@@ -37,7 +39,7 @@ export class DepositBalance extends BackendJS.Module.Command<Context, Args, Opti
             order: 0,
             asset: PaymentMethod.Balance,
             value: args.value,
-            data: BalanceEvent.Deposit
+            data: args.label
         });
 
         return new CoreJS.JSONResponse({
