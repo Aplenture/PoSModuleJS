@@ -1119,6 +1119,75 @@ describe("Commands", () => {
             it("catches missing account", () => m.execute("getFinances").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
             it("catches invalid account", () => m.execute("getFinances", { account: 2, customer: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_permission_denied" })));
         });
+
+        describe("Transfers", () => {
+            it("returns all of account 1", async () => {
+                let result = await m.execute("getTransfers", { account: 1 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(3);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Deposit, value: 1000 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, data: BalanceEvent.Deposit, value: 5000 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Withdraw, value: 900 });
+            });
+
+            it("returns all of account 2", async () => {
+                let result = await m.execute("getTransfers", { account: 2 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+            });
+
+            it("returns by start", async () => {
+                let result = await m.execute("getTransfers", { account: 1, start: "2022-09-25" }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+
+                result = await m.execute("getTransfers", { account: 1, start: CoreJS.calcDate() }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                data = JSON.parse(result.data);
+
+                expect(data).has.length(3);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Deposit, value: 1000 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, data: BalanceEvent.Deposit, value: 5000 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Withdraw, value: 900 });
+            });
+
+            it("returns by end", async () => {
+                let result = await m.execute("getTransfers", { account: 1, end: CoreJS.calcDate() }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+
+                result = await m.execute("getTransfers", { account: 1, end: Date.now() + CoreJS.Milliseconds.Hour }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                data = JSON.parse(result.data);
+
+                expect(data).has.length(3);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Deposit, value: 1000 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, data: BalanceEvent.Deposit, value: 5000 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Withdraw, value: 900 });
+            });
+
+            it("catches missing account", () => m.execute("getTransfers").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+        });
     });
 
     describe("Transaction Labels", () => {
