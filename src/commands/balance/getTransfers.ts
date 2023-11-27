@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { BalanceEvent, OrderState, PaymentMethod } from "../../enums";
+import { BalanceEvent } from "../../enums";
 
 const MAX_DURATION = CoreJS.Milliseconds.Day * 32; // one more than highest month lenght
 
