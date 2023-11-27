@@ -44,6 +44,7 @@ export class GetTransfers extends BackendJS.Module.Command<Context, Args, Option
         });
 
         events.forEach(data => result.push({
+            id: data.id,
             account: data.account,
             timestamp: data.timestamp,
             type: data.type,
