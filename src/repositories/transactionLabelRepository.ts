@@ -34,7 +34,7 @@ export class TransactionLabelRepository extends BackendJS.Database.Repository<st
             values.push(type);
         }
 
-        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${where.join(' AND ')}`, values);
+        const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${where.join(' AND ')} ORDER BY \`id\` ASC`, values);
 
         if (!result.length)
             return [];

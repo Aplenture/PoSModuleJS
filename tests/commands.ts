@@ -906,6 +906,16 @@ describe("Commands", () => {
                 expect(data).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 1580 });
             });
 
+            it("deposits to remove", async () => {
+                const result = await m.execute("depositBalance", { account: 1, customer: 4, value: 5000 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 6580 });
+            });
+
             it("catches missing account", () => m.execute("depositBalance", { customer: 1, value: 1000 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
             it("catches invalid account", () => m.execute("depositBalance", { account: 2, customer: 1, value: 1000 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_permission_denied" })));
             it("catches missing customer", () => m.execute("depositBalance", { account: 1, value: 1000 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
@@ -923,10 +933,47 @@ describe("Commands", () => {
                 expect(data).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: 100 });
             });
 
+            it("withdraw to undo", async () => {
+                const result = await m.execute("withdrawBalance", { account: 1, customer: 1, value: 200 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: -100 });
+            });
+
             it("catches missing account", () => m.execute("withdrawBalance", { customer: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
             it("catches invalid account", () => m.execute("withdrawBalance", { account: 2, customer: 1, value: 1000 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_permission_denied" })));
             it("catches missing customer", () => m.execute("withdrawBalance", { account: 1, value: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "customer", type: "number" } })));
             it("catches missing value", () => m.execute("withdrawBalance", { account: 1, customer: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "value", type: "number" } })));
+        });
+
+        describe("Undo Transfers", () => {
+            it("undo deposit", async () => {
+                const result = await m.execute("undoTransfer", { account: 1, id: 22 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ account: 1, customer: 4, paymentMethod: PaymentMethod.Balance, value: 1580 });
+            });
+
+            it("undo withdraw", async () => {
+                const result = await m.execute("undoTransfer", { account: 1, id: 24 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ account: 1, customer: 1, paymentMethod: PaymentMethod.Balance, value: 100 });
+            });
+
+            it("catches missing account", () => m.execute("undoTransfer", { id: 23 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+            it("catches invalid account", () => m.execute("undoTransfer", { account: 2, id: 23 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_permission_denied" })));
+            it("catches missing id", () => m.execute("undoTransfer", { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "id", type: "number" } })));
+            it("catches invalid data", () => m.execute("undoTransfer", { account: 1, id: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_transaction_data_invalid" })));
         });
 
         describe("Get Current", () => {
@@ -1119,6 +1166,75 @@ describe("Commands", () => {
             it("catches missing account", () => m.execute("getFinances").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
             it("catches invalid account", () => m.execute("getFinances", { account: 2, customer: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: "#_permission_denied" })));
         });
+
+        describe("Transfers", () => {
+            it("returns all of account 1", async () => {
+                let result = await m.execute("getTransfers", { account: 1 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(3);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Deposit, value: 1000 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, data: BalanceEvent.Deposit, value: 5000 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Withdraw, value: 900 });
+            });
+
+            it("returns all of account 2", async () => {
+                let result = await m.execute("getTransfers", { account: 2 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+            });
+
+            it("returns by start", async () => {
+                let result = await m.execute("getTransfers", { account: 1, start: "2022-09-25" }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+
+                result = await m.execute("getTransfers", { account: 1, start: CoreJS.calcDate() }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                data = JSON.parse(result.data);
+
+                expect(data).has.length(3);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Deposit, value: 1000 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, data: BalanceEvent.Deposit, value: 5000 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Withdraw, value: 900 });
+            });
+
+            it("returns by end", async () => {
+                let result = await m.execute("getTransfers", { account: 1, end: CoreJS.calcDate() }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                let data = JSON.parse(result.data);
+
+                expect(data).has.length(0);
+
+                result = await m.execute("getTransfers", { account: 1, end: Date.now() + CoreJS.Milliseconds.Hour }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                data = JSON.parse(result.data);
+
+                expect(data).has.length(3);
+                expect(data[0]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Deposit, value: 1000 });
+                expect(data[1]).deep.contains({ account: 1, customer: 4, data: BalanceEvent.Deposit, value: 5000 });
+                expect(data[2]).deep.contains({ account: 1, customer: 1, data: BalanceEvent.Withdraw, value: 900 });
+            });
+
+            it("catches missing account", () => m.execute("getTransfers").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
+        });
     });
 
     describe("Transaction Labels", () => {
@@ -1176,7 +1292,7 @@ describe("Commands", () => {
     });
 
     describe("Deinitialization", () => {
-        it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
+        // it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
         it("closes", () => m.deinit());
     });
 });

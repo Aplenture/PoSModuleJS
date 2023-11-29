@@ -54,6 +54,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
             : await this.context.balanceRepository.getEventSum(args.account, options);
 
         events.forEach(data => result.push({
+            id: data.id,
             account: data.account,
             timestamp: data.timestamp,
             type: data.type,

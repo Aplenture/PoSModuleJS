@@ -8,4 +8,6 @@
 export * from "./depositBalance";
 export * from "./getBalance";
 export * from "./getFinances";
+export * from "./getTransfers";
+export * from "./undoTransfer";
 export * from "./withdrawBalance";
