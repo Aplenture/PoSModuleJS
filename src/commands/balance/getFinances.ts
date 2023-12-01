@@ -17,6 +17,7 @@ interface Args extends GlobalArgs {
     readonly customer: number;
     readonly start: number;
     readonly end: number;
+    readonly paymentmethod: PaymentMethod;
     readonly data: readonly string[];
 }
 
@@ -27,6 +28,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
         new CoreJS.NumberParameter('customer', 'customer id', null),
         new CoreJS.TimeParameter('start', 'start timestamp of finances', null),
         new CoreJS.TimeParameter('end', 'end timestamp of orders', null),
+        new CoreJS.NumberParameter('paymentmethod', 'method of payment', null),
         new CoreJS.ArrayParameter('data', 'array of finance data', new CoreJS.StringParameter('', ''), null)
     );
 
@@ -45,6 +47,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
             depot: args.customer,
             start,
             end,
+            asset: args.paymentmethod,
             data: args.data,
             groupDepots: !args.customer
         };
