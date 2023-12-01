@@ -15,7 +15,7 @@ interface Args extends GlobalArgs {
 }
 
 export class RemoveCustomer extends BackendJS.Module.Command<Context, Args, Options> {
-    public readonly description = 'deletes a customer';
+    public readonly description = 'removes a customer';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('customer', 'customer id')
@@ -29,6 +29,9 @@ export class RemoveCustomer extends BackendJS.Module.Command<Context, Args, Opti
 
         if (customer.account != args.account)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
+        if (await this.context.orderRepository.getOpenOrderByCustomer(args.customer))
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_customer_has_open_order');
 
         const result = await this.context.customerRepository.delete(args.customer);
 
