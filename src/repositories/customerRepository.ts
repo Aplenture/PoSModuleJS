@@ -89,10 +89,8 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         return 0 < result.affectedRows;
     }
 
-    public async delete(id: number): Promise<boolean> {
-        const result = await this.database.query(`DELETE FROM ${this.data} WHERE \`id\`=?`, [
-            id
-        ]);
+    public async delete(...id: readonly number[]): Promise<boolean> {
+        const result = await this.database.query(`DELETE FROM ${this.data} WHERE \`id\` IN (${id.join(',')})`);
 
         return 0 < result.affectedRows;
     }
@@ -160,7 +158,7 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
             customer,
             method
         ]);
-        
+
         return !!result.length;
     }
 

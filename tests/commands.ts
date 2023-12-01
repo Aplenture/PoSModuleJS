@@ -1291,8 +1291,25 @@ describe("Commands", () => {
         });
     });
 
+    describe("Remove Customers", () => {
+        describe("Remove Customer", () => {
+            it("catches open orders", () => m.execute('removeCustomer', { account: 1, customer: 4 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.Forbidden, data: '#_customer_has_open_order' })));
+        });
+
+        describe("Remove Customers", () => {
+            it("all without open order", () => m.execute('removeCustomers', { account: 1, paymentmethod: PaymentMethod.Cash }).then(result => {
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text });
+
+                return m.customerRepository.getAll(1, { paymentMethods: PaymentMethod.Cash }).then(result => expect(result.map(data => data.id)).deep.equals([1, 4, 5]));
+            }));
+
+            it("catches missing account", () => m.execute('removeCustomers', { paymentmethod: PaymentMethod.Cash }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
+            it("catches missing paymentmethod", () => m.execute('removeCustomers', { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'paymentmethod', type: 'number' } })));
+        });
+    });
+
     describe("Deinitialization", () => {
-        // it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
+        it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
         it("closes", () => m.deinit());
     });
 });
