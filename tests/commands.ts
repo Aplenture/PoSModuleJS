@@ -1305,6 +1305,7 @@ describe("Commands", () => {
 
             it("catches missing account", () => m.execute('removeAllCustomers', { paymentmethod: PaymentMethod.Cash }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
             it("catches missing paymentmethod", () => m.execute('removeAllCustomers', { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'paymentmethod', type: 'number' } })));
+            it("catches zero customers to delete", () => m.execute('removeAllCustomers', { account: 1, paymentmethod: PaymentMethod.Cash }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
         });
     });
 

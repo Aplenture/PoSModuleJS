@@ -90,6 +90,9 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
     }
 
     public async delete(...id: readonly number[]): Promise<boolean> {
+        if (0 == id.length)
+            return true;
+
         const result = await this.database.query(`DELETE FROM ${this.data} WHERE \`id\` IN (${id.join(',')})`);
 
         return 0 < result.affectedRows;
