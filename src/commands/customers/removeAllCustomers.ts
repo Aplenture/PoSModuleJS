@@ -15,7 +15,7 @@ interface Args extends GlobalArgs {
     readonly paymentmethod: PaymentMethod;
 }
 
-export class RemoveCustomers extends BackendJS.Module.Command<Context, Args, Options> {
+export class RemoveAllCustomers extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'removes all customers with specific payment method and no open orders';
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),

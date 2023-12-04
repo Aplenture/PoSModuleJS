@@ -9,4 +9,4 @@ export * from "./addCustomer";
 export * from "./editCustomer";
 export * from "./getCustomers";
 export * from "./removeCustomer";
-export * from "./removeCustomers";
+export * from "./removeAllCustomers";
