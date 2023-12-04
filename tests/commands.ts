@@ -1298,7 +1298,7 @@ describe("Commands", () => {
 
         describe("Remove All Customers", () => {
             it("all without open order", () => m.execute('removeAllCustomers', { account: 1, paymentmethod: PaymentMethod.Cash }).then(result => {
-                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text });
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" });
 
                 return m.customerRepository.getAll(1, { paymentMethods: PaymentMethod.Cash }).then(result => expect(result.map(data => data.id)).deep.equals([1, 4, 5]));
             }));
