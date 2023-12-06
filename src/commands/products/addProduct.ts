@@ -14,6 +14,10 @@ interface Args extends GlobalArgs {
     readonly name: string;
     readonly price: number;
     readonly discount: number;
+    readonly category: string;
+    readonly priority: number;
+    readonly start: number;
+    readonly end: number;
 }
 
 export class AddProduct extends BackendJS.Module.Command<Context, Args, Options> {
@@ -22,17 +26,26 @@ export class AddProduct extends BackendJS.Module.Command<Context, Args, Options>
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.StringParameter('name', 'name of product'),
         new CoreJS.NumberParameter('price', 'price of product'),
-        new CoreJS.NumberParameter('discount', 'discount of product', 0)
+        new CoreJS.StringParameter('name', 'name of product'),
+        new CoreJS.StringParameter('category', 'category of product'),
+        new CoreJS.NumberParameter('discount', 'discount of product', 0),
+        new CoreJS.TimeParameter('start', 'when the product starts', null),
+        new CoreJS.TimeParameter('end', 'when the product ends', null),
+        new CoreJS.NumberParameter('priority', 'priority of product', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
         try {
-            const result = await this.context.productRepository.create(
-                args.account,
-                args.name,
-                args.price,
-                args.discount
-            );
+            const result = await this.context.productRepository.create({
+                account: args.account,
+                name: args.name,
+                price: args.price,
+                discount: args.discount,
+                category: args.category,
+                priority: args.priority,
+                start: args.start,
+                end: args.end
+            });
 
             return new CoreJS.JSONResponse(result);
         } catch (error) {

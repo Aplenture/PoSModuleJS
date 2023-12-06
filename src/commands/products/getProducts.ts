@@ -13,6 +13,7 @@ interface Args extends GlobalArgs {
     readonly account: number;
     readonly firstID: number;
     readonly lastID: number;
+    readonly time: number;
 }
 
 export class GetProducts extends BackendJS.Module.Command<Context, Args, Options> {
@@ -20,7 +21,8 @@ export class GetProducts extends BackendJS.Module.Command<Context, Args, Options
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('firstID', 'id of first returning product', null),
-        new CoreJS.NumberParameter('lastID', 'id of last returned product', null)
+        new CoreJS.NumberParameter('lastID', 'id of last returned product', null),
+        new CoreJS.TimeParameter('time', 'filters products where start/end time includes this value', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {

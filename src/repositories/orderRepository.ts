@@ -222,7 +222,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
 
     public async getOrders(account: number, options: GetOrdersOptions = {}): Promise<Order[]> {
         const limit = Math.min(MAX_LIMIT, options.limit || MAX_LIMIT);
-        const values = [account];
+        const values: any[] = [account];
         const keys = ['`account`=?'];
 
         if (options.customer) {
@@ -242,12 +242,12 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
 
         if (options.start) {
             values.push(BackendJS.Database.parseFromTime(options.start));
-            keys.push('`updated`>=FROM_UNIXTIME(?)');
+            keys.push('`updated`>=?');
         }
 
         if (options.end) {
             values.push(BackendJS.Database.parseFromTime(options.end));
-            keys.push('`updated`<=FROM_UNIXTIME(?)');
+            keys.push('`updated`<=?');
         }
 
         const result = await this.database.query(`SELECT * FROM ${this.data.orders} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC LIMIT ${limit}`, values);
@@ -264,7 +264,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
     }
 
     public async fetchOrders(account: number, callback: (order: Order, index: number) => Promise<void>, options: GetOrdersOptions = {}): Promise<void> {
-        const values = [account];
+        const values: any[] = [account];
         const keys = ['`account`=?'];
 
         if (options.customer) {
@@ -284,12 +284,12 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
 
         if (options.start) {
             values.push(BackendJS.Database.parseFromTime(options.start));
-            keys.push('`updated`>=FROM_UNIXTIME(?)');
+            keys.push('`updated`>=?');
         }
 
         if (options.end) {
             values.push(BackendJS.Database.parseFromTime(options.end));
-            keys.push('`updated`<=FROM_UNIXTIME(?)');
+            keys.push('`updated`<=?');
         }
 
         await this.database.fetch(`SELECT * FROM ${this.data.orders} WHERE ${keys.join(' AND ')} ORDER BY \`id\` ASC`, (data, index) => callback({

@@ -15,6 +15,10 @@ interface Args extends GlobalArgs {
     readonly name: string;
     readonly price: number;
     readonly discount: number;
+    readonly category: string;
+    readonly priority: number;
+    readonly start: number;
+    readonly end: number;
 }
 
 export class EditProduct extends BackendJS.Module.Command<Context, Args, Options> {
@@ -23,8 +27,12 @@ export class EditProduct extends BackendJS.Module.Command<Context, Args, Options
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('product', 'product id'),
         new CoreJS.StringParameter('name', 'name of product', null),
-        new CoreJS.StringParameter('price', 'price of product', null),
-        new CoreJS.StringParameter('discount', 'discount of product', null)
+        new CoreJS.NumberParameter('price', 'price of product', null),
+        new CoreJS.NumberParameter('discount', 'discount of product', null),
+        new CoreJS.StringParameter('category', 'category of product', null),
+        new CoreJS.NumberParameter('priority', 'priority of product', null),
+        new CoreJS.TimeParameter('start', 'start of product', null),
+        new CoreJS.TimeParameter('end', 'end of product', null)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {

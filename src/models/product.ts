@@ -12,4 +12,8 @@ export interface Product {
     readonly name: string;
     readonly price: number;
     readonly discount: number;
+    readonly category: string;
+    readonly priority: number;
+    readonly start: number;
+    readonly end: number;
 }
