@@ -97,12 +97,12 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
             values.push(options.priority);
         }
 
-        if (undefined != options.start) {
+        if (undefined !== options.start) {
             keys.push('`start`=?');
             values.push(BackendJS.Database.parseFromTime(options.start));
         }
 
-        if (undefined != options.end) {
+        if (undefined !== options.end) {
             keys.push('`end`=?');
             values.push(BackendJS.Database.parseFromTime(options.end));
         }
