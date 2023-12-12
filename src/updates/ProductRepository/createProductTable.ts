@@ -27,8 +27,7 @@ export class CreateProductTable extends BackendJS.Database.Update<string> {
             \`created\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             \`name\` VARCHAR(64) NOT NULL,
             \`price\` INT NOT NULL,
-            \`discount\` INT NOT NULL,
-            UNIQUE (\`account\`,\`name\`)
+            \`discount\` INT NOT NULL
         ) DEFAULT CHARSET=utf8`;
     }
 }

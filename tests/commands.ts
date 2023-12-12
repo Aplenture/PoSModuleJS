@@ -323,7 +323,6 @@ describe("Commands", () => {
             it("catches missing account", () => m.execute("addProduct", { name: 'test', price: 100, category: "test" }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
             it("catches missing name", () => m.execute("addProduct", { account: 1, price: 100, category: "test" }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'name', type: 'string' } })));
             it("catches missing price", () => m.execute("addProduct", { account: 1, name: 'test', category: "test" }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'price', type: 'number' } })));
-            it("catches duplicate", () => m.execute("addProduct", { account: 1, name: 'product 1', price: 100, category: "category" }).then(result => expect(result).contains({ code: CoreJS.ResponseCode.Forbidden, data: '#_product_duplicate_name' })));
         });
 
         describe("Edit", () => {
