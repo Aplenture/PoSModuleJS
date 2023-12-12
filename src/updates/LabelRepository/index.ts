@@ -5,5 +5,4 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
-export * from "./createTransactionLabel";
-export * from "./getTransactionLabels";
+export * from "./createLabelTable";

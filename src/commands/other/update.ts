@@ -23,7 +23,7 @@ export class Update extends BackendJS.Module.Command<Context, Args, Options> {
         await this.context.balanceRepository.update({ maxVersion: args.version });
         await this.context.customerRepository.update({ maxVersion: args.version });
         await this.context.orderRepository.update({ maxVersion: args.version });
-        await this.context.transactionLabelRepository.update({ maxVersion: args.version });
+        await this.context.labelRepository.update({ maxVersion: args.version });
         const version = await this.context.productRepository.update({ maxVersion: args.version });
 
         return new CoreJS.TextResponse('updated to version ' + version);

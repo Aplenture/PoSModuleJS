@@ -14,5 +14,5 @@ export interface Options extends BackendJS.Module.Options {
     readonly customerTable?: string;
     readonly orderTables?: OrderTables;
     readonly productTable?: string;
-    readonly transactionLabelTable?: string;
+    readonly labelTable?: string;
 }

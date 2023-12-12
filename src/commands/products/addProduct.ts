@@ -8,13 +8,14 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
+import { LabelType } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
     readonly name: string;
     readonly price: number;
     readonly discount: number;
-    readonly category: string;
+    readonly category: number;
     readonly priority: number;
     readonly start: number;
     readonly end: number;
@@ -27,7 +28,7 @@ export class AddProduct extends BackendJS.Module.Command<Context, Args, Options>
         new CoreJS.StringParameter('name', 'name of product'),
         new CoreJS.NumberParameter('price', 'price of product'),
         new CoreJS.StringParameter('name', 'name of product'),
-        new CoreJS.StringParameter('category', 'category of product'),
+        new CoreJS.NumberParameter('category', 'category of product'),
         new CoreJS.NumberParameter('discount', 'discount of product', 0),
         new CoreJS.TimeParameter('start', 'when the product starts', null),
         new CoreJS.TimeParameter('end', 'when the product ends', null),
@@ -35,6 +36,11 @@ export class AddProduct extends BackendJS.Module.Command<Context, Args, Options>
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
+        const validLabels = await this.context.labelRepository.getAll(args.account, LabelType.ProductCategory);
+
+        if (!validLabels.some(data => data.id == args.category))
+            return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, "#_product_category_invalid");
+
         try {
             const result = await this.context.productRepository.create({
                 account: args.account,

@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { BalanceEvent } from "../../enums";
+import { BalanceEvent, LabelType } from "../../enums";
 
 const MAX_DURATION = CoreJS.Milliseconds.Day * 32; // one more than highest month lenght
 
@@ -27,7 +27,10 @@ export class GetTransfers extends BackendJS.Module.Command<Context, Args, Option
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const transactionLabels = await this.context.transactionLabelRepository.getAll(args.account);
+        const validLabels = await this.context.labelRepository.getAll(args.account,
+            LabelType.Deposit,
+            LabelType.Withdraw
+        );
 
         // if start not set calc start by end or now and max duration
         const start = args.start || ((args.end || Date.now()) - MAX_DURATION);
@@ -40,7 +43,7 @@ export class GetTransfers extends BackendJS.Module.Command<Context, Args, Option
         const events = await this.context.balanceRepository.getEvents(args.account, {
             start,
             end,
-            data: [BalanceEvent.Deposit as string, BalanceEvent.Withdraw as string].concat(transactionLabels.map(data => data.name)),
+            data: [BalanceEvent.Deposit as string, BalanceEvent.Withdraw as string].concat(validLabels.map(data => data.name)),
         });
 
         events.forEach(data => result.push({

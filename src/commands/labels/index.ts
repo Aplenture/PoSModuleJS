@@ -5,8 +5,5 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
-export enum TransactionType {
-    Deposit = 1,
-    Withdraw,
-    Invoice
-}
+export * from "./createLabel";
+export * from "./getLabels";

@@ -10,4 +10,4 @@ export * from "./customers";
 export * from "./orders";
 export * from "./other";
 export * from "./products";
-export * from "./transactionLabels";
+export * from "./labels";

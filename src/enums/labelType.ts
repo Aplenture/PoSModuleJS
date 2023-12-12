@@ -5,7 +5,9 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
-export * from "./customerRepository";
-export * from "./orderRepository";
-export * from "./productRepository";
-export * from "./labelRepository";
+export enum LabelType {
+    Deposit = 1,
+    Withdraw,
+    Invoice,
+    ProductCategory
+}

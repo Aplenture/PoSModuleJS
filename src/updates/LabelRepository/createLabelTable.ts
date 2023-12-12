@@ -7,8 +7,8 @@
 
 import * as BackendJS from "backendjs";
 
-export class CreateTransactionLabelTable extends BackendJS.Database.Update<string> {
-    public readonly name = "CreateTransactionLabelTable";
+export class CreateLabelTable extends BackendJS.Database.Update<string> {
+    public readonly name = "CreateLabelTable";
     public readonly version = 1;
     public readonly timestamp = '2023-11-09';
 

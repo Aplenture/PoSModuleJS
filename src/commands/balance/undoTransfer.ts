@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
-import { BalanceEvent, OrderState, PaymentMethod } from "../../enums";
+import { BalanceEvent, LabelType, OrderState, PaymentMethod } from "../../enums";
 
 const MAX_DURATION = CoreJS.Milliseconds.Day * 32; // one more than highest month lenght
 
@@ -30,10 +30,14 @@ export class UndoTransfer extends BackendJS.Module.Command<Context, Args, Option
         if (transfer.account != args.account)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
-        const transactionLabels = await this.context.transactionLabelRepository.getAll(args.account);
-        const transactionDatas = [BalanceEvent.Deposit as string, BalanceEvent.Withdraw as string].concat(transactionLabels.map(data => data.name));
+        const validLabels = await this.context.labelRepository.getAll(args.account
+            , LabelType.Deposit,
+            LabelType.Withdraw
+        );
 
-        if (!transactionDatas.includes(transfer.data))
+        const validDatas = [BalanceEvent.Deposit as string, BalanceEvent.Withdraw as string].concat(validLabels.map(data => data.name));
+
+        if (!validDatas.includes(transfer.data))
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_transaction_data_invalid');
 
         const result = await this.context.balanceRepository.removeEvent(args.id);

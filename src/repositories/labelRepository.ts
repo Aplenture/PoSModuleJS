@@ -6,11 +6,11 @@
  */
 
 import * as BackendJS from "backendjs";
-import { TransactionType } from "../enums";
-import { TransactionLabel } from "../models";
+import { LabelType } from "../enums";
+import { Label } from "../models";
 
-export class TransactionLabelRepository extends BackendJS.Database.Repository<string> {
-    public async create(account: number, type: TransactionType, name: string): Promise<TransactionLabel> {
+export class LabelRepository extends BackendJS.Database.Repository<string> {
+    public async create(account: number, type: LabelType, name: string): Promise<Label> {
         const result = await this.database.query(`INSERT INTO ${this.data} (\`account\`,\`type\`,\`name\`) VALUES (?,?,?)`, [
             account,
             type,
@@ -25,13 +25,13 @@ export class TransactionLabelRepository extends BackendJS.Database.Repository<st
         };
     }
 
-    public async getAll(account: number, type?: TransactionType): Promise<TransactionLabel[]> {
+    public async getAll(account: number, ...types: LabelType[]): Promise<Label[]> {
         const where = ['`account`=?'];
         const values = [account];
 
-        if (type) {
-            where.push('`type`=?');
-            values.push(type);
+        if (types.length) {
+            where.push(`\`type\` IN (${types.map(() => '?').join(',')})`);
+            values.push(...types);
         }
 
         const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${where.join(' AND ')} ORDER BY \`id\` ASC`, values);

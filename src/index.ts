@@ -8,7 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args, Options, Context } from "./core";
-import { CustomerRepository, OrderRepository, ProductRepository, TransactionLabelRepository } from "./repositories";
+import { CustomerRepository, OrderRepository, ProductRepository, LabelRepository } from "./repositories";
 import { OrderTables } from "./models/orderTables";
 
 export class Module extends BackendJS.Module.Module<Context, Args, Options> implements Context {
@@ -19,7 +19,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
     public readonly customerRepository: CustomerRepository;
     public readonly orderRepository: OrderRepository;
     public readonly productRepository: ProductRepository;
-    public readonly transactionLabelRepository: TransactionLabelRepository;
+    public readonly labelRepository: LabelRepository;
 
     private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders", { account: 2 }), { days: 1 }, CoreJS.addDate({ days: 1, minutes: -1 }));
 
@@ -28,7 +28,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
             new CoreJS.DictionaryParameter('databaseConfig', 'database config', BackendJS.Database.Parameters),
             new CoreJS.StringParameter('customerTable', 'database table customer name', '`customers`'),
             new CoreJS.StringParameter('productTable', 'database table product name', '`products`'),
-            new CoreJS.StringParameter('transactionLabelTable', 'database table transaction labels', '`transactionLabels`'),
+            new CoreJS.StringParameter('labelTable', 'database table labels', '`labels`'),
             new CoreJS.DictionaryParameter<OrderTables>('orderTables', 'database table order names', [
                 new CoreJS.StringParameter('orders', 'database table order name', '`orders`'),
                 new CoreJS.StringParameter('products', 'database table order product name', '`orderProducts`')
@@ -55,7 +55,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.customerRepository = new CustomerRepository(this.options.customerTable, this.database, __dirname + '/updates/' + CustomerRepository.name);
         this.orderRepository = new OrderRepository(this.options.orderTables, this.database, __dirname + '/updates/' + OrderRepository.name);
         this.productRepository = new ProductRepository(this.options.productTable, this.database, __dirname + '/updates/' + ProductRepository.name);
-        this.transactionLabelRepository = new TransactionLabelRepository(this.options.transactionLabelTable, this.database, __dirname + '/updates/' + TransactionLabelRepository.name);
+        this.labelRepository = new LabelRepository(this.options.labelTable, this.database, __dirname + '/updates/' + LabelRepository.name);
 
         this.addCommands(Object.values(require('./commands')).map((constructor: any) => new constructor(this)));
 

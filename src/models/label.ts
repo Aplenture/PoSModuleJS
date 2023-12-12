@@ -5,4 +5,11 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
-export * from "./createTransactionLabelTable";
+import { LabelType } from "../enums";
+
+export interface Label {
+    readonly id: number;
+    readonly account: number;
+    readonly type: LabelType;
+    readonly name: string;
+}

@@ -21,6 +21,6 @@ export class ImplementCategory extends BackendJS.Database.Update<string> {
 
         this.reset = ``;
         this.revert = `ALTER TABLE ${table} DROP COLUMN \`category\``;
-        this.update = `ALTER TABLE ${table} ADD COLUMN \`category\` VARCHAR(64) NOT NULL DEFAULT '#_other'`;
+        this.update = `ALTER TABLE ${table} ADD COLUMN \`category\` INT DEFAULT NULL`;
     }
 }

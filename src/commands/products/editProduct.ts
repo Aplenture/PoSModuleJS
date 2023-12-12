@@ -8,6 +8,7 @@
 import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
+import { LabelType } from "../../enums";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -15,7 +16,7 @@ interface Args extends GlobalArgs {
     readonly name: string;
     readonly price: number;
     readonly discount: number;
-    readonly category: string;
+    readonly category: number;
     readonly priority: number;
     readonly start: number;
     readonly end: number;
@@ -29,7 +30,7 @@ export class EditProduct extends BackendJS.Module.Command<Context, Args, Options
         new CoreJS.StringParameter('name', 'name of product', null),
         new CoreJS.NumberParameter('price', 'price of product', null),
         new CoreJS.NumberParameter('discount', 'discount of product', null),
-        new CoreJS.StringParameter('category', 'category of product', null),
+        new CoreJS.NumberParameter('category', 'category of product', null),
         new CoreJS.NumberParameter('priority', 'priority of product', null),
         new CoreJS.TimeParameter('start', 'start of product', null),
         new CoreJS.TimeParameter('end', 'end of product', null)
@@ -43,6 +44,13 @@ export class EditProduct extends BackendJS.Module.Command<Context, Args, Options
 
         if (product.account != args.account)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
+
+        if (undefined != args.category) {
+            const validLabels = await this.context.labelRepository.getAll(args.account, LabelType.ProductCategory);
+
+            if (!validLabels.some(data => data.id == args.category))
+                return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, "#_product_category_invalid");
+        }
 
         const result = await this.context.productRepository.edit(args.product, args);
 
