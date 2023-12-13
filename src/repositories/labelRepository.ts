@@ -9,19 +9,25 @@ import * as BackendJS from "backendjs";
 import { LabelType } from "../enums";
 import { Label } from "../models";
 
+interface CreateData {
+    readonly account: number;
+    readonly type: LabelType;
+    readonly name: string;
+}
+
 export class LabelRepository extends BackendJS.Database.Repository<string> {
-    public async create(account: number, type: LabelType, name: string): Promise<Label> {
-        const result = await this.database.query(`INSERT INTO ${this.data} (\`account\`,\`type\`,\`name\`) VALUES (?,?,?)`, [
-            account,
-            type,
-            name
+    public async create(data: CreateData): Promise<Label> {
+        const result = await this.database.query(`INSERT INTO ${this.data} (\`account\`,\`type\`,\`name\`) VALUES (?,?,?,?)`, [
+            data.account,
+            data.type,
+            data.name
         ]);
 
         return {
             id: result.insertId,
-            account,
-            type,
-            name
+            account: data.account,
+            type: data.type,
+            name: data.name
         };
     }
 

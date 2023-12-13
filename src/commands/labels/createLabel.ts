@@ -26,7 +26,7 @@ export class CreateLabel extends BackendJS.Module.Command<Context, Args, Options
 
     public async execute(args: Args): Promise<CoreJS.Response> {
         try {
-            const result = await this.context.labelRepository.create(args.account, args.type, args.name);
+            const result = await this.context.labelRepository.create(args);
 
             return new CoreJS.JSONResponse(result);
         } catch (error) {
