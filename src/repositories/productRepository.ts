@@ -153,8 +153,19 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
 
     public async getAll(account: number, options: GetAllOptions = {}): Promise<Product[]> {
         const limit = Math.min(MAX_LIMIT, options.limit || MAX_LIMIT);
-        const values: any[] = [account];
-        const keys = ['`account`=?'];
+        const time = BackendJS.Database.parseFromTime(options.time || Number(CoreJS.calcDate()));
+
+        const values: any[] = [
+            account,
+            time,
+            time
+        ];
+
+        const keys = [
+            '`account`=?',
+            '(`start` IS NULL OR `start`<=?)',
+            '(`end` IS NULL OR `end`>=?)'
+        ];
 
         if (options.firstID) {
             values.push(options.firstID);
@@ -166,13 +177,6 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
             keys.push('`id`<=?');
         }
 
-        if (options.time) {
-            values.push(BackendJS.Database.parseFromTime(options.time));
-            keys.push('(`start` IS NULL OR `start`<=?)');
-
-            values.push(BackendJS.Database.parseFromTime(options.time));
-            keys.push('(`end` IS NULL OR `end`>=?)');
-        }
 
         const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${keys.join(' AND ')} LIMIT ${limit}`, values);
 
