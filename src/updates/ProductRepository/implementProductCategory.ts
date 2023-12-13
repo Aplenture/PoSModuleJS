@@ -7,9 +7,9 @@
 
 import * as BackendJS from "backendjs";
 
-export class ImplementPriortiy extends BackendJS.Database.Update<string> {
-    public readonly name = "ImplementPriortiy";
-    public readonly version = 3;
+export class ImplementProductCategory extends BackendJS.Database.Update<string> {
+    public readonly name = "ImplementProductCategory";
+    public readonly version = 2;
     public readonly timestamp = '2023-12-05';
 
     public readonly update: string;
@@ -20,7 +20,7 @@ export class ImplementPriortiy extends BackendJS.Database.Update<string> {
         super(table);
 
         this.reset = ``;
-        this.revert = `ALTER TABLE ${table} DROP COLUMN \`priority\``;
-        this.update = `ALTER TABLE ${table} ADD COLUMN \`priority\` INT DEFAULT 0`;
+        this.revert = `ALTER TABLE ${table} DROP COLUMN \`category\``;
+        this.update = `ALTER TABLE ${table} ADD COLUMN \`category\` INT DEFAULT 1`;
     }
 }

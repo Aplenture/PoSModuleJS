@@ -6,6 +6,6 @@
  */
 
 export * from "./createProductTable";
-export * from "./implementCategory";
-export * from "./implementPriority";
-export * from "./implementTimeframe";
+export * from "./implementProductCategory";
+export * from "./implementProductPriority";
+export * from "./implementProductTimeframe";
