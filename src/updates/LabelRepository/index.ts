@@ -5,4 +5,5 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
+export * from "./createDefaultLabel";
 export * from "./createLabelTable";
