@@ -6,6 +6,7 @@
  */
 
 import * as BackendJS from "backendjs";
+import * as CoreJS from "corejs";
 import { Product } from "../models";
 
 const MAX_LIMIT = 1000;
@@ -36,6 +37,7 @@ interface GetAllOptions {
     readonly firstID?: number;
     readonly lastID?: number;
     readonly time?: number;
+    readonly category?: number;
 }
 
 export class ProductRepository extends BackendJS.Database.Repository<string> {
@@ -177,6 +179,10 @@ export class ProductRepository extends BackendJS.Database.Repository<string> {
             keys.push('`id`<=?');
         }
 
+        if (undefined != options.category) {
+            values.push(options.category);
+            keys.push('`category`=?');
+        }
 
         const result = await this.database.query(`SELECT * FROM ${this.data} WHERE ${keys.join(' AND ')} LIMIT ${limit}`, values);
 
