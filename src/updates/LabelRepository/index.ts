@@ -7,3 +7,4 @@
 
 export * from "./createDefaultLabel";
 export * from "./createLabelTable";
+export * from "./implementLabelPriority";

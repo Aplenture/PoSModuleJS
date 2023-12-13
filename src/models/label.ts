@@ -12,4 +12,5 @@ export interface Label {
     readonly account: number;
     readonly type: LabelType;
     readonly name: string;
+    readonly priority: number;
 }

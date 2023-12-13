@@ -14,6 +14,7 @@ interface Args extends GlobalArgs {
     readonly account: number;
     readonly type: LabelType;
     readonly name: string;
+    readonly priority: number;
 }
 
 export class CreateLabel extends BackendJS.Module.Command<Context, Args, Options> {
@@ -21,7 +22,8 @@ export class CreateLabel extends BackendJS.Module.Command<Context, Args, Options
     public readonly parameters = new CoreJS.ParameterList(
         new CoreJS.NumberParameter('account', 'account id'),
         new CoreJS.NumberParameter('type', 'type of label'),
-        new CoreJS.StringParameter('name', 'name of label')
+        new CoreJS.StringParameter('name', 'name of label'),
+        new CoreJS.NumberParameter('priority', 'priority of label', 0)
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {

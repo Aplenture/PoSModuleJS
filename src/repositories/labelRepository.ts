@@ -13,21 +13,24 @@ interface CreateData {
     readonly account: number;
     readonly type: LabelType;
     readonly name: string;
+    readonly priority?: number;
 }
 
 export class LabelRepository extends BackendJS.Database.Repository<string> {
     public async create(data: CreateData): Promise<Label> {
-        const result = await this.database.query(`INSERT INTO ${this.data} (\`account\`,\`type\`,\`name\`) VALUES (?,?,?,?)`, [
+        const result = await this.database.query(`INSERT INTO ${this.data} (\`account\`,\`type\`,\`name\`,\`priority\`) VALUES (?,?,?,?)`, [
             data.account,
             data.type,
-            data.name
+            data.name,
+            data.priority ?? 0
         ]);
 
         return {
             id: result.insertId,
             account: data.account,
             type: data.type,
-            name: data.name
+            name: data.name,
+            priority: data.priority ?? 0
         };
     }
 
@@ -49,7 +52,8 @@ export class LabelRepository extends BackendJS.Database.Repository<string> {
             id: data.id,
             account: data.account,
             type: data.type,
-            name: data.name
+            name: data.name,
+            priority: data.priority
         }));
     }
 }
