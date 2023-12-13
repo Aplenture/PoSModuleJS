@@ -26,11 +26,11 @@ export class LabelRepository extends BackendJS.Database.Repository<string> {
     }
 
     public async getAll(account: number, ...types: LabelType[]): Promise<Label[]> {
-        const where = ['`account`=?'];
+        const where = ['(`account`=? OR `account`=0)'];
         const values = [account];
 
         if (types.length) {
-            where.push(`\`type\` IN (${types.map(() => '?').join(',')})`);
+            where.push(`\`type\` IN (0,${types.map(() => '?').join(',')})`);
             values.push(...types);
         }
 
