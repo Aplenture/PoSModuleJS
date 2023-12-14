@@ -28,6 +28,7 @@ export class GetTransfers extends BackendJS.Module.Command<Context, Args, Option
 
     public async execute(args: Args): Promise<CoreJS.Response> {
         const validLabels = await this.context.labelRepository.getAll(args.account,
+            LabelType.Default,
             LabelType.Deposit,
             LabelType.Withdraw
         );
