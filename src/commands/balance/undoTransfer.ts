@@ -30,8 +30,9 @@ export class UndoTransfer extends BackendJS.Module.Command<Context, Args, Option
         if (transfer.account != args.account)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
-        const validLabels = await this.context.labelRepository.getAll(args.account
-            , LabelType.Deposit,
+        const validLabels = await this.context.labelRepository.getAll(args.account,
+            LabelType.Default,
+            LabelType.Deposit,
             LabelType.Withdraw
         );
 
