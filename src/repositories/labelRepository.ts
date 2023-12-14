@@ -39,7 +39,7 @@ export class LabelRepository extends BackendJS.Database.Repository<string> {
         const values = [account];
 
         if (types.length) {
-            where.push(`\`type\` IN (0,${types.map(() => '?').join(',')})`);
+            where.push(`\`type\` IN (${types.map(() => '?').join(',')})`);
             values.push(...types);
         }
 

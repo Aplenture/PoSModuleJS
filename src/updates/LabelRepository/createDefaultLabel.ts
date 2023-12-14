@@ -6,6 +6,7 @@
  */
 
 import * as BackendJS from "backendjs";
+import { LabelType } from "../../enums";
 
 export class CreateDefaultLabel extends BackendJS.Database.Update<string> {
     public readonly name = "CreateDefaultLabel";
@@ -21,6 +22,6 @@ export class CreateDefaultLabel extends BackendJS.Database.Update<string> {
 
         this.reset = ``;
         this.revert = `DELETE FROM ${table} WHERE \`id\`=0`;
-        this.update = `INSERT INTO ${table} (\`account\`,\`type\`,\`name\`) VALUES (0,0,'#_title_default')`;
+        this.update = `INSERT INTO ${table} (\`account\`,\`type\`,\`name\`) VALUES (0,${LabelType.Default},'#_title_default')`;
     }
 }
