@@ -21,10 +21,13 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
     public readonly productRepository: ProductRepository;
     public readonly labelRepository: LabelRepository;
 
+    public readonly discount: number;
+
     private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders", { account: 2 }), { days: 1 }, CoreJS.addDate({ days: 1, minutes: -1 }));
 
     constructor(app: BackendJS.Module.IApp, args: BackendJS.Module.Args, options: Options, ...params: CoreJS.Parameter<any>[]) {
         super(app, args, options, ...params,
+            new CoreJS.NumberParameter('discount', 'discount of bonus payment'),
             new CoreJS.DictionaryParameter('databaseConfig', 'database config', BackendJS.Database.Parameters),
             new CoreJS.StringParameter('customerTable', 'database table customer name', '`customers`'),
             new CoreJS.StringParameter('productTable', 'database table product name', '`products`'),
@@ -56,6 +59,8 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.orderRepository = new OrderRepository(this.options.orderTables, this.database, __dirname + '/updates/' + OrderRepository.name);
         this.productRepository = new ProductRepository(this.options.productTable, this.database, __dirname + '/updates/' + ProductRepository.name);
         this.labelRepository = new LabelRepository(this.options.labelTable, this.database, __dirname + '/updates/' + LabelRepository.name);
+
+        this.discount = this.options.discount;
 
         this.addCommands(Object.values(require('./commands')).map((constructor: any) => new constructor(this)));
 

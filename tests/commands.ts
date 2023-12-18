@@ -17,6 +17,7 @@ const args = {
 
 const config = {
     name: "test",
+    discount: 30,
     databaseConfig: {
         host: "localhost",
         user: "dev",
@@ -1482,6 +1483,68 @@ describe("Commands", () => {
             it("catches zero customers to delete", () => m.execute('removeAllCustomers', { account: 1, paymentmethod: PaymentMethod.Cash }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
         });
     });
+
+    describe("Bonus handling", () => {
+        it("executes", () => m.execute("executeBonus", { account: 3 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
+    }).beforeAll(async () => {
+        console.log(await m.execute("addCustomer", { account: 3, firstname: "do_nothing", paymentMethods: PaymentMethod.Balance }));
+        console.log(await m.execute("addCustomer", { account: 3, firstname: "no_balance", paymentMethods: PaymentMethod.Balance }));
+        console.log(await m.execute("addCustomer", { account: 3, firstname: "deposit_first_not_enough", paymentMethods: PaymentMethod.Balance }));
+        console.log(await m.execute("addCustomer", { account: 3, firstname: "deposit_first_enough", paymentMethods: PaymentMethod.Balance }));
+        console.log(await m.execute("addCustomer", { account: 3, firstname: "deposit_between_not_enough", paymentMethods: PaymentMethod.Balance }));
+        console.log(await m.execute("addCustomer", { account: 3, firstname: "deposit_between_enough", paymentMethods: PaymentMethod.Balance }));
+        console.log(await m.execute("addCustomer", { account: 3, firstname: "deposit_after_not_enough", paymentMethods: PaymentMethod.Balance }));
+        console.log(await m.execute("addCustomer", { account: 3, firstname: "deposit_after_enough", paymentMethods: PaymentMethod.Balance }));
+
+        console.log(await m.execute("addProduct", { account: 3, name: 'product', price: 100, category: 1 }));
+
+        console.log(await m.execute("orderProduct", { account: 3, customer: 11, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 12, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 13, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 14, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 15, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 16, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 17, product: 12 }));
+
+        console.log(await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(new Date('2023-10-03')) / 1000}) WHERE account=3 AND \`id\`>=14`));
+
+        console.log(await m.execute("orderProduct", { account: 3, customer: 11, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 12, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 13, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 14, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 15, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 16, product: 12 }));
+        console.log(await m.execute("orderProduct", { account: 3, customer: 17, product: 12 }));
+
+        console.log(await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(new Date('2023-10-03')) / 1000}) WHERE account=3 AND \`id\`>=21`));
+
+        console.log(await m.execute("depositBalance", { date: Number(new Date('2023-10-02')), account: 3, customer: 12, value: 150 }));
+        console.log(await m.execute("depositBalance", { date: Number(new Date('2023-10-02')), account: 3, customer: 13, value: 200 }));
+
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-10-03'), account: 3, depot: 11, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-10-03'), account: 3, depot: 12, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-10-03'), account: 3, depot: 13, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-10-03'), account: 3, depot: 14, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-10-03'), account: 3, depot: 15, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-10-03'), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-10-03'), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+
+        console.log(await m.execute("depositBalance", { date: Number(new Date('2023-10-04')), account: 3, customer: 14, value: 150 }));
+        console.log(await m.execute("depositBalance", { date: Number(new Date('2023-10-04')), account: 3, customer: 15, value: 200 }));
+
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-11-02'), account: 3, depot: 11, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-11-02'), account: 3, depot: 12, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-11-02'), account: 3, depot: 13, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-11-02'), account: 3, depot: 14, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-11-02'), account: 3, depot: 15, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-11-02'), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+        console.log(await m.balanceRepository.decrease({ date: new Date('2023-11-02'), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice }));
+
+        console.log(await m.execute("depositBalance", { date: Number(new Date('2023-11-03')), account: 3, customer: 16, value: 150 }));
+        console.log(await m.execute("depositBalance", { date: Number(new Date('2023-11-03')), account: 3, customer: 17, value: 200 }));
+
+        console.log(await m.balanceRepository.getBalance(3));
+    }).afterAll(() => m.balanceRepository.getBalance(3).then(console.log));
 
     describe("Deinitialization", () => {
         it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));

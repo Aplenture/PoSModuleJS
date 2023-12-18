@@ -9,6 +9,7 @@ import * as BackendJS from "backendjs";
 import { OrderTables } from "../models/orderTables";
 
 export interface Options extends BackendJS.Module.Options {
+    readonly discount: number;
     readonly databaseConfig: BackendJS.Database.Config;
     readonly balanceTables?: BackendJS.Balance.Tables;
     readonly customerTable?: string;
