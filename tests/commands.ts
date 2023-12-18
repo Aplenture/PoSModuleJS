@@ -42,8 +42,8 @@ app.onMessage.on(message => log.write(message));
 describe("Commands", () => {
     describe("Initialization", () => {
         it("initializes", () => m.init());
-        it("updates", () => m.execute('update').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
         it("resets", () => m.execute('reset').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
+        it("updates", () => m.execute('update').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
     });
 
     describe("Labels", () => {
@@ -74,15 +74,16 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(8);
-                expect(data[0]).deep.contains({ id: 1, account: 1, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });
-                expect(data[1]).deep.contains({ id: 2, account: 1, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });
-                expect(data[2]).deep.contains({ id: 3, account: 1, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });
-                expect(data[3]).deep.contains({ id: 4, account: 1, type: LabelType.Deposit, name: 'my_second_deposit_label', priority: 0 });
-                expect(data[4]).deep.contains({ id: 5, account: 1, type: LabelType.Withdraw, name: 'my_second_withdraw_label', priority: 0 });
-                expect(data[5]).deep.contains({ id: 6, account: 1, type: LabelType.ProductCategory, name: 'my_second_category_label', priority: 0 });
-                expect(data[6]).deep.contains({ id: 10, account: 1, type: LabelType.ProductCategory, name: 'my_another_category_label', priority: 0 });
-                expect(data[7]).deep.contains({ id: 11, account: 1, type: LabelType.ProductCategory, name: 'my_label_with_prio', priority: 1337 });
+                expect(data).has.length(9);
+                expect(data[0]).deep.contains({ id: 1, account: 0, type: LabelType.Default, name: '#_title_default', priority: 0 });
+                expect(data[1]).deep.contains({ id: 2, account: 1, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });
+                expect(data[2]).deep.contains({ id: 3, account: 1, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });
+                expect(data[3]).deep.contains({ id: 4, account: 1, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });
+                expect(data[4]).deep.contains({ id: 5, account: 1, type: LabelType.Deposit, name: 'my_second_deposit_label', priority: 0 });
+                expect(data[5]).deep.contains({ id: 6, account: 1, type: LabelType.Withdraw, name: 'my_second_withdraw_label', priority: 0 });
+                expect(data[6]).deep.contains({ id: 7, account: 1, type: LabelType.ProductCategory, name: 'my_second_category_label', priority: 0 });
+                expect(data[7]).deep.contains({ id: 11, account: 1, type: LabelType.ProductCategory, name: 'my_another_category_label', priority: 0 });
+                expect(data[8]).deep.contains({ id: 12, account: 1, type: LabelType.ProductCategory, name: 'my_label_with_prio', priority: 1337 });
             });
 
             it("all of account 2", async () => {
@@ -92,10 +93,11 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(3);
-                expect(data[0]).deep.contains({ id: 7, account: 2, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });;
-                expect(data[1]).deep.contains({ id: 8, account: 2, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });;
-                expect(data[2]).deep.contains({ id: 9, account: 2, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });;
+                expect(data).has.length(4);
+                expect(data[0]).deep.contains({ id: 1, account: 0, type: LabelType.Default, name: '#_title_default', priority: 0 });
+                expect(data[1]).deep.contains({ id: 8, account: 2, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });;
+                expect(data[2]).deep.contains({ id: 9, account: 2, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });;
+                expect(data[3]).deep.contains({ id: 10, account: 2, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });;
             });
 
             it("single type specific", async () => {
@@ -106,10 +108,10 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(4);
-                expect(data[0]).deep.contains({ id: 3, account: 1, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });;
-                expect(data[1]).deep.contains({ id: 6, account: 1, type: LabelType.ProductCategory, name: 'my_second_category_label', priority: 0 });;
-                expect(data[2]).deep.contains({ id: 10, account: 1, type: LabelType.ProductCategory, name: 'my_another_category_label', priority: 0 });
-                expect(data[3]).deep.contains({ id: 11, account: 1, type: LabelType.ProductCategory, name: 'my_label_with_prio', priority: 1337 });
+                expect(data[0]).deep.contains({ id: 4, account: 1, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });;
+                expect(data[1]).deep.contains({ id: 7, account: 1, type: LabelType.ProductCategory, name: 'my_second_category_label', priority: 0 });;
+                expect(data[2]).deep.contains({ id: 11, account: 1, type: LabelType.ProductCategory, name: 'my_another_category_label', priority: 0 });
+                expect(data[3]).deep.contains({ id: 12, account: 1, type: LabelType.ProductCategory, name: 'my_label_with_prio', priority: 1337 });
             });
 
             it("multiple type specific", async () => {
@@ -120,10 +122,10 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(4);
-                expect(data[0]).deep.contains({ id: 1, account: 1, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });
-                expect(data[1]).deep.contains({ id: 2, account: 1, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });
-                expect(data[2]).deep.contains({ id: 4, account: 1, type: LabelType.Deposit, name: 'my_second_deposit_label', priority: 0 });
-                expect(data[3]).deep.contains({ id: 5, account: 1, type: LabelType.Withdraw, name: 'my_second_withdraw_label', priority: 0 });
+                expect(data[0]).deep.contains({ id: 2, account: 1, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });
+                expect(data[1]).deep.contains({ id: 3, account: 1, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });
+                expect(data[2]).deep.contains({ id: 5, account: 1, type: LabelType.Deposit, name: 'my_second_deposit_label', priority: 0 });
+                expect(data[3]).deep.contains({ id: 6, account: 1, type: LabelType.Withdraw, name: 'my_second_withdraw_label', priority: 0 });
             });
 
             it("catches missing account", () => m.execute('getLabels', { type: LabelType.Deposit, name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
@@ -291,117 +293,117 @@ describe("Commands", () => {
     describe("Products", () => {
         describe("add", () => {
             it("adds product without discount", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'product 1', price: 100, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'product 1', price: 100, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 1, account: 1, name: 'product 1', price: 100, discount: 0, category: 3 });
+                expect(data).contains({ id: 1, account: 1, name: 'product 1', price: 100, discount: 0, category: 4 });
             });
 
             it("adds product with discount", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'product 2', price: 150, discount: 10, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'product 2', price: 150, discount: 10, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 2, account: 1, name: 'product 2', price: 150, discount: 10, category: 3 });
+                expect(data).contains({ id: 2, account: 1, name: 'product 2', price: 150, discount: 10, category: 4 });
             });
 
             it("adds product third", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'product 3', price: 150, discount: 10, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'product 3', price: 150, discount: 10, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 3, account: 1, name: 'product 3', price: 150, discount: 10, category: 3 });
+                expect(data).contains({ id: 3, account: 1, name: 'product 3', price: 150, discount: 10, category: 4 });
             });
 
             it("adds product fourth", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'product 4', price: 150, discount: 10, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'product 4', price: 150, discount: 10, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 10, category: 3 });
+                expect(data).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 10, category: 4 });
             });
 
             it("adds product for additional account", async () => {
-                const result = await m.execute("addProduct", { account: 2, name: 'product 4', price: 150, discount: 10, category: 9 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 2, name: 'product 4', price: 150, discount: 10, category: 10 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 5, account: 2, name: 'product 4', price: 150, discount: 10, category: 9 });
+                expect(data).contains({ id: 5, account: 2, name: 'product 4', price: 150, discount: 10, category: 10 });
             });
 
             it("adds started product", async () => {
                 const start = CoreJS.reduceDate({ days: 1 });
-                const result = await m.execute("addProduct", { account: 1, name: 'started', price: 150, start, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'started', price: 150, start, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 6, account: 1, name: 'started', price: 150, start: Number(start), category: 3 });
+                expect(data).contains({ id: 6, account: 1, name: 'started', price: 150, start: Number(start), category: 4 });
             });
 
             it("adds almost ended product", async () => {
                 const end = CoreJS.addDate({ days: 1 });
-                const result = await m.execute("addProduct", { account: 1, name: 'almost ended', price: 150, end, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'almost ended', price: 150, end, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 7, account: 1, name: 'almost ended', price: 150, end: Number(end), category: 3 });
+                expect(data).contains({ id: 7, account: 1, name: 'almost ended', price: 150, end: Number(end), category: 4 });
             });
 
             it("adds outdated product", async () => {
                 const end = CoreJS.reduceDate({ days: 2 });
-                const result = await m.execute("addProduct", { account: 1, name: 'outdated', price: 150, end, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'outdated', price: 150, end, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 8, account: 1, name: 'outdated', price: 150, end: Number(end), category: 3 });
+                expect(data).contains({ id: 8, account: 1, name: 'outdated', price: 150, end: Number(end), category: 4 });
             });
 
             it("adds future product", async () => {
                 const start = CoreJS.addDate({ days: 2 });
-                const result = await m.execute("addProduct", { account: 1, name: 'future', price: 150, start, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'future', price: 150, start, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 9, account: 1, name: 'future', price: 150, start: Number(start), category: 3 });
+                expect(data).contains({ id: 9, account: 1, name: 'future', price: 150, start: Number(start), category: 4 });
             });
 
             it("adds product with priority", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'priority', price: 150, priority: 2, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'priority', price: 150, priority: 2, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2, category: 3 });
+                expect(data).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2, category: 4 });
             });
 
             it("adds product with different category", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'category', price: 150, category: 6 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'category', price: 150, category: 7 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6 });
+                expect(data).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7 });
             });
 
             it("catches missing account", () => m.execute("addProduct", { name: 'test', price: 100, category: "test" }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
@@ -413,7 +415,7 @@ describe("Commands", () => {
             it("changes name", () => m.execute("editProduct", { account: 1, product: 1, name: 'test1' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes price", () => m.execute("editProduct", { account: 1, product: 3, price: 200 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes discount", () => m.execute("editProduct", { account: 1, product: 4, discount: 20 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("changes category", () => m.execute("editProduct", { account: 1, product: 1, category: 10 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes category", () => m.execute("editProduct", { account: 1, product: 1, category: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes priority", () => m.execute("editProduct", { account: 1, product: 1, priority: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes start", () => m.execute("editProduct", { account: 1, product: 1, start: CoreJS.addDate({ days: 1 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes end", () => m.execute("editProduct", { account: 1, product: 3, end: CoreJS.reduceDate({ days: 1 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
@@ -436,15 +438,15 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(9);
-                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 10, priority: 1 });
-                expect(data[1]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 3, priority: 0 });
-                expect(data[2]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 3, priority: 0 });
-                expect(data[3]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 3, priority: 0 });
-                expect(data[4]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 3, priority: 0 });
-                expect(data[5]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 3, priority: 0 });
-                expect(data[6]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 3, priority: 0 });
-                expect(data[7]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 3, priority: 2 });
-                expect(data[8]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 11, priority: 1 });
+                expect(data[1]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 4, priority: 0 });
+                expect(data[2]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 4, priority: 0 });
+                expect(data[3]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 4, priority: 0 });
+                expect(data[4]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 4, priority: 0 });
+                expect(data[5]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 4, priority: 0 });
+                expect(data[6]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 4, priority: 0 });
+                expect(data[7]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 4, priority: 2 });
+                expect(data[8]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns all from account 2", async () => {
@@ -466,11 +468,11 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(5);
-                expect(data[0]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 3, priority: 0 });
-                expect(data[1]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 3, priority: 0 });
-                expect(data[2]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 3, priority: 0 });
-                expect(data[3]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 3, priority: 2 });
-                expect(data[4]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[0]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 4, priority: 0 });
+                expect(data[1]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 4, priority: 0 });
+                expect(data[2]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 4, priority: 0 });
+                expect(data[3]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 4, priority: 2 });
+                expect(data[4]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns last id 6", async () => {
@@ -481,10 +483,10 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(4);
-                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 10, priority: 1 });
-                expect(data[1]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 3, priority: 0 });
-                expect(data[2]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 3, priority: 0 });
-                expect(data[3]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 3, priority: 0 });
+                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 11, priority: 1 });
+                expect(data[1]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 4, priority: 0 });
+                expect(data[2]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 4, priority: 0 });
+                expect(data[3]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 4, priority: 0 });
             });
 
             it("returns current products", async () => {
@@ -499,7 +501,7 @@ describe("Commands", () => {
                 expect(data[1]).contains({ id: 6, account: 1, name: 'started', price: 150 });
                 expect(data[2]).contains({ id: 7, account: 1, name: 'almost ended', price: 150 });
                 expect(data[3]).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2 });
-                expect(data[4]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[4]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns past products", async () => {
@@ -510,12 +512,12 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(6);
-                expect(data[0]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 3, priority: 0 });
+                expect(data[0]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 4, priority: 0 });
                 expect(data[1]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20 });
                 expect(data[2]).contains({ id: 7, account: 1, name: 'almost ended', price: 150 });
-                expect(data[3]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 3, priority: 0 });
+                expect(data[3]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 4, priority: 0 });
                 expect(data[4]).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2 });
-                expect(data[5]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[5]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns future products", async () => {
@@ -526,29 +528,29 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(6);
-                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 10, priority: 1 });
+                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 11, priority: 1 });
                 expect(data[1]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20 });
                 expect(data[2]).contains({ id: 6, account: 1, name: 'started', price: 150 });
-                expect(data[3]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 3, priority: 0 });
+                expect(data[3]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 4, priority: 0 });
                 expect(data[4]).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2 });
-                expect(data[5]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[5]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns by category", async () => {
-                const result = await m.execute("getProducts", { account: 1, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("getProducts", { account: 1, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(7);
-                expect(data[0]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 3, priority: 0 });
-                expect(data[1]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 3, priority: 0 });
-                expect(data[2]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 3, priority: 0 });
-                expect(data[3]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 3, priority: 0 });
-                expect(data[4]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 3, priority: 0 });
-                expect(data[5]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 3, priority: 0 });
-                expect(data[6]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 3, priority: 2 });
+                expect(data[0]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 4, priority: 0 });
+                expect(data[1]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 4, priority: 0 });
+                expect(data[2]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 4, priority: 0 });
+                expect(data[3]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 4, priority: 0 });
+                expect(data[4]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 4, priority: 0 });
+                expect(data[5]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 4, priority: 0 });
+                expect(data[6]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 4, priority: 2 });
             });
 
             it("catches missing account", () => m.execute("getProducts", {}).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
