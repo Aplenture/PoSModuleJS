@@ -156,7 +156,7 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         }));
     }
 
-    public async fetchAll(account: number, callback: (data: Customer) => Promise<void>, options: GetAllOptions = {}): Promise<void> {
+    public async fetchAll(account: number, callback: (data: Customer) => Promise<any>, options: GetAllOptions = {}): Promise<void> {
         const values = [account];
         const keys = ['`account`=?'];
 
