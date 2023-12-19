@@ -21,7 +21,7 @@ export async function executeBonus(account: number, customer: Customer, context:
             data: BalanceEvent.Bonus
         });
 
-        // skip bonus that has already been paid out
+        // skip months where bonus has already been paid out
         if (0 < paidBonus.length)
             continue;
 
