@@ -24,6 +24,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
     public readonly discount: number;
 
     private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders", { account: 2 }), { days: 1 }, CoreJS.addDate({ days: 1, minutes: -1 }));
+    private readonly executeBonusCronjob = new CoreJS.Cronjob(() => this.execute("executeBonus", { account: 2 }), { months: 1 }, CoreJS.calcDate({ monthDay: 1 }));
 
     constructor(app: BackendJS.Module.IApp, args: BackendJS.Module.Args, options: Options, ...params: CoreJS.Parameter<any>[]) {
         super(app, args, options, ...params,
@@ -65,6 +66,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.addCommands(Object.values(require('./commands')).map((constructor: any) => new constructor(this)));
 
         this.closeAllOpenBalanceOrdersCronjob.onExecute.on(next => app.onMessage.emit(this, `closing all open balance orders (next update: ${new Date(next).toLocaleString()})`));
+        this.executeBonusCronjob.onExecute.on(next => app.onMessage.emit(this, `executing bonus payment (next update: ${new Date(next).toLocaleString()})`));
     }
 
     public async init(): Promise<void> {
@@ -73,6 +75,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         await super.init();
 
         this.app.updateLoop.add(this.closeAllOpenBalanceOrdersCronjob, true);
+        this.app.updateLoop.add(this.executeBonusCronjob, true);
     }
 
     public async deinit(): Promise<void> {
@@ -80,5 +83,6 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         await super.deinit();
 
         this.app.updateLoop.remove(this.closeAllOpenBalanceOrdersCronjob, true);
+        this.app.updateLoop.remove(this.executeBonusCronjob, true);
     }
 }
