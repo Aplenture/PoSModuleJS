@@ -9,6 +9,7 @@ export * from "./cancelProduct";
 export * from "./closeAllOpenBalanceOrders";
 export * from "./closeOrder";
 export * from "./deleteOrder";
+export * from "./getOpenOrders";
 export * from "./getOrders";
 export * from "./orderProduct";
 export * from "./reopenOrder";
