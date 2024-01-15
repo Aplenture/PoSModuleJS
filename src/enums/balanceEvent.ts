@@ -6,5 +6,6 @@ export enum BalanceEvent {
     Tip = "tip",
     UndoInvoice = "undo_invoice",
     UndoTip = "undo_tip",
-    Withdraw = "withdraw"
+    Withdraw = "withdraw",
+    Bonus = "bonus"
 }

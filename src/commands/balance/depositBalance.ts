@@ -9,6 +9,7 @@ import * as BackendJS from "backendjs";
 import * as CoreJS from "corejs";
 import { Args as GlobalArgs, Context, Options } from "../../core";
 import { BalanceEvent, PaymentMethod } from "../../enums";
+import { executeBonus } from "../../utils";
 
 interface Args extends GlobalArgs {
     readonly account: number;
@@ -29,10 +30,12 @@ export class DepositBalance extends BackendJS.Module.Command<Context, Args, Opti
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        if (!await this.context.customerRepository.hasPermissions(args.account, args.customer))
+        const customer = await this.context.customerRepository.get(args.customer);
+
+        if (args.account != customer.account)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
-        const result = await this.context.balanceRepository.increase({
+        const deposit = await this.context.balanceRepository.increase({
             date: args.date && new Date(args.date) || null,
             account: args.account,
             depot: args.customer,
@@ -41,6 +44,10 @@ export class DepositBalance extends BackendJS.Module.Command<Context, Args, Opti
             value: args.value,
             data: args.label
         });
+
+        const bonus = await executeBonus(args.account, customer, this.context, args.date);
+
+        const result = bonus || deposit;
 
         return new CoreJS.JSONResponse({
             timestamp: result.timestamp,

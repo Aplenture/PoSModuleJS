@@ -156,6 +156,36 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         }));
     }
 
+    public async fetchAll(account: number, callback: (data: Customer) => Promise<any>, options: GetAllOptions = {}): Promise<void> {
+        const values = [account];
+        const keys = ['`account`=?'];
+
+        if (options.firstID) {
+            values.push(options.firstID);
+            keys.push('`id`>=?');
+        }
+
+        if (options.lastID) {
+            values.push(options.lastID);
+            keys.push('`id`<=?');
+        }
+
+        if (options.paymentMethods) {
+            values.push(options.paymentMethods);
+            keys.push('(`paymentMethods`&?)>0');
+        }
+
+        await this.database.fetch(`SELECT * FROM ${this.data} WHERE ${keys.join(' AND ')}`, data => callback({
+            id: data.id,
+            account: data.account,
+            created: BackendJS.Database.parseToTime(data.created),
+            firstname: data.firstname,
+            lastname: data.lastname,
+            nickname: data.nickname,
+            paymentMethods: data.paymentMethods
+        }), values);
+    }
+
     public async canPayWith(customer: number, method: PaymentMethod): Promise<boolean> {
         const result = await this.database.query(`SELECT * FROM ${this.data} WHERE \`id\`=? AND (\`paymentMethods\`&?)!=0 LIMIT 1`, [
             customer,

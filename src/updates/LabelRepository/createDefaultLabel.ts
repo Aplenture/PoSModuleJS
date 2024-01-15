@@ -21,7 +21,7 @@ export class CreateDefaultLabel extends BackendJS.Database.Update<string> {
         super(table);
 
         this.reset = ``;
-        this.revert = `DELETE FROM ${table} WHERE \`id\`=0`;
+        this.revert = `DELETE FROM ${table} WHERE \`account\`=0 AND \`type\`=${LabelType.Default} AND \`name\`='#_title_default'`;
         this.update = `INSERT INTO ${table} (\`account\`,\`type\`,\`name\`) VALUES (0,${LabelType.Default},'#_title_default')`;
     }
 }

@@ -36,7 +36,7 @@ export class AddProduct extends BackendJS.Module.Command<Context, Args, Options>
     );
 
     public async execute(args: Args): Promise<CoreJS.Response> {
-        const validLabels = await this.context.labelRepository.getAll(args.account, LabelType.ProductCategory);
+        const validLabels = await this.context.labelRepository.getAll(args.account, LabelType.Default, LabelType.ProductCategory);
 
         if (!validLabels.some(data => data.id == args.category))
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, "#_product_category_invalid");

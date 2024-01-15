@@ -17,6 +17,7 @@ const args = {
 
 const config = {
     name: "test",
+    discount: 30,
     databaseConfig: {
         host: "localhost",
         user: "dev",
@@ -42,8 +43,8 @@ app.onMessage.on(message => log.write(message));
 describe("Commands", () => {
     describe("Initialization", () => {
         it("initializes", () => m.init());
-        it("updates", () => m.execute('update').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
         it("resets", () => m.execute('reset').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
+        it("updates", () => m.execute('update').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
     });
 
     describe("Labels", () => {
@@ -74,15 +75,16 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(8);
-                expect(data[0]).deep.contains({ id: 1, account: 1, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });
-                expect(data[1]).deep.contains({ id: 2, account: 1, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });
-                expect(data[2]).deep.contains({ id: 3, account: 1, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });
-                expect(data[3]).deep.contains({ id: 4, account: 1, type: LabelType.Deposit, name: 'my_second_deposit_label', priority: 0 });
-                expect(data[4]).deep.contains({ id: 5, account: 1, type: LabelType.Withdraw, name: 'my_second_withdraw_label', priority: 0 });
-                expect(data[5]).deep.contains({ id: 6, account: 1, type: LabelType.ProductCategory, name: 'my_second_category_label', priority: 0 });
-                expect(data[6]).deep.contains({ id: 10, account: 1, type: LabelType.ProductCategory, name: 'my_another_category_label', priority: 0 });
-                expect(data[7]).deep.contains({ id: 11, account: 1, type: LabelType.ProductCategory, name: 'my_label_with_prio', priority: 1337 });
+                expect(data).has.length(9);
+                expect(data[0]).deep.contains({ id: 1, account: 0, type: LabelType.Default, name: '#_title_default', priority: 0 });
+                expect(data[1]).deep.contains({ id: 2, account: 1, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });
+                expect(data[2]).deep.contains({ id: 3, account: 1, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });
+                expect(data[3]).deep.contains({ id: 4, account: 1, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });
+                expect(data[4]).deep.contains({ id: 5, account: 1, type: LabelType.Deposit, name: 'my_second_deposit_label', priority: 0 });
+                expect(data[5]).deep.contains({ id: 6, account: 1, type: LabelType.Withdraw, name: 'my_second_withdraw_label', priority: 0 });
+                expect(data[6]).deep.contains({ id: 7, account: 1, type: LabelType.ProductCategory, name: 'my_second_category_label', priority: 0 });
+                expect(data[7]).deep.contains({ id: 11, account: 1, type: LabelType.ProductCategory, name: 'my_another_category_label', priority: 0 });
+                expect(data[8]).deep.contains({ id: 12, account: 1, type: LabelType.ProductCategory, name: 'my_label_with_prio', priority: 1337 });
             });
 
             it("all of account 2", async () => {
@@ -92,10 +94,11 @@ describe("Commands", () => {
 
                 const data = JSON.parse(result.data);
 
-                expect(data).has.length(3);
-                expect(data[0]).deep.contains({ id: 7, account: 2, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });;
-                expect(data[1]).deep.contains({ id: 8, account: 2, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });;
-                expect(data[2]).deep.contains({ id: 9, account: 2, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });;
+                expect(data).has.length(4);
+                expect(data[0]).deep.contains({ id: 1, account: 0, type: LabelType.Default, name: '#_title_default', priority: 0 });
+                expect(data[1]).deep.contains({ id: 8, account: 2, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });;
+                expect(data[2]).deep.contains({ id: 9, account: 2, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });;
+                expect(data[3]).deep.contains({ id: 10, account: 2, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });;
             });
 
             it("single type specific", async () => {
@@ -106,10 +109,10 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(4);
-                expect(data[0]).deep.contains({ id: 3, account: 1, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });;
-                expect(data[1]).deep.contains({ id: 6, account: 1, type: LabelType.ProductCategory, name: 'my_second_category_label', priority: 0 });;
-                expect(data[2]).deep.contains({ id: 10, account: 1, type: LabelType.ProductCategory, name: 'my_another_category_label', priority: 0 });
-                expect(data[3]).deep.contains({ id: 11, account: 1, type: LabelType.ProductCategory, name: 'my_label_with_prio', priority: 1337 });
+                expect(data[0]).deep.contains({ id: 4, account: 1, type: LabelType.ProductCategory, name: 'my_first_category_label', priority: 0 });;
+                expect(data[1]).deep.contains({ id: 7, account: 1, type: LabelType.ProductCategory, name: 'my_second_category_label', priority: 0 });;
+                expect(data[2]).deep.contains({ id: 11, account: 1, type: LabelType.ProductCategory, name: 'my_another_category_label', priority: 0 });
+                expect(data[3]).deep.contains({ id: 12, account: 1, type: LabelType.ProductCategory, name: 'my_label_with_prio', priority: 1337 });
             });
 
             it("multiple type specific", async () => {
@@ -120,10 +123,10 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(4);
-                expect(data[0]).deep.contains({ id: 1, account: 1, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });
-                expect(data[1]).deep.contains({ id: 2, account: 1, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });
-                expect(data[2]).deep.contains({ id: 4, account: 1, type: LabelType.Deposit, name: 'my_second_deposit_label', priority: 0 });
-                expect(data[3]).deep.contains({ id: 5, account: 1, type: LabelType.Withdraw, name: 'my_second_withdraw_label', priority: 0 });
+                expect(data[0]).deep.contains({ id: 2, account: 1, type: LabelType.Deposit, name: 'my_first_deposit_label', priority: 0 });
+                expect(data[1]).deep.contains({ id: 3, account: 1, type: LabelType.Withdraw, name: 'my_first_withdraw_label', priority: 0 });
+                expect(data[2]).deep.contains({ id: 5, account: 1, type: LabelType.Deposit, name: 'my_second_deposit_label', priority: 0 });
+                expect(data[3]).deep.contains({ id: 6, account: 1, type: LabelType.Withdraw, name: 'my_second_withdraw_label', priority: 0 });
             });
 
             it("catches missing account", () => m.execute('getLabels', { type: LabelType.Deposit, name: 'test' }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
@@ -291,117 +294,117 @@ describe("Commands", () => {
     describe("Products", () => {
         describe("add", () => {
             it("adds product without discount", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'product 1', price: 100, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'product 1', price: 100, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 1, account: 1, name: 'product 1', price: 100, discount: 0, category: 3 });
+                expect(data).contains({ id: 1, account: 1, name: 'product 1', price: 100, discount: 0, category: 4 });
             });
 
             it("adds product with discount", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'product 2', price: 150, discount: 10, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'product 2', price: 150, discount: 10, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 2, account: 1, name: 'product 2', price: 150, discount: 10, category: 3 });
+                expect(data).contains({ id: 2, account: 1, name: 'product 2', price: 150, discount: 10, category: 4 });
             });
 
             it("adds product third", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'product 3', price: 150, discount: 10, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'product 3', price: 150, discount: 10, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 3, account: 1, name: 'product 3', price: 150, discount: 10, category: 3 });
+                expect(data).contains({ id: 3, account: 1, name: 'product 3', price: 150, discount: 10, category: 4 });
             });
 
             it("adds product fourth", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'product 4', price: 150, discount: 10, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'product 4', price: 150, discount: 10, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 10, category: 3 });
+                expect(data).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 10, category: 4 });
             });
 
             it("adds product for additional account", async () => {
-                const result = await m.execute("addProduct", { account: 2, name: 'product 4', price: 150, discount: 10, category: 9 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 2, name: 'product 4', price: 150, discount: 10, category: 10 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 5, account: 2, name: 'product 4', price: 150, discount: 10, category: 9 });
+                expect(data).contains({ id: 5, account: 2, name: 'product 4', price: 150, discount: 10, category: 10 });
             });
 
             it("adds started product", async () => {
                 const start = CoreJS.reduceDate({ days: 1 });
-                const result = await m.execute("addProduct", { account: 1, name: 'started', price: 150, start, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'started', price: 150, start, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 6, account: 1, name: 'started', price: 150, start: Number(start), category: 3 });
+                expect(data).contains({ id: 6, account: 1, name: 'started', price: 150, start: Number(start), category: 4 });
             });
 
             it("adds almost ended product", async () => {
                 const end = CoreJS.addDate({ days: 1 });
-                const result = await m.execute("addProduct", { account: 1, name: 'almost ended', price: 150, end, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'almost ended', price: 150, end, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 7, account: 1, name: 'almost ended', price: 150, end: Number(end), category: 3 });
+                expect(data).contains({ id: 7, account: 1, name: 'almost ended', price: 150, end: Number(end), category: 4 });
             });
 
             it("adds outdated product", async () => {
                 const end = CoreJS.reduceDate({ days: 2 });
-                const result = await m.execute("addProduct", { account: 1, name: 'outdated', price: 150, end, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'outdated', price: 150, end, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 8, account: 1, name: 'outdated', price: 150, end: Number(end), category: 3 });
+                expect(data).contains({ id: 8, account: 1, name: 'outdated', price: 150, end: Number(end), category: 4 });
             });
 
             it("adds future product", async () => {
                 const start = CoreJS.addDate({ days: 2 });
-                const result = await m.execute("addProduct", { account: 1, name: 'future', price: 150, start, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'future', price: 150, start, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 9, account: 1, name: 'future', price: 150, start: Number(start), category: 3 });
+                expect(data).contains({ id: 9, account: 1, name: 'future', price: 150, start: Number(start), category: 4 });
             });
 
             it("adds product with priority", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'priority', price: 150, priority: 2, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'priority', price: 150, priority: 2, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2, category: 3 });
+                expect(data).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2, category: 4 });
             });
 
             it("adds product with different category", async () => {
-                const result = await m.execute("addProduct", { account: 1, name: 'category', price: 150, category: 6 }) as CoreJS.JSONResponse;
+                const result = await m.execute("addProduct", { account: 1, name: 'category', price: 150, category: 7 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
-                expect(data).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6 });
+                expect(data).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7 });
             });
 
             it("catches missing account", () => m.execute("addProduct", { name: 'test', price: 100, category: "test" }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
@@ -413,7 +416,7 @@ describe("Commands", () => {
             it("changes name", () => m.execute("editProduct", { account: 1, product: 1, name: 'test1' }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes price", () => m.execute("editProduct", { account: 1, product: 3, price: 200 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes discount", () => m.execute("editProduct", { account: 1, product: 4, discount: 20 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
-            it("changes category", () => m.execute("editProduct", { account: 1, product: 1, category: 10 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
+            it("changes category", () => m.execute("editProduct", { account: 1, product: 1, category: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes priority", () => m.execute("editProduct", { account: 1, product: 1, priority: 1 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes start", () => m.execute("editProduct", { account: 1, product: 1, start: CoreJS.addDate({ days: 1 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
             it("changes end", () => m.execute("editProduct", { account: 1, product: 3, end: CoreJS.reduceDate({ days: 1 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, data: "1" })));
@@ -436,15 +439,15 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(9);
-                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 10, priority: 1 });
-                expect(data[1]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 3, priority: 0 });
-                expect(data[2]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 3, priority: 0 });
-                expect(data[3]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 3, priority: 0 });
-                expect(data[4]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 3, priority: 0 });
-                expect(data[5]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 3, priority: 0 });
-                expect(data[6]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 3, priority: 0 });
-                expect(data[7]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 3, priority: 2 });
-                expect(data[8]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 11, priority: 1 });
+                expect(data[1]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 4, priority: 0 });
+                expect(data[2]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 4, priority: 0 });
+                expect(data[3]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 4, priority: 0 });
+                expect(data[4]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 4, priority: 0 });
+                expect(data[5]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 4, priority: 0 });
+                expect(data[6]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 4, priority: 0 });
+                expect(data[7]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 4, priority: 2 });
+                expect(data[8]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns all from account 2", async () => {
@@ -466,11 +469,11 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(5);
-                expect(data[0]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 3, priority: 0 });
-                expect(data[1]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 3, priority: 0 });
-                expect(data[2]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 3, priority: 0 });
-                expect(data[3]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 3, priority: 2 });
-                expect(data[4]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[0]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 4, priority: 0 });
+                expect(data[1]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 4, priority: 0 });
+                expect(data[2]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 4, priority: 0 });
+                expect(data[3]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 4, priority: 2 });
+                expect(data[4]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns last id 6", async () => {
@@ -481,10 +484,10 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(4);
-                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 10, priority: 1 });
-                expect(data[1]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 3, priority: 0 });
-                expect(data[2]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 3, priority: 0 });
-                expect(data[3]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 3, priority: 0 });
+                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 11, priority: 1 });
+                expect(data[1]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 4, priority: 0 });
+                expect(data[2]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 4, priority: 0 });
+                expect(data[3]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 4, priority: 0 });
             });
 
             it("returns current products", async () => {
@@ -499,7 +502,7 @@ describe("Commands", () => {
                 expect(data[1]).contains({ id: 6, account: 1, name: 'started', price: 150 });
                 expect(data[2]).contains({ id: 7, account: 1, name: 'almost ended', price: 150 });
                 expect(data[3]).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2 });
-                expect(data[4]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[4]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns past products", async () => {
@@ -510,12 +513,12 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(6);
-                expect(data[0]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 3, priority: 0 });
+                expect(data[0]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 4, priority: 0 });
                 expect(data[1]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20 });
                 expect(data[2]).contains({ id: 7, account: 1, name: 'almost ended', price: 150 });
-                expect(data[3]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 3, priority: 0 });
+                expect(data[3]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 4, priority: 0 });
                 expect(data[4]).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2 });
-                expect(data[5]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[5]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns future products", async () => {
@@ -526,29 +529,29 @@ describe("Commands", () => {
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(6);
-                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 10, priority: 1 });
+                expect(data[0]).contains({ id: 1, account: 1, name: 'test1', price: 100, discount: 0, category: 11, priority: 1 });
                 expect(data[1]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20 });
                 expect(data[2]).contains({ id: 6, account: 1, name: 'started', price: 150 });
-                expect(data[3]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 3, priority: 0 });
+                expect(data[3]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 4, priority: 0 });
                 expect(data[4]).contains({ id: 10, account: 1, name: 'priority', price: 150, priority: 2 });
-                expect(data[5]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 6, priority: 0 });
+                expect(data[5]).contains({ id: 11, account: 1, name: 'category', price: 150, category: 7, priority: 0 });
             });
 
             it("returns by category", async () => {
-                const result = await m.execute("getProducts", { account: 1, category: 3 }) as CoreJS.JSONResponse;
+                const result = await m.execute("getProducts", { account: 1, category: 4 }) as CoreJS.JSONResponse;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
                 const data = JSON.parse(result.data);
 
                 expect(data).has.length(7);
-                expect(data[0]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 3, priority: 0 });
-                expect(data[1]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 3, priority: 0 });
-                expect(data[2]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 3, priority: 0 });
-                expect(data[3]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 3, priority: 0 });
-                expect(data[4]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 3, priority: 0 });
-                expect(data[5]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 3, priority: 0 });
-                expect(data[6]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 3, priority: 2 });
+                expect(data[0]).contains({ id: 3, account: 1, name: 'product 3', price: 200, discount: 10, category: 4, priority: 0 });
+                expect(data[1]).contains({ id: 4, account: 1, name: 'product 4', price: 150, discount: 20, category: 4, priority: 0 });
+                expect(data[2]).contains({ id: 6, account: 1, name: 'started', price: 150, category: 4, priority: 0 });
+                expect(data[3]).contains({ id: 7, account: 1, name: 'almost ended', price: 150, category: 4, priority: 0 });
+                expect(data[4]).contains({ id: 8, account: 1, name: 'outdated', price: 150, category: 4, priority: 0 });
+                expect(data[5]).contains({ id: 9, account: 1, name: 'future', price: 150, category: 4, priority: 0 });
+                expect(data[6]).contains({ id: 10, account: 1, name: 'priority', price: 150, category: 4, priority: 2 });
             });
 
             it("catches missing account", () => m.execute("getProducts", {}).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'account', type: 'number' } })));
@@ -1479,6 +1482,207 @@ describe("Commands", () => {
             it("catches missing paymentmethod", () => m.execute('removeAllCustomers', { account: 1 }).catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: 'paymentmethod', type: 'number' } })));
             it("catches zero customers to delete", () => m.execute('removeAllCustomers', { account: 1, paymentmethod: PaymentMethod.Cash }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
         });
+    });
+
+    describe("Bonus handling", () => {
+        describe("deposit before", () => {
+            it("deposits for customer 12", async () => {
+                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 1 }), account: 3, customer: 12, value: 100 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ customer: 12, value: 100 });
+            });
+
+            it("deposits for customer 13", async () => {
+                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 1 }), account: 3, customer: 13, value: 780 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ customer: 13, value: 780 });
+            });
+        });
+
+        describe("deposit after", () => {
+            it("deposits for customer 14", async () => {
+                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }), account: 3, customer: 14, value: 400 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ customer: 14, value: -380 });
+            });
+
+            it("deposits for customer 15", async () => {
+                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }), account: 3, customer: 15, value: 780 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ customer: 15, value: 150 });
+            });
+
+            it("deposits for customer 16", async () => {
+                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 4 }), account: 3, customer: 16, value: 750 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ customer: 16, value: -150 });
+            });
+
+            it("deposits for customer 17", async () => {
+                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 4 }), account: 3, customer: 17, value: 900 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ customer: 17, value: 150 });
+            });
+        }).beforeAll(async () => {
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 12 });
+
+            await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
+
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 11, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 12, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 13, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 14, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 15, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 12 });
+
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 13 });
+
+            await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
+
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 11, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 12, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 13, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 14, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 15, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 13 });
+
+            await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
+
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 11, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 12, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 13, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 14, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 15, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
+
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 12 });
+
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 13 });
+
+            await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
+
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 }), account: 3, depot: 11, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 }), account: 3, depot: 12, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 }), account: 3, depot: 13, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 }), account: 3, depot: 14, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 }), account: 3, depot: 15, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 }), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 }), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
+        });
+
+        describe("first bonus execution", () => {
+            it("executes", () => m.execute("executeBonus", { account: 3, time: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
+            it("results", async () => {
+                await m.execute("getBalance", { account: 3, customer: 10 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" }));
+                await m.execute("getBalance", { account: 3, customer: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-900" }));
+                await m.execute("getBalance", { account: 3, customer: 12 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-800" }));
+                await m.execute("getBalance", { account: 3, customer: 13 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 14 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-380" }));
+                await m.execute("getBalance", { account: 3, customer: 15 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 16 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-150" }));
+                await m.execute("getBalance", { account: 3, customer: 17 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+            });
+        });
+
+        describe("second bonus execution", () => {
+            it("executes", () => m.execute("executeBonus", { account: 3, time: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
+            it("results", async () => {
+                await m.execute("getBalance", { account: 3, customer: 10 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" }));
+                await m.execute("getBalance", { account: 3, customer: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-900" }));
+                await m.execute("getBalance", { account: 3, customer: 12 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-800" }));
+                await m.execute("getBalance", { account: 3, customer: 13 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 14 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-380" }));
+                await m.execute("getBalance", { account: 3, customer: 15 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 16 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-150" }));
+                await m.execute("getBalance", { account: 3, customer: 17 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 18 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "30" }));
+            });
+        }).beforeAll(async () => {
+            await m.execute("addCustomer", { account: 3, firstname: "additional_execution", paymentMethods: PaymentMethod.Balance });
+            await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 1 }), account: 3, customer: 18, value: 100 });
+            await m.execute("orderProduct", { account: 3, customer: 18, product: 12 });
+            await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 2 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 2 }), account: 3, depot: 18, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+        });
+    }).beforeAll(async () => {
+        await m.execute("addCustomer", { account: 3, firstname: "do_nothing", paymentMethods: PaymentMethod.Balance });
+        await m.execute("addCustomer", { account: 3, firstname: "no_balance", paymentMethods: PaymentMethod.Balance });
+        await m.execute("addCustomer", { account: 3, firstname: "deposit_first_not_enough", paymentMethods: PaymentMethod.Balance });
+        await m.execute("addCustomer", { account: 3, firstname: "deposit_first_enough", paymentMethods: PaymentMethod.Balance });
+        await m.execute("addCustomer", { account: 3, firstname: "deposit_between_not_enough", paymentMethods: PaymentMethod.Balance });
+        await m.execute("addCustomer", { account: 3, firstname: "deposit_between_enough", paymentMethods: PaymentMethod.Balance });
+        await m.execute("addCustomer", { account: 3, firstname: "deposit_after_not_enough", paymentMethods: PaymentMethod.Balance });
+        await m.execute("addCustomer", { account: 3, firstname: "deposit_after_enough", paymentMethods: PaymentMethod.Balance });
+
+        await m.execute("addProduct", { account: 3, name: 'product_1', price: 100, category: 1 });
+        await m.execute("addProduct", { account: 3, name: 'product_2', price: 200, category: 1 });
     });
 
     describe("Deinitialization", () => {

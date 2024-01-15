@@ -263,7 +263,7 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         }));
     }
 
-    public async fetchOrders(account: number, callback: (order: Order, index: number) => Promise<void>, options: GetOrdersOptions = {}): Promise<void> {
+    public async fetchOrders(account: number, callback: (order: Order, index: number) => Promise<any>, options: GetOrdersOptions = {}): Promise<void> {
         const values: any[] = [account];
         const keys = ['`account`=?'];
 
