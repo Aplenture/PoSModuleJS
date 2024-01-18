@@ -44,7 +44,19 @@ export async function executeBonus(account: number, customer: Customer, context:
         let bonus = 0;
 
         // caluclate bonus by orders of month
-        await context.orderRepository.fetchOrders(account, async order => bonus += CoreJS.Currency.percentage(await context.orderRepository.getInvoice(order.id), context.discount), {
+        await context.orderRepository.fetchOrders(account, async order => {
+            // get ordered products
+            const orderProducts = await context.orderRepository.getProducts(order.id);
+
+            // increase bonus by ordered products
+            await Promise.all(orderProducts.map(async orderProduct => {
+                const product = await context.productRepository.get(orderProduct.product);
+
+                // increase bonus only if product has discount
+                if (product.discount)
+                    bonus += CoreJS.Currency.percentage(orderProduct.price * orderProduct.amount, context.discount || product.discount);
+            }));
+        }, {
             customer: customer.id,
             start: Number(start),
             end: Number(end),

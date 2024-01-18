@@ -1548,13 +1548,13 @@ describe("Commands", () => {
                 expect(data).deep.contains({ customer: 17, value: 150 });
             });
         }).beforeAll(async () => {
-            await m.execute("orderProduct", { account: 3, customer: 11, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 12, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 13, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 14, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 15, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 16, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 17, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 12, discount: 0 });
 
             await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
 
@@ -1566,21 +1566,21 @@ describe("Commands", () => {
             await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
             await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 2 }), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
 
-            await m.execute("orderProduct", { account: 3, customer: 11, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 12, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 13, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 14, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 15, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 16, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 17, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 12, discount: 0 });
 
-            await m.execute("orderProduct", { account: 3, customer: 11, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 12, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 13, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 14, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 15, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 16, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 17, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 13, discount: 0 });
 
             await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
 
@@ -1592,13 +1592,13 @@ describe("Commands", () => {
             await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
             await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 3 }), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 300, data: BalanceEvent.Invoice });
 
-            await m.execute("orderProduct", { account: 3, customer: 11, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 12, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 13, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 14, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 15, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 16, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 17, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 13, discount: 0 });
 
             await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
 
@@ -1610,21 +1610,21 @@ describe("Commands", () => {
             await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 16, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
             await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 2 }), account: 3, depot: 17, order: 0, asset: PaymentMethod.Balance, value: 200, data: BalanceEvent.Invoice });
 
-            await m.execute("orderProduct", { account: 3, customer: 11, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 12, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 13, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 14, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 15, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 16, product: 12 });
-            await m.execute("orderProduct", { account: 3, customer: 17, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 12, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 12, discount: 0 });
 
-            await m.execute("orderProduct", { account: 3, customer: 11, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 12, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 13, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 14, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 15, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 16, product: 13 });
-            await m.execute("orderProduct", { account: 3, customer: 17, product: 13 });
+            await m.execute("orderProduct", { account: 3, customer: 11, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 12, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 13, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 14, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 15, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 16, product: 13, discount: 0 });
+            await m.execute("orderProduct", { account: 3, customer: 17, product: 13, discount: 0 });
 
             await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 2 }), monthDay: 3 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
 
@@ -1667,7 +1667,7 @@ describe("Commands", () => {
         }).beforeAll(async () => {
             await m.execute("addCustomer", { account: 3, firstname: "additional_execution", paymentMethods: PaymentMethod.Balance });
             await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 1 }), account: 3, customer: 18, value: 100 });
-            await m.execute("orderProduct", { account: 3, customer: 18, product: 12 });
+            await m.execute("orderProduct", { account: 3, customer: 18, product: 12, discount: 0 });
             await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 2 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
             await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 2 }), account: 3, depot: 18, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
         });
@@ -1681,8 +1681,8 @@ describe("Commands", () => {
         await m.execute("addCustomer", { account: 3, firstname: "deposit_after_not_enough", paymentMethods: PaymentMethod.Balance });
         await m.execute("addCustomer", { account: 3, firstname: "deposit_after_enough", paymentMethods: PaymentMethod.Balance });
 
-        await m.execute("addProduct", { account: 3, name: 'product_1', price: 100, category: 1 });
-        await m.execute("addProduct", { account: 3, name: 'product_2', price: 200, category: 1 });
+        await m.execute("addProduct", { account: 3, name: 'product_1', price: 100, category: 1, discount: 1 });
+        await m.execute("addProduct", { account: 3, name: 'product_2', price: 200, category: 1, discount: 1 });
     });
 
     describe("Deinitialization", () => {
