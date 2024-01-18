@@ -26,6 +26,13 @@ interface GetOrdersOptions {
     readonly paymentMethod?: PaymentMethod;
 }
 
+interface CloseData {
+    readonly id: number;
+    readonly paymentMethod: PaymentMethod;
+    readonly tip?: number;
+    readonly time?: number;
+}
+
 export class OrderRepository extends BackendJS.Database.Repository<OrderTables> {
     public async createOrder(account: number, customer: number, paymentMethod = PaymentMethod.None): Promise<Order | null> {
         const result = await this.database.query(`
@@ -57,18 +64,19 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         };
     }
 
-    public async closeOrder(id: number, paymentMethod: PaymentMethod, tip = 0): Promise<Order | null> {
+    public async closeOrder(data: CloseData): Promise<Order | null> {
         const result = await this.database.query(`IF EXISTS (SELECT * FROM ${this.data.orders} WHERE \`id\`=? AND \`state\`=? LIMIT 1) THEN
-            UPDATE ${this.data.orders} SET \`state\`=?,\`paymentMethod\`=?,\`tip\`=? WHERE \`id\`=?;
+            UPDATE ${this.data.orders} SET \`updated\`=?,\`state\`=?,\`paymentMethod\`=?,\`tip\`=? WHERE \`id\`=?;
             SELECT * FROM ${this.data.orders} WHERE \`id\`=? LIMIT 1;
         END IF;`, [
-            id,
+            data.id,
             OrderState.Open,
+            BackendJS.Database.parseFromTime(data.time),
             OrderState.Closed,
-            paymentMethod,
-            tip,
-            id,
-            id
+            data.paymentMethod,
+            data.tip || 0,
+            data.id,
+            data.id
         ]);
 
         if (!result.length)

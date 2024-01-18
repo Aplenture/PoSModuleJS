@@ -56,7 +56,7 @@ export class CloseOrder extends BackendJS.Module.Command<Context, Args, Options>
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_not_enough_amount');
 
         const tip = args.amount - invoice;
-        const result = await this.context.orderRepository.closeOrder(args.order, args.paymentmethod, tip);
+        const result = await this.context.orderRepository.closeOrder({ id: args.order, paymentMethod: args.paymentmethod, tip });
 
         if (!result)
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_order_invalid');
