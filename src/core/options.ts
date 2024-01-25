@@ -7,6 +7,7 @@
 
 import * as BackendJS from "backendjs";
 import { OrderTables } from "../models/orderTables";
+import { BackupArgs } from "../commands";
 
 export interface Options extends BackendJS.Module.Options {
     readonly discount: number;
@@ -16,4 +17,5 @@ export interface Options extends BackendJS.Module.Options {
     readonly orderTables?: OrderTables;
     readonly productTable?: string;
     readonly labelTable?: string;
+    readonly backup?: BackupArgs;
 }

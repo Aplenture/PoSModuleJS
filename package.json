@@ -35,6 +35,7 @@
         "typescript": "^4.9.4"
     },
     "dependencies": {
-        "backendjs": "github:Aplenture/BackendJS"
+        "backendjs": "github:Aplenture/BackendJS",
+        "basic-ftp": "^5.0.4"
     }
 }

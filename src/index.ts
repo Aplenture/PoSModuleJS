@@ -10,6 +10,7 @@ import * as CoreJS from "corejs";
 import { Args, Options, Context } from "./core";
 import { CustomerRepository, OrderRepository, ProductRepository, LabelRepository } from "./repositories";
 import { OrderTables } from "./models/orderTables";
+import { BackupArgs } from "./commands";
 
 export class Module extends BackendJS.Module.Module<Context, Args, Options> implements Context {
     public readonly allowedRequestHeaders: readonly string[] = [];
@@ -25,6 +26,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
 
     private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders", { account: 2 }), { days: 1 }, CoreJS.addDate({ days: 1, minutes: -1 }));
     private readonly executeBonusCronjob = new CoreJS.Cronjob(() => this.execute("executeBonus", { account: 2 }), { months: 1 }, CoreJS.calcDate({ monthDay: 1 }));
+    private readonly backupCronjob: CoreJS.Cronjob;
 
     constructor(app: BackendJS.Module.IApp, args: BackendJS.Module.Args, options: Options, ...params: CoreJS.Parameter<any>[]) {
         super(app, args, options, ...params,
@@ -47,7 +49,16 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
             ], {
                 eventTable: '`balanceEvents`',
                 updateTable: '`balanceUpdates`'
-            })
+            }),
+            new CoreJS.DictionaryParameter<BackupArgs>('backup', 'backup config', [
+                new CoreJS.StringParameter("ftp_host", "host of ftp server"),
+                new CoreJS.StringParameter("ftp_user", "user of ftp server"),
+                new CoreJS.StringParameter("ftp_password", "password of ftp server"),
+                new CoreJS.StringParameter("ftp_path", "path where to store the backup files", "/"),
+                new CoreJS.StringParameter("db_user", "user of database"),
+                new CoreJS.StringParameter("db_database", "name of database"),
+                new CoreJS.StringParameter("gpg_password", "password for gpg encryption")
+            ])
         );
 
         this.database = new BackendJS.Database.Database(this.options.databaseConfig, {
@@ -62,11 +73,14 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.labelRepository = new LabelRepository(this.options.labelTable, this.database, __dirname + '/updates/' + LabelRepository.name);
 
         this.discount = this.options.discount;
+        
+        this.backupCronjob = new CoreJS.Cronjob(() => this.execute("backup", this.options.backup), { days: 1 }, CoreJS.calcDate())
 
         this.addCommands(Object.values(require('./commands')).map((constructor: any) => new constructor(this)));
 
         this.closeAllOpenBalanceOrdersCronjob.onExecute.on(next => app.onMessage.emit(this, `closing all open balance orders (next update: ${new Date(next).toLocaleString()})`));
         this.executeBonusCronjob.onExecute.on(next => app.onMessage.emit(this, `executing bonus payment (next update: ${new Date(next).toLocaleString()})`));
+        this.backupCronjob.onExecute.on(next => app.onMessage.emit(this, `database backup created (next update: ${new Date(next).toLocaleString()})`));
     }
 
     public async init(): Promise<void> {
@@ -76,6 +90,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
 
         this.app.updateLoop.add(this.closeAllOpenBalanceOrdersCronjob, true);
         this.app.updateLoop.add(this.executeBonusCronjob, true);
+        this.app.updateLoop.add(this.backupCronjob, true);
     }
 
     public async deinit(): Promise<void> {
@@ -84,5 +99,6 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
 
         this.app.updateLoop.remove(this.closeAllOpenBalanceOrdersCronjob, true);
         this.app.updateLoop.remove(this.executeBonusCronjob, true);
+        this.app.updateLoop.remove(this.backupCronjob, true);
     }
 }
