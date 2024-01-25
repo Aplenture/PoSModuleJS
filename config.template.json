@@ -1,0 +1,10 @@
+{
+    "name": "test",
+    "discount": 30,
+    "databaseConfig": {
+        "host": "localhost",
+        "user": "dev",
+        "password": "",
+        "database": "test"
+    }
+}

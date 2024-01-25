@@ -15,16 +15,7 @@ const args = {
     debug: true
 };
 
-const config = {
-    name: "test",
-    discount: 30,
-    databaseConfig: {
-        host: "localhost",
-        user: "dev",
-        password: "",
-        database: "test"
-    }
-};
+const config = BackendJS.loadConfig("config.json");
 
 const app: any = {
     onMessage: new CoreJS.Event<any, string>('app.onMessage'),
