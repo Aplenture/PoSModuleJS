@@ -72,7 +72,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
             const previousBalances = args.start ? await this.context.balanceRepository.getBalance(args.account, {
                 asset: PaymentMethod.Balance,
                 depot: args.customer,
-                time: args.start,
+                time: args.start - 1,
                 limit: 1
             }) : [];
 
