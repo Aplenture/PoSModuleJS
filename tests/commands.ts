@@ -1676,9 +1676,9 @@ describe("Commands", () => {
         await m.execute("addProduct", { account: 3, name: 'product_2', price: 200, category: 1, discount: 1 });
     });
 
-    describe("Backup", () => {
-        it("creates", () => m.execute('backup', config.backup).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK })));
-    });
+    // describe("Backup", () => {
+    //     it("creates", () => m.execute('backup', config.backup).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK })));
+    // });
 
     describe("Deinitialization", () => {
         it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));

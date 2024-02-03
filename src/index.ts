@@ -90,7 +90,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
 
         this.app.updateLoop.add(this.closeAllOpenBalanceOrdersCronjob, true);
         this.app.updateLoop.add(this.executeBonusCronjob, true);
-        this.app.updateLoop.add(this.backupCronjob, true);
+        // this.app.updateLoop.add(this.backupCronjob, true);
     }
 
     public async deinit(): Promise<void> {
