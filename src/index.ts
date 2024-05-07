@@ -51,13 +51,10 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
                 updateTable: '`balanceUpdates`'
             }),
             new CoreJS.DictionaryParameter<BackupArgs>('backup', 'backup config', [
-                new CoreJS.StringParameter("ftp_host", "host of ftp server"),
-                new CoreJS.StringParameter("ftp_user", "user of ftp server"),
-                new CoreJS.StringParameter("ftp_password", "password of ftp server"),
-                new CoreJS.StringParameter("ftp_path", "path where to store the backup files", "/"),
-                new CoreJS.StringParameter("db_user", "user of database"),
-                new CoreJS.StringParameter("db_database", "name of database"),
-                new CoreJS.StringParameter("gpg_password", "password for gpg encryption")
+                new CoreJS.StringParameter("user", "database user"),
+                new CoreJS.StringParameter("password", "database password", ""),
+                new CoreJS.StringParameter("database", "database name"),
+                new CoreJS.StringParameter("directory", "path where to store the backup files", "backup/")
             ])
         );
 
@@ -73,8 +70,8 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.labelRepository = new LabelRepository(this.options.labelTable, this.database, __dirname + '/updates/' + LabelRepository.name);
 
         this.discount = this.options.discount;
-        
-        this.backupCronjob = new CoreJS.Cronjob(() => this.execute("backup", this.options.backup), { days: 1 }, CoreJS.calcDate())
+
+        this.backupCronjob = new CoreJS.Cronjob(() => this.execute("backup", this.options.backup), { days: 1 }, CoreJS.calcDate());
 
         this.addCommands(Object.values(require('./commands')).map((constructor: any) => new constructor(this)));
 
@@ -90,7 +87,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
 
         this.app.updateLoop.add(this.closeAllOpenBalanceOrdersCronjob, true);
         this.app.updateLoop.add(this.executeBonusCronjob, true);
-        // this.app.updateLoop.add(this.backupCronjob, true);
+        this.app.updateLoop.add(this.backupCronjob, true);
     }
 
     public async deinit(): Promise<void> {

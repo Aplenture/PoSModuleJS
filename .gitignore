@@ -8,6 +8,7 @@ setup/
 *.log
 *.key
 *.pem
+*.sql
 
 config.json
 

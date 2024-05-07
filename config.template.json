@@ -8,12 +8,9 @@
         "database": "test"
     },
     "backup": {
-        "ftp_host": "",
-        "ftp_user": "",
-        "ftp_password": "",
-        "ftp_path": "pos/",
-        "db_user": "",
-        "db_database": "test",
-        "gpg_password": "1234"
+        "user": "dev",
+        "password": "1234",
+        "database": "test",
+        "directory": "backup/"
     }
 }
