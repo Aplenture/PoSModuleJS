@@ -1,5 +1,6 @@
 {
     "name": "test",
+    "bonusEnabled": true,
     "discount": 30,
     "databaseConfig": {
         "host": "localhost",

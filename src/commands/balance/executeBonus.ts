@@ -29,6 +29,9 @@ export class ExecuteBonus extends BackendJS.Module.Command<Context, Args, Option
         if (args.customer && !await this.context.customerRepository.hasPermissions(args.account, args.customer))
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
+        if (!this.context.bonusEnabled)
+            return new CoreJS.TextResponse("bonus is disabled");
+
         if (args.customer)
             await executeBonus(await this.context.customerRepository.get(args.customer), this.context, args.time);
         else

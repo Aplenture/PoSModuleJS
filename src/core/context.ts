@@ -9,6 +9,7 @@ import * as BackendJS from "backendjs";
 import { CustomerRepository, OrderRepository, ProductRepository, LabelRepository } from "../repositories";
 
 export interface Context extends BackendJS.Module.Context {
+    readonly bonusEnabled: boolean;
     readonly discount: number;
     readonly balanceRepository: BackendJS.Balance.Repository;
     readonly customerRepository: CustomerRepository;

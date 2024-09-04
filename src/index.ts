@@ -22,6 +22,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
     public readonly productRepository: ProductRepository;
     public readonly labelRepository: LabelRepository;
 
+    public readonly bonusEnabled: boolean;
     public readonly discount: number;
 
     private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders"), { days: 1 }, CoreJS.addDate({ days: 1, minutes: -1 }));
@@ -69,6 +70,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
         this.productRepository = new ProductRepository(this.options.productTable, this.database, __dirname + '/updates/' + ProductRepository.name);
         this.labelRepository = new LabelRepository(this.options.labelTable, this.database, __dirname + '/updates/' + LabelRepository.name);
 
+        this.bonusEnabled = this.options.bonusEnabled;
         this.discount = this.options.discount;
 
         this.backupCronjob = new CoreJS.Cronjob(() => this.execute("backup", this.options.backup), { days: 1 }, CoreJS.calcDate());

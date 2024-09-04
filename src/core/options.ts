@@ -10,6 +10,7 @@ import { OrderTables } from "../models/orderTables";
 import { BackupArgs } from "../commands";
 
 export interface Options extends BackendJS.Module.Options {
+    readonly bonusEnabled: boolean;
     readonly discount: number;
     readonly databaseConfig: BackendJS.Database.Config;
     readonly balanceTables?: BackendJS.Balance.Tables;

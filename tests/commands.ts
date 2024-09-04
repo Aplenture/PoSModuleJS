@@ -5,6 +5,7 @@
  * MIT License https://github.com/Aplenture/PoSModuleJS/blob/main/LICENSE
  */
 
+import * as FS from "fs";
 import * as BackendJS from 'backendjs';
 import * as CoreJS from 'corejs';
 import { expect } from "chai";
@@ -15,7 +16,13 @@ const args = {
     debug: true
 };
 
-const config = BackendJS.loadConfig("config.json");
+const config = BackendJS.loadConfig("config.template.json");
+
+if (FS.existsSync("config.json"))
+    Object.assign(config, BackendJS.loadConfig("config.json"));
+
+config.bonusEnabled = true;
+config.discount = 30;
 
 const app: any = {
     onMessage: new CoreJS.Event<any, string>('app.onMessage'),
@@ -1474,6 +1481,12 @@ describe("Commands", () => {
     });
 
     describe("Bonus handling", () => {
+        describe("catches disabled bonus", () => {
+            it("returns 'bonus is disabled'", () => m.execute("executeBonus").then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "bonus is disabled" })));
+        })
+            .beforeAll(() => (m.bonusEnabled as any) = false)
+            .afterAll(() => (m.bonusEnabled as any) = true);
+
         describe("deposit before", () => {
             it("deposits for customer 12", async () => {
                 const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 1 }), account: 3, customer: 12, value: 100 }) as CoreJS.Response;
