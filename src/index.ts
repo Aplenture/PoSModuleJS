@@ -24,7 +24,7 @@ export class Module extends BackendJS.Module.Module<Context, Args, Options> impl
 
     public readonly discount: number;
 
-    private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders", { account: 2 }), { days: 1 }, CoreJS.addDate({ days: 1, minutes: -1 }));
+    private readonly closeAllOpenBalanceOrdersCronjob = new CoreJS.Cronjob(() => this.execute("closeAllOpenBalanceOrders"), { days: 1 }, CoreJS.addDate({ days: 1, minutes: -1 }));
     private readonly executeBonusCronjob = new CoreJS.Cronjob(() => this.execute("executeBonus", { account: 2 }), { months: 1 }, CoreJS.calcDate({ monthDay: 1 }));
     private readonly backupCronjob: CoreJS.Cronjob;
 

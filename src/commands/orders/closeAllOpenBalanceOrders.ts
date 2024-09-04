@@ -19,7 +19,7 @@ interface Args extends GlobalArgs {
 export class CloseAllOpenBalanceOrders extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'closes all open orders with balance as payment method';
     public readonly parameters = new CoreJS.ParameterList(
-        new CoreJS.NumberParameter('account', 'account id'),
+        new CoreJS.NumberParameter('account', 'account id', null),
         new CoreJS.TimeParameter('time', 'closing timestamp', null)
     );
 
@@ -29,7 +29,7 @@ export class CloseAllOpenBalanceOrders extends BackendJS.Module.Command<Context,
             ? new Date(args.time)
             : new Date();
 
-        await this.context.orderRepository.fetchOrders(args.account, async order => {
+        await this.context.orderRepository.fetchOrders(async order => {
             if (!await this.context.customerRepository.canPayWith(order.customer, PaymentMethod.Balance))
                 return;
 
@@ -48,7 +48,10 @@ export class CloseAllOpenBalanceOrders extends BackendJS.Module.Command<Context,
             });
 
             result.push(closedOrder);
-        }, { state: OrderState.Open });
+        }, {
+            account: args.account,
+            state: OrderState.Open
+        });
 
         return new CoreJS.JSONResponse(result);
     }

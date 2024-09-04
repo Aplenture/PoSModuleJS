@@ -18,6 +18,7 @@ interface UpdateOptions {
 }
 
 interface GetOrdersOptions {
+    readonly account?: number;
     readonly customer?: number;
     readonly start?: number;
     readonly end?: number;
@@ -271,9 +272,14 @@ export class OrderRepository extends BackendJS.Database.Repository<OrderTables> 
         }));
     }
 
-    public async fetchOrders(account: number, callback: (order: Order, index: number) => Promise<any>, options: GetOrdersOptions = {}): Promise<void> {
-        const values: any[] = [account];
-        const keys = ['`account`=?'];
+    public async fetchOrders(callback: (order: Order, index: number) => Promise<any>, options: GetOrdersOptions = {}): Promise<void> {
+        const values: any[] = [];
+        const keys = [];
+
+        if (options.account) {
+            values.push(options.account);
+            keys.push('`account`=?');
+        }
 
         if (options.customer) {
             values.push(options.customer);

@@ -899,7 +899,7 @@ describe("Commands", () => {
         });
 
         describe("Close All Open Balance Orders", () => {
-            it("closes all open balance orders", async () => {
+            it("closes all open balance orders with account argument", async () => {
                 const result = await m.execute("closeAllOpenBalanceOrders", { account: 1 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
@@ -910,8 +910,6 @@ describe("Commands", () => {
                 expect(data[0]).deep.contains({ id: 10, account: 1, state: OrderState.Closed, customer: 3, paymentMethod: PaymentMethod.Balance, tip: 0 });
                 expect(data[1]).deep.contains({ id: 13, account: 1, state: OrderState.Closed, customer: 4, paymentMethod: PaymentMethod.Balance, tip: 0 });
             });
-
-            it("catches missing account", () => m.execute("closeAllOpenBalanceOrders").catch(error => expect(error).deep.contains({ code: CoreJS.CoreErrorCode.MissingParameter, data: { name: "account", type: "number" } })));
         });
 
         describe("Reopen Orders", () => {
@@ -1679,6 +1677,18 @@ describe("Commands", () => {
     // describe("Backup", () => {
     //     it("creates", () => m.execute('backup', config.backup).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK })));
     // });
+
+    describe("Close All Open Balance Orders", () => {
+        it("closes rest of open balance orders without account argument", async () => {
+            const result = await m.execute("closeAllOpenBalanceOrders") as CoreJS.Response;
+
+            expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+            const data = JSON.parse(result.data);
+
+            expect(data).has.length(3);
+        });
+    });
 
     describe("Deinitialization", () => {
         it("reverts", () => m.execute('revert').then((result: any) => expect(result.code).equals(200, 'wrong response code')));
