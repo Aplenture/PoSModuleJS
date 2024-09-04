@@ -4,7 +4,7 @@ import { Customer } from "../models";
 import { BalanceEvent, OrderState, PaymentMethod } from "../enums";
 import { Context } from "../core";
 
-export async function executeBonus(account: number, customer: Customer, context: Context, time?: number): Promise<BackendJS.Balance.Update | null> {
+export async function executeBonus(customer: Customer, context: Context, time?: number): Promise<BackendJS.Balance.Update | null> {
     const firstDayOfCurrentMonth = CoreJS.calcDate({ monthDay: 1 });
     const firstDayOfStartMonth = time
         ? CoreJS.calcDate({ date: new Date(time), monthDay: 1 })
@@ -14,7 +14,7 @@ export async function executeBonus(account: number, customer: Customer, context:
 
     for (let start = firstDayOfStartMonth, end = CoreJS.addDate({ date: start, months: 1 }); start < firstDayOfCurrentMonth; start = end, end = CoreJS.addDate({ date: start, months: 1 })) {
         // get paid out bonus
-        const paidBonus = await context.balanceRepository.getEvents(account, {
+        const paidBonus = await context.balanceRepository.getEvents(customer.account, {
             start: Number(start),
             end: Number(end),
             depot: customer.id,
@@ -26,7 +26,7 @@ export async function executeBonus(account: number, customer: Customer, context:
             continue;
 
         // get balance at end of month
-        const balance = await context.balanceRepository.getBalance(account, {
+        const balance = await context.balanceRepository.getBalance(customer.account, {
             time: Number(end),
             depot: customer.id,
             asset: PaymentMethod.Balance
@@ -57,7 +57,7 @@ export async function executeBonus(account: number, customer: Customer, context:
                     bonus += CoreJS.Currency.percentage(orderProduct.price * orderProduct.amount, context.discount || product.discount);
             }));
         }, {
-            account,
+            account: customer.account,
             customer: customer.id,
             start: Number(start),
             end: Number(end),
@@ -76,7 +76,7 @@ export async function executeBonus(account: number, customer: Customer, context:
         // pay out bonus
         result = await context.balanceRepository.increase({
             date: CoreJS.reduceDate({ date: end, milliseconds: 1 }),
-            account: account,
+            account: customer.account,
             depot: customer.id,
             order: 0,
             asset: PaymentMethod.Balance,

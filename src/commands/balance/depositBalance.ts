@@ -45,7 +45,7 @@ export class DepositBalance extends BackendJS.Module.Command<Context, Args, Opti
             data: args.label
         });
 
-        const bonus = await executeBonus(args.account, customer, this.context, args.date);
+        const bonus = await executeBonus(customer, this.context, args.date);
 
         const result = bonus || deposit;
 

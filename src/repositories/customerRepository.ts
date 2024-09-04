@@ -24,6 +24,7 @@ interface EditOptions {
 }
 
 interface GetAllOptions {
+    readonly account?: number;
     readonly limit?: number;
     readonly firstID?: number;
     readonly lastID?: number;
@@ -156,9 +157,14 @@ export class CustomerRepository extends BackendJS.Database.Repository<string> {
         }));
     }
 
-    public async fetchAll(account: number, callback: (data: Customer) => Promise<any>, options: GetAllOptions = {}): Promise<void> {
-        const values = [account];
-        const keys = ['`account`=?'];
+    public async fetchAll(callback: (data: Customer) => Promise<any>, options: GetAllOptions = {}): Promise<void> {
+        const values = [];
+        const keys = [];
+
+        if (options.account) {
+            values.push(options.account);
+            keys.push('`account`=?');
+        }
 
         if (options.firstID) {
             values.push(options.firstID);

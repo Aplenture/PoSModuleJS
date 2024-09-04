@@ -1627,7 +1627,7 @@ describe("Commands", () => {
         });
 
         describe("first bonus execution", () => {
-            it("executes", () => m.execute("executeBonus", { account: 3, time: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
+            it("executes without account argument", () => m.execute("executeBonus", { time: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
             it("results", async () => {
                 await m.execute("getBalance", { account: 3, customer: 10 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" }));
                 await m.execute("getBalance", { account: 3, customer: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-900" }));
@@ -1641,7 +1641,28 @@ describe("Commands", () => {
         });
 
         describe("second bonus execution", () => {
-            it("executes", () => m.execute("executeBonus", { account: 3, time: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
+            it("executes for different account", () => m.execute("executeBonus", { account: 1, time: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
+            it("results", async () => {
+                await m.execute("getBalance", { account: 3, customer: 10 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" }));
+                await m.execute("getBalance", { account: 3, customer: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-900" }));
+                await m.execute("getBalance", { account: 3, customer: 12 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-800" }));
+                await m.execute("getBalance", { account: 3, customer: 13 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 14 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-380" }));
+                await m.execute("getBalance", { account: 3, customer: 15 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 16 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-150" }));
+                await m.execute("getBalance", { account: 3, customer: 17 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 18 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" }));
+            });
+        }).beforeAll(async () => {
+            await m.execute("addCustomer", { account: 3, firstname: "additional_execution", paymentMethods: PaymentMethod.Balance });
+            await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 1 }), account: 3, customer: 18, value: 100 });
+            await m.execute("orderProduct", { account: 3, customer: 18, product: 12, discount: 0 });
+            await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 2 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
+            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 2 }), account: 3, depot: 18, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
+        });
+
+        describe("second bonus execution", () => {
+            it("executes with account argument", () => m.execute("executeBonus", { account: 3, time: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 4 }) }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "1" })));
             it("results", async () => {
                 await m.execute("getBalance", { account: 3, customer: 10 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" }));
                 await m.execute("getBalance", { account: 3, customer: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-900" }));
@@ -1653,12 +1674,6 @@ describe("Commands", () => {
                 await m.execute("getBalance", { account: 3, customer: 17 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
                 await m.execute("getBalance", { account: 3, customer: 18 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "30" }));
             });
-        }).beforeAll(async () => {
-            await m.execute("addCustomer", { account: 3, firstname: "additional_execution", paymentMethods: PaymentMethod.Balance });
-            await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 1 }), account: 3, customer: 18, value: 100 });
-            await m.execute("orderProduct", { account: 3, customer: 18, product: 12, discount: 0 });
-            await m.database.query(`UPDATE orders SET \`state\`=${OrderState.Closed},\`paymentMethod\`=${PaymentMethod.Balance},\`tip\`=0,\`updated\`=FROM_UNIXTIME(${Number(CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 2 })) / 1000}) WHERE account=3 AND \`state\`=${OrderState.Open}`);
-            await m.balanceRepository.decrease({ date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 1 }), monthDay: 2 }), account: 3, depot: 18, order: 0, asset: PaymentMethod.Balance, value: 100, data: BalanceEvent.Invoice });
         });
     }).beforeAll(async () => {
         await m.execute("addCustomer", { account: 3, firstname: "do_nothing", paymentMethods: PaymentMethod.Balance });

@@ -20,7 +20,7 @@ interface Args extends GlobalArgs {
 export class ExecuteBonus extends BackendJS.Module.Command<Context, Args, Options> {
     public readonly description = 'calculates bonus by ordered products discounts and deposits it if balance is not negative';
     public readonly parameters = new CoreJS.ParameterList(
-        new CoreJS.NumberParameter('account', 'account id'),
+        new CoreJS.NumberParameter('account', 'account id', null),
         new CoreJS.NumberParameter('customer', 'customer id', null),
         new CoreJS.TimeParameter('time', 'time of bonus', null)
     );
@@ -30,9 +30,9 @@ export class ExecuteBonus extends BackendJS.Module.Command<Context, Args, Option
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
         if (args.customer)
-            await executeBonus(args.account, await this.context.customerRepository.get(args.customer), this.context, args.time);
+            await executeBonus(await this.context.customerRepository.get(args.customer), this.context, args.time);
         else
-            await this.context.customerRepository.fetchAll(args.account, customer => executeBonus(args.account, customer, this.context, args.time), { paymentMethods: PaymentMethod.Balance });
+            await this.context.customerRepository.fetchAll(customer => executeBonus(customer, this.context, args.time), { account: args.account, paymentMethods: PaymentMethod.Balance });
 
         return new CoreJS.OKResponse();
     }
