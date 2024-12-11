@@ -22,8 +22,13 @@ export async function executeBonus(customer: Customer, context: Context, time?: 
         });
 
         // skip months where bonus has already been paid out
-        if (0 < paidBonus.length)
-            continue;
+        // if (0 < paidBonus.length)
+        //     continue;
+
+        // remove already paid out bonuses
+        // to undo bonuses when customer balance has changed
+        for (let i = 0; i < paidBonus.length; ++i)
+            await context.balanceRepository.removeEvent(paidBonus[i].id);
 
         // get balance at end of month
         const balance = await context.balanceRepository.getBalance(customer.account, {

@@ -41,7 +41,13 @@ export class UndoTransfer extends BackendJS.Module.Command<Context, Args, Option
         if (!validDatas.includes(transfer.data))
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_transaction_data_invalid');
 
-        const result = await this.context.balanceRepository.removeEvent(args.id);
+        await this.context.balanceRepository.removeEvent(args.id);
+
+        const customer = await this.context.customerRepository.get(transfer.depot);
+
+        await executeBonus(customer, this.context, transfer.timestamp);
+
+        const result = (await this.context.balanceRepository.getBalance(customer.account, { depot: customer.id }))[0];
 
         return new CoreJS.JSONResponse({
             timestamp: result.timestamp,

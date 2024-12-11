@@ -1498,8 +1498,18 @@ describe("Commands", () => {
                 expect(data).deep.contains({ customer: 12, value: 100 });
             });
 
-            it("deposits for customer 13", async () => {
-                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 1 }), account: 3, customer: 13, value: 780 }) as CoreJS.Response;
+            it("deposit 1 for customer 13", async () => {
+                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 1 }), account: 3, customer: 13, value: 600 }) as CoreJS.Response;
+
+                expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
+
+                const data = JSON.parse(result.data);
+
+                expect(data).deep.contains({ customer: 13, value: 600 });
+            });
+
+            it("deposit 2 for customer 13", async () => {
+                const result = await m.execute("depositBalance", { date: CoreJS.calcDate({ date: CoreJS.reduceDate({ months: 3 }), monthDay: 1 }), account: 3, customer: 13, value: 180 }) as CoreJS.Response;
 
                 expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.JSON });
 
@@ -1681,6 +1691,22 @@ describe("Commands", () => {
                 await m.execute("getBalance", { account: 3, customer: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-900" }));
                 await m.execute("getBalance", { account: 3, customer: 12 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-800" }));
                 await m.execute("getBalance", { account: 3, customer: 13 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 14 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-380" }));
+                await m.execute("getBalance", { account: 3, customer: 15 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 16 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-150" }));
+                await m.execute("getBalance", { account: 3, customer: 17 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
+                await m.execute("getBalance", { account: 3, customer: 18 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "30" }));
+            });
+        });
+
+        describe("bonus execution with undo transfer", () => {
+            it("undo transfer", () => m.execute("undoTransfer", { account: 3, id: 27 }));
+
+            it("results", async () => {
+                await m.execute("getBalance", { account: 3, customer: 10 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "0" }));
+                await m.execute("getBalance", { account: 3, customer: 11 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-900" }));
+                await m.execute("getBalance", { account: 3, customer: 12 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-800" }));
+                await m.execute("getBalance", { account: 3, customer: 13 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-180" }));
                 await m.execute("getBalance", { account: 3, customer: 14 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-380" }));
                 await m.execute("getBalance", { account: 3, customer: 15 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "150" }));
                 await m.execute("getBalance", { account: 3, customer: 16 }).then(result => expect(result).deep.contains({ code: CoreJS.ResponseCode.OK, type: CoreJS.ResponseType.Text, data: "-150" }));
