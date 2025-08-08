@@ -18,6 +18,7 @@ interface Args extends GlobalArgs {
     readonly start: number;
     readonly end: number;
     readonly paymentmethod: PaymentMethod;
+    readonly endless: boolean;
     readonly data: readonly string[];
 }
 
@@ -29,6 +30,7 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
         new CoreJS.TimeParameter('start', 'start timestamp of finances', null),
         new CoreJS.TimeParameter('end', 'end timestamp of orders', null),
         new CoreJS.NumberParameter('paymentmethod', 'method of payment', null),
+        new CoreJS.BoolParameter('endless', 'ignores start/end, attention causes high time consumption', null),
         new CoreJS.ArrayParameter('data', 'array of finance data', new CoreJS.StringParameter('', ''), null)
     );
 
@@ -36,11 +38,15 @@ export class GetFinances extends BackendJS.Module.Command<Context, Args, Options
         if (!await this.context.customerRepository.hasPermissions(args.account, args.customer))
             return new CoreJS.ErrorResponse(CoreJS.ResponseCode.Forbidden, '#_permission_denied');
 
-        // if start not set calc start by end or now and max duration
-        const start = args.start || ((args.end || Date.now()) - MAX_DURATION);
+        const start = args.endless
+            ? undefined
+            // if start not set calc start by end or now and max duration
+            : args.start || ((args.end || Date.now()) - MAX_DURATION);
 
-        // clamp end by start + max duration
-        const end = Math.min(args.end || (start + MAX_DURATION), start + MAX_DURATION);
+        const end = args.endless
+            ? undefined
+            // clamp end by start + max duration
+            : Math.min(args.end || (start + MAX_DURATION), start + MAX_DURATION);
 
         const result = [];
         const options = {
